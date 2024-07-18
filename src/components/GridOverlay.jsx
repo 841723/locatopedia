@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useMap, Polygon, useMapEvents } from 'react-leaflet';
+import { useMap, useMapEvents, Polygon } from 'react-leaflet';
 import PropTypes from 'prop-types';
 
 const sideMapRelations = {
@@ -18,16 +18,30 @@ const sideMapRelations = {
     13: 0.008,
     14: 0.004,
     15: 0.002,
-    16: 0.0010,
+    16: 0.001,
     17: 0.0005,
-    18: 0.0002,
+    18: 0.00025,
 }
 
 
 export function GridOverlay() {
     const map = useMap();
-    const [grid, setGrid] = useState([]);
     const [sideLength, setSideLength] = useState(0.001);
+    const [grid, setGrid] = useState([]);
+    const [selected, setSelected] = useState([]);
+
+    const callback = (positions) => {
+        setSelected((prev) => {
+            const newSelected = [...prev];
+            const idx = newSelected.findIndex((pos) => pos === positions);
+            if (idx === -1) {
+                newSelected.push(positions);
+            } else {
+                newSelected.splice(idx, 1);
+            }
+            return newSelected;
+        });
+    }
 
     useMapEvents({
         zoomend() {
@@ -74,28 +88,26 @@ export function GridOverlay() {
 
     return (
         <>
+            <Polygon positions={selected} pathOptions={{ color: 'black', fillColor:'red' }} />
             {grid.map((square, idx) => (
-                <GridCell key={idx} positions={square}/>
+                <GridCell key={idx} positions={square} callback={callback} />
             ))}
         </>
     );
 }
 
 
-function GridCell({ positions }) {
-    const [marked, setMarked] = useState(false);
-
-    const color = marked ? 'white' : 'black';
+function GridCell({ positions,callback }) {
 
     const handleClick = () => {
-        console.log('click cell');
-        setMarked((prev) => !prev);
+        callback(positions);
     }
 
     return (
-        <Polygon eventHandlers={{ click: handleClick }} positions={positions} pathOptions={{color:color}} weight={1} />
+        <Polygon eventHandlers={{ click: handleClick }} positions={positions} fillColor={"#00000000"} pathOptions={{color:"black"}} weight={1} />
     )
 }
 GridCell.propTypes = {
     positions: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired,
+    callback: PropTypes.func.isRequired,
 }
