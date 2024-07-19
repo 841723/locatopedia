@@ -91,13 +91,17 @@ function MapUser() {
 
         console.log("currentH3Res", currentH3Res);
         const { _southWest: sw, _northEast: ne } = map.getBounds();
+        const padding = 0.1;
+        const extraPaddingLat = (ne.lat - sw.lat) * padding;
+        const extraPaddingLng = (ne.lng - sw.lng) * padding;
+
 
         const boundsPolygon = [
-            [sw.lat, sw.lng],
-            [ne.lat, sw.lng],
-            [ne.lat, ne.lng],
-            [sw.lat, ne.lng],
-            [sw.lat, sw.lng],
+            [sw.lat-extraPaddingLat, sw.lng-extraPaddingLng],
+            [ne.lat+extraPaddingLat, sw.lng-extraPaddingLng],
+            [ne.lat+extraPaddingLat, ne.lng+extraPaddingLng],
+            [sw.lat-extraPaddingLat, ne.lng+extraPaddingLng],
+            [sw.lat-extraPaddingLat, sw.lng-extraPaddingLng],
         ];
 
         const h3s = h3.polygonToCells(boundsPolygon, currentH3Res);
