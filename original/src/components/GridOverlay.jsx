@@ -3,8 +3,8 @@ import { useMap, useMapEvents, Polygon } from 'react-leaflet';
 import PropTypes from 'prop-types';
 
 const sideMapRelations = {
-    1: 16.384,
-    2: 12.288,
+    1: 32.768,
+    2: 16.384,
     3: 8.192,
     4: 4.096,
     5: 2.048,
@@ -26,19 +26,35 @@ const sideMapRelations = {
 
 export function GridOverlay() {
     const map = useMap();
-    const [sideLength, setSideLength] = useState(0.001);
+    const [sideLength, setSideLength] = useState(sideMapRelations[map.getZoom()]);
     const [grid, setGrid] = useState([]);
     const [selected, setSelected] = useState([]);
 
     const callback = (positions) => {
         setSelected((prev) => {
             const newSelected = [...prev];
+            // mirar si hay algúna celda seleccionada dentro de este cuadrado
+            const [latNW, lngNW] = positions[0];
+            const [latSE, lngSE] = positions[2];
+
+            const toRemove = newSelected.filter(([dNW, dSE]) => {
+                return latNW <= dNW[0] && dSE[0] <= latSE && lngNW <= dNW[1] && dSE[1] <= lngSE;
+            });
+
+            toRemove.forEach((pos) => {
+                const idx = newSelected.findIndex((pos2) => pos2 === pos);
+                newSelected.splice(idx, 1);
+            });
+
+            // mirar si este cuadrado ya está seleccionado
             const idx = newSelected.findIndex((pos) => pos === positions);
             if (idx === -1) {
                 newSelected.push(positions);
             } else {
                 newSelected.splice(idx, 1);
             }
+
+            console.log(newSelected);
             return newSelected;
         });
     }
@@ -46,8 +62,6 @@ export function GridOverlay() {
     useMapEvents({
         zoomend() {
             const zoom = map.getZoom();
-            console.log(zoom);
-            console.log(sideMapRelations[zoom]);
             setSideLength(sideMapRelations[zoom]);
         },
     });
@@ -57,7 +71,6 @@ export function GridOverlay() {
 
         const updateGrid = () => {
             const bounds = map.getBounds();
-            console.log(bounds);
             const minLat = Math.floor(bounds.getSouthWest().lat / sideLength) * sideLength;
             const maxLat = Math.ceil(bounds.getNorthEast().lat / sideLength) * sideLength;
             const minLng = Math.floor(bounds.getSouthWest().lng / sideLength) * sideLength;

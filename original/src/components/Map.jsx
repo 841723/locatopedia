@@ -29,7 +29,7 @@ export function Map() {
     }
 
     return (
-        <MapContainer center={[40.5956, 0.5690]} zoom={20} scrollWheelZoom={true}>
+        <MapContainer center={[40.5956, 0.5690]} zoom={2} scrollWheelZoom={true}>
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
