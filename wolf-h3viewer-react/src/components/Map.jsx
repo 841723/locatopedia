@@ -1,12 +1,18 @@
 import { useEffect, useState, useRef } from "react";
 
-export function Map() {
+
+/**
+ * 
+ * @param selected the selected cells are highlighted in the map, user cannot select cells. If empty or undefined, user can select cells 
+ * 
+ */
+export function Map({ selected }) {
 
     const [map, setMap] = useState(undefined);
     var hexLayer = useRef(null);
     const [selectedCellsIDs, setSelectedCellsIDs] = useState([]);
+    const allowSelectingCells = !selected || selected.length === 0;
 
-    const [showSelected, setShowSelected] = useState(true);
 
     useEffect(() => {
         const m = L.map('mapid');
@@ -17,7 +23,14 @@ export function Map() {
             attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
         }).addTo(m);
 
-        m.setView([40.5956, 0.5690], 17);
+        m.setView([41.64731, -0.89001], 13);
+
+        if (selected) {
+            for (const h3id of selected) {
+                setSelectedCellsIDs(prev => [...prev, h3id]);
+            }
+        }
+
         setMap(m);
     }, []);
 
@@ -72,20 +85,24 @@ export function Map() {
         return lngLatH3Bounds;
     };
 
-    function computeAverageEdgeLengthInMeters(vertexLocations) {
-        let totalLength = 0;
-        let edgeCount = 0;
-        for (let i = 1; i < vertexLocations.length; i++) {
-            const [fromLat, fromLng] = vertexLocations[i - 1];
-            const [toLat, toLng] = vertexLocations[i];
-            const edgeDistance = GeoUtils.getDistanceOnEarthInMeters(fromLat, fromLng, toLat, toLng);
-            totalLength += edgeDistance;
-            edgeCount++;
-        }
-        return totalLength / edgeCount;
-    }
+    // function computeAverageEdgeLengthInMeters(vertexLocations) {
+    //     let totalLength = 0;
+    //     let edgeCount = 0;
+    //     for (let i = 1; i < vertexLocations.length; i++) {
+    //         const [fromLat, fromLng] = vertexLocations[i - 1];
+    //         const [toLat, toLng] = vertexLocations[i];
+    //         const edgeDistance = GeoUtils.getDistanceOnEarthInMeters(fromLat, fromLng, toLat, toLng);
+    //         totalLength += edgeDistance;
+    //         edgeCount++;
+    //     }
+    //     return totalLength / edgeCount;
+    // }
 
     function handleClickCell(h3id) {
+        // console.log("Clicked cell", h3id);
+
+        if (!allowSelectingCells) return;
+
         setSelectedCellsIDs(prev => {
             if (prev.includes(h3id)) {
                 return prev.filter((id) => id !== h3id);
@@ -121,15 +138,13 @@ export function Map() {
                 [sw.lat - extraPaddingLat, sw.lng - extraPaddingLng],
             ];
 
-            if (showSelected) {
-                for (const h3id of selectedCellsIDs) {
-                    const polygonLayer = L.layerGroup().addTo(hexLayer.current);
-    
-                    const h3Bounds = h3.cellToBoundary(h3id);
-    
-                    L.polygon(h3BoundsToPolygon(h3Bounds), { fillColor: "black", fillOpacity: 1, stroke: false })
-                        .addTo(polygonLayer);
-                }
+            for (const h3id of selectedCellsIDs) {
+                const polygonLayer = L.layerGroup().addTo(hexLayer.current);
+
+                const h3Bounds = h3.cellToBoundary(h3id);
+
+                L.polygon(h3BoundsToPolygon(h3Bounds), { fillColor: "black", fillOpacity: 1, stroke: false })
+                    .addTo(polygonLayer);
             }
 
 
@@ -140,20 +155,9 @@ export function Map() {
 
                 const h3Bounds = h3.cellToBoundary(h3id);
 
-                const style = !showSelected && !selectedCellsIDs.includes(h3id) ? { fillColor: "red", fillOpacity: 0.9, stroke: false } : { fillOpacity: 0.1, weight: 1 };
-
-                const h3Polygon = L.polygon(h3BoundsToPolygon(h3Bounds), style)
+                L.polygon(h3BoundsToPolygon(h3Bounds), { weight: 1.5 })
                     .on('click', () => handleClickCell(h3id))
                     .addTo(polygonLayer);
-
-                if (false) {
-                    var svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-                    svgElement.setAttribute('xmlns', "http://www.w3.org/2000/svg");
-                    svgElement.setAttribute('viewBox', "0 0 200 200");
-                    svgElement.innerHTML = `<text x="20" y="70" class="h3Text">${h3id}</text>`;
-                    var svgElementBounds = h3Polygon.getBounds();
-                    L.svgOverlay(svgElement, svgElementBounds).addTo(polygonLayer);
-                }
             }
         }
 
@@ -168,14 +172,22 @@ export function Map() {
         return () => {
             map.off("moveend", debouncedUpdateMapDisplay);
         };
-    }, [map, selectedCellsIDs, showSelected]);
+    }, [map, selectedCellsIDs]);
 
     return (
         <>
-            <div id="mapid" style={{ height: "90vh", width: "100vw" }}></div>
-            <button onClick={() => console.log(selectedCellsIDs)}>selectedCellsIDs</button>
-            <button onClick={() => setShowSelected((prev) => !prev)}>invert colors</button>
-            <button onClick={() => setSelectedCellsIDs([])}>clear selected</button>
+            <div id="mapid" className="relative h-full w-full">
+                <div className="w-32 absolute z-[2000] p-1 right-0 mt-[10px] mr-[10px] bg-white text-black shadow-black/65 shadow-md rounded-[4px]">
+                    <button onClick={() => setSelectedCellsIDs([])}>Clear selected</button>
+                    <hr className="my-1" />
+                    <h3>Selected cells:</h3>
+                    <ul className="ml-2">
+                        {selectedCellsIDs.map((id) => (
+                            <li key={id}>{id}</li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
         </>
     );
 }

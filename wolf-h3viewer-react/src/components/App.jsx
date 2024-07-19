@@ -4,7 +4,9 @@ function App() {
 
   return (
     <>
-      <Map />
+      <div className='w-[100vw] h-[100vh]'>
+        <Map selected={[]} />
+      </div>
     </>
   )
 }
