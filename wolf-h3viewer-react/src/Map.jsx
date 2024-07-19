@@ -1,13 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
-function MapUser() {
-    
+export function Map() {
+
+    console.log("RENDERING MAP");
+
     const [map, setMap] = useState(undefined);
-    let hexLayer = undefined;
-    const [searchH3Id, setSearchH3Id] = useState(undefined);
-
-    const $mapid = document.getElementById("mapid")
-    console.log($mapid)
+    var hexLayer = useRef(null);
+    const [selectedCellsIDs, setSelectedCellsIDs] = useState(["8182bffffffffff", "8182fffffffffff"]);
 
     useEffect(() => {
         setMap(L.map('mapid'));
@@ -65,7 +64,7 @@ function MapUser() {
         lngLatH3Bounds.push(lngLatH3Bounds[0]); // "close" the polygon
         return lngLatH3Bounds;
     };
-    
+
     function computeAverageEdgeLengthInMeters(vertexLocations) {
         let totalLength = 0;
         let edgeCount = 0;
@@ -79,29 +78,45 @@ function MapUser() {
         return totalLength / edgeCount;
     }
 
+    function handleClickCell(h3id) {
+        if (selectedCellsIDs.includes(h3id)) {
+            setSelectedCellsIDs(selectedCellsIDs.filter((id) => id !== h3id));
+        }
+        else {
+            setSelectedCellsIDs((prev) => [...prev, h3id]);
+        }
+    }
+
+    useEffect(() => {
+        console.log("selectedCellsIDs changed to", selectedCellsIDs);
+        if (!map) return;
+        updateMapDisplay();
+    }, [selectedCellsIDs]);
+
     function updateMapDisplay() {
-        if (hexLayer) {
-            hexLayer.remove();
+        // console.log("updateMapDisplay - hexLayer", hexLayer);
+        if (hexLayer.current) {
+            hexLayer.current.remove();
         }
 
-        hexLayer = L.layerGroup().addTo(map);
+        hexLayer.current = L.layerGroup().addTo(map);
 
         const zoom = map.getZoom();
         const currentH3Res = getH3ResForMapZoom(zoom);
-
-        console.log("currentH3Res", currentH3Res);
         const { _southWest: sw, _northEast: ne } = map.getBounds();
+
+        // TODO: change padding to be based on the map size
         const padding = 0.1;
         const extraPaddingLat = (ne.lat - sw.lat) * padding;
         const extraPaddingLng = (ne.lng - sw.lng) * padding;
 
 
         const boundsPolygon = [
-            [sw.lat-extraPaddingLat, sw.lng-extraPaddingLng],
-            [ne.lat+extraPaddingLat, sw.lng-extraPaddingLng],
-            [ne.lat+extraPaddingLat, ne.lng+extraPaddingLng],
-            [sw.lat-extraPaddingLat, ne.lng+extraPaddingLng],
-            [sw.lat-extraPaddingLat, sw.lng-extraPaddingLng],
+            [sw.lat - extraPaddingLat, sw.lng - extraPaddingLng],
+            [ne.lat + extraPaddingLat, sw.lng - extraPaddingLng],
+            [ne.lat + extraPaddingLat, ne.lng + extraPaddingLng],
+            [sw.lat - extraPaddingLat, ne.lng + extraPaddingLng],
+            [sw.lat - extraPaddingLat, sw.lng - extraPaddingLng],
         ];
 
         const h3s = h3.polygonToCells(boundsPolygon, currentH3Res);
@@ -109,9 +124,13 @@ function MapUser() {
         for (const h3id of h3s) {
 
             const polygonLayer = L.layerGroup()
-                .addTo(hexLayer);
+                .addTo(hexLayer.current);
 
-            const isSelected = h3id === searchH3Id;
+            if (h3id === "81823ffffffffff") {
+                console.log ("selectedCellsIDs.includes(81823ffffffffff);", selectedCellsIDs.includes(h3id));
+                console.log("selectedCellsIDs", selectedCellsIDs);
+            }
+            const isSelected = selectedCellsIDs.includes(h3id);
 
             const style = isSelected ? { fillColor: "orange" } : {};
 
@@ -128,12 +147,12 @@ function MapUser() {
             `;
 
             const h3Polygon = L.polygon(h3BoundsToPolygon(h3Bounds), style)
-                .on('click', () => copyToClipboard(h3id))
+                .on('click', () => handleClickCell(h3id))
                 .bindTooltip(tooltipText)
                 .addTo(polygonLayer);
 
             // less SVG, otherwise perf is bad
-            if (Math.random() > 0.8 || isSelected) {
+            if (true) {
                 var svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
                 svgElement.setAttribute('xmlns', "http://www.w3.org/2000/svg");
                 svgElement.setAttribute('viewBox', "0 0 200 200");
@@ -142,7 +161,13 @@ function MapUser() {
                 L.svgOverlay(svgElement, svgElementBounds).addTo(polygonLayer);
             }
         }
+
+        // setHexLayer(hexLayerTmp);
     }
+
+    useEffect(() => {
+        console.log("hexLayer changed to", hexLayer);
+    }, [hexLayer]);
 
     function findH3() {
         if (!h3.isValidCell(searchH3Id)) {
@@ -175,40 +200,22 @@ function MapUser() {
             maxZoom: 24,
             attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
         }).addTo(map);
-        let pointsLayer = L.layerGroup([]).addTo(map);
 
-        const queryParams = new URLSearchParams(window.location.search);
-
-        const initialLat = queryParams.lat ?? 0;
-        const initialLng = queryParams.lng ?? 0;
-        const initialZoom = queryParams.zoom ?? 5;
-        map.setView([initialLat, initialLng], initialZoom);
-        map.on("zoomend", updateMapDisplay);
+        map.setView([0,0],5);
         map.on("moveend", updateMapDisplay);
-
-        const { h3 } = queryParams;
-        if (h3) {
-            setSearchH3Id(h3);
-            window.setTimeout(findH3, 50);
-        }
 
         updateMapDisplay();
 
         return () => {
-            map.off("zoomend", updateMapDisplay);
             map.off("moveend", updateMapDisplay);
         }
     }, [map]);
 
     return (
-        <div id="mapid" style={{ height: "100vh", width:"100vw" }}></div>
-    );
-}
-
-export function Map() {
-    return (
         <>
-            <MapUser />
+            <div id="mapid" style={{ height: "90vh", width: "100vw" }}></div>
+            <button onClick={() => console.log(selectedCellsIDs)}>selectedCellsIDs</button>
+            <button onClick={() => console.log(selectedCellsIDs.includes("81823ffffffffff"))}>selectedCellsIDs.includes("81823ffffffffff")</button>
         </>
     );
 }
