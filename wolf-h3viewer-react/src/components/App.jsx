@@ -1,13 +1,12 @@
-import { Map } from './Map'
+import { Page } from '@/components/Page'
+import { Layout } from '@/layouts/Layout'
 
 function App() {
 
   return (
-    <>
-      <div className='w-[100vw] h-[100vh]'>
-        <Map selected={[]} />
-      </div>
-    </>
+    <Layout>
+      <Page />
+    </ Layout>
   )
 }
 

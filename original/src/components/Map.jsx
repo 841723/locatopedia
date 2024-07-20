@@ -7,7 +7,6 @@ import { GridOverlay } from "../components/GridOverlay";
 
 
 export function Map() {
-
     function LocationMarker() {
         const [position, setPosition] = useState(null);
         useMapEvents({

@@ -1,12 +1,11 @@
 import { useEffect, useState, useRef } from "react";
 
-
 /**
  * 
  * @param selected the selected cells are highlighted in the map, user cannot select cells. If empty or undefined, user can select cells 
  * 
  */
-export function Map({ selected }) {
+export function Map({ selected, className }) {
 
     const [map, setMap] = useState(undefined);
     var hexLayer = useRef(null);
@@ -148,17 +147,20 @@ export function Map({ selected }) {
             }
 
 
-            const h3s = h3.polygonToCells(boundsPolygon, currentH3Res);
+            if (allowSelectingCells) {
+                const h3s = h3.polygonToCells(boundsPolygon, currentH3Res);
+    
+                for (const h3id of h3s) {
+                    const polygonLayer = L.layerGroup().addTo(hexLayer.current);
+    
+                    const h3Bounds = h3.cellToBoundary(h3id);
+    
+                    L.polygon(h3BoundsToPolygon(h3Bounds), { weight: 1.5 })
+                        .on('click', () => handleClickCell(h3id))
+                        .addTo(polygonLayer);
+                }
+            } 
 
-            for (const h3id of h3s) {
-                const polygonLayer = L.layerGroup().addTo(hexLayer.current);
-
-                const h3Bounds = h3.cellToBoundary(h3id);
-
-                L.polygon(h3BoundsToPolygon(h3Bounds), { weight: 1.5 })
-                    .on('click', () => handleClickCell(h3id))
-                    .addTo(polygonLayer);
-            }
         }
 
         if (!map) return;
@@ -176,17 +178,22 @@ export function Map({ selected }) {
 
     return (
         <>
-            <div id="mapid" className="relative h-full w-full">
-                <div className="w-32 absolute z-[2000] p-1 right-0 mt-[10px] mr-[10px] bg-white text-black shadow-black/65 shadow-md rounded-[4px]">
-                    <button onClick={() => setSelectedCellsIDs([])}>Clear selected</button>
-                    <hr className="my-1" />
-                    <h3>Selected cells:</h3>
-                    <ul className="ml-2">
-                        {selectedCellsIDs.map((id) => (
-                            <li key={id}>{id}</li>
-                        ))}
-                    </ul>
-                </div>
+            <div id="mapid" className={`relative ${className}`}>
+
+                {
+                    allowSelectingCells && (
+                        <div className="w-32 absolute z-[2000] p-1 right-0 mt-[10px] mr-[10px] bg-white text-black shadow-black/65 shadow-md rounded-[4px]">
+                            <button onClick={() => setSelectedCellsIDs([])}>Clear selected</button>
+                            <hr className="my-1" />
+                            <h3>Selected cells:</h3>
+                            <ul className="ml-2">
+                                {selectedCellsIDs.map((id) => (
+                                    <li key={id}>{id}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    )
+                }
             </div>
         </>
     );
