@@ -1,6 +1,6 @@
-import { Map } from '@/components/Map'
-import { PageContent } from '@/components/PageContent'
-import { useEffect, useState } from 'react';
+import { Map } from "@/components/Map";
+import { PageContent } from "@/components/PageContent";
+import { useEffect, useState } from "react";
 
 const textContent = `
 Hi everyone, this is a test page for the h3viewer project.
@@ -38,18 +38,17 @@ This is the content of header 2.1
 ## Header 2.2
 This is the content of header 2.2
 
-    `
-
-
+    `;
 
 export function Page() {
-
     const [contents, setContents] = useState(parseTextToObjects(textContent));
     const [editing, setEditing] = useState(false);
 
     useEffect(() => {
         if (editing) {
-            document.getElementById('editPageForm').scrollIntoView({ behavior: 'smooth' });
+            document
+                .getElementById("editPageForm")
+                .scrollIntoView({ behavior: "smooth" });
         }
     }, [editing]);
 
@@ -57,8 +56,12 @@ export function Page() {
         <>
             <div className='flex justify-between mb-4'>
                 <div>
-                    <h1 className='text-4xl font-medium'>Título de la página</h1>
-                    <h2 className='mt-1 text-xl text-gray-600'>Este es el subtitulo de esta pagina</h2>
+                    <h1 className='text-4xl font-medium'>
+                        Título de la página
+                    </h1>
+                    <h2 className='mt-1 text-xl text-gray-600'>
+                        Este es el subtitulo de esta pagina
+                    </h2>
                 </div>
                 <div className='flex flex-col justify-end'>
                     <button
@@ -69,63 +72,61 @@ export function Page() {
                     </button>
                 </div>
             </div>
-            
-            <Map className={'w-full h-80'} selected={["883970125bfffff"]} />
 
-            <hr className='w-full my-4 border border-gray-900'/>
+            <Map className={"w-full h-80"} selected={["883970125bfffff"]} />
 
-            {
-                editing ? (
-                    <form
-                        id='editPageForm'
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            const text = e.target[0].value;
-                            setContents(parseTextToObjects(text));
-                            setEditing(false);
-                        }}
+            <hr className='w-full my-4 border border-gray-900' />
+
+            {editing ? (
+                <form
+                    id='editPageForm'
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        const text = e.target[0].value;
+                        setContents(parseTextToObjects(text));
+                        setEditing(false);
+                    }}
+                >
+                    <label className='block text-lg'>
+                        Contenido de la página
+                    </label>
+                    <textarea
+                        className='w-full h-80'
+                        defaultValue={parseObjectsToText(contents)}
+                        autoComplete='off'
+                        autoFocus
+                    />
+                    <button
+                        className='text-sm border border-gray-900 px-2 py-1 rounded-md transition hover:bg-gray-200'
+                        type='submit'
                     >
-                        <label className='block text-lg'>Contenido de la página</label>
-                        <textarea
-                            className='w-full h-80'
-                            defaultValue={parseObjectsToText(contents)}
-                            autoComplete='off'
-                            autoFocus
-                        />
-                        <button
-                            className='text-sm border border-gray-900 px-2 py-1 rounded-md transition hover:bg-gray-200'
-                            type='submit'
-                        >
-                            Guardar cambios
-                        </button>
-                    </form>
-                )
-                :
-                    (<PageContent contents={contents} />)
-            }
+                        Guardar cambios
+                    </button>
+                </form>
+            ) : (
+                <PageContent contents={contents} />
+            )}
         </>
-    )
+    );
 }
 
-
-
 function parseTextToObjects(text) {
-    const lines = text.split('\n');
+    const lines = text.split("\n");
     const result = [];
     let currentObject = null;
     let currentSubHeader = null;
     let currentSubSubHeader = null;
     let currentSubSubSubHeader = null;
 
-    let foundAnyHeader = false;
-
     for (const line of lines) {
         const trimmedLine = line.trim();
 
-        if (trimmedLine.startsWith('# ') && !trimmedLine.startsWith('## ')) {
+        if (trimmedLine.startsWith("# ") && !trimmedLine.startsWith("## ")) {
             if (currentObject) {
                 if (currentSubSubSubHeader) {
-                    currentSubSubHeader.headersInside.push(currentSubSubSubHeader);
+                    currentSubSubHeader.headersInside.push(
+                        currentSubSubSubHeader
+                    );
                     currentSubSubSubHeader = null;
                 }
                 if (currentSubSubHeader) {
@@ -140,10 +141,13 @@ function parseTextToObjects(text) {
             }
             currentObject = {
                 headerName: trimmedLine.substring(2).trim(),
-                content: '',
-                headersInside: []
+                content: "",
+                headersInside: [],
             };
-        } else if (trimmedLine.startsWith('## ') && !trimmedLine.startsWith('### ')) {
+        } else if (
+            trimmedLine.startsWith("## ") &&
+            !trimmedLine.startsWith("### ")
+        ) {
             if (currentSubSubSubHeader) {
                 currentSubSubHeader.headersInside.push(currentSubSubSubHeader);
                 currentSubSubSubHeader = null;
@@ -157,10 +161,13 @@ function parseTextToObjects(text) {
             }
             currentSubHeader = {
                 headerName: trimmedLine.substring(3).trim(),
-                content: '',
-                headersInside: []
+                content: "",
+                headersInside: [],
             };
-        } else if (trimmedLine.startsWith('### ') && !trimmedLine.startsWith('#### ')) {
+        } else if (
+            trimmedLine.startsWith("### ") &&
+            !trimmedLine.startsWith("#### ")
+        ) {
             if (currentSubSubSubHeader) {
                 currentSubSubHeader.headersInside.push(currentSubSubSubHeader);
                 currentSubSubSubHeader = null;
@@ -170,32 +177,32 @@ function parseTextToObjects(text) {
             }
             currentSubSubHeader = {
                 headerName: trimmedLine.substring(4).trim(),
-                content: '',
-                headersInside: []
+                content: "",
+                headersInside: [],
             };
-        } else if (trimmedLine.startsWith('#### ')) {
+        } else if (trimmedLine.startsWith("#### ")) {
             if (currentSubSubSubHeader) {
                 currentSubSubHeader.headersInside.push(currentSubSubSubHeader);
             }
             currentSubSubSubHeader = {
                 headerName: trimmedLine.substring(5).trim(),
-                content: '',
-                headersInside: []
+                content: "",
+                headersInside: [],
             };
         } else {
             if (currentSubSubSubHeader) {
-                currentSubSubSubHeader.content += line + '\n';
+                currentSubSubSubHeader.content += line + "\n";
             } else if (currentSubSubHeader) {
-                currentSubSubHeader.content += line + '\n';
+                currentSubSubHeader.content += line + "\n";
             } else if (currentSubHeader) {
-                currentSubHeader.content += line + '\n';
+                currentSubHeader.content += line + "\n";
             } else if (currentObject) {
-                currentObject.content += line + '\n';
+                currentObject.content += line + "\n";
             } else {
                 currentObject = {
-                    headerName: '',
-                    content: line + '\n',
-                    headersInside: []
+                    headerName: "",
+                    content: line + "\n",
+                    headersInside: [],
                 };
             }
         }
@@ -214,13 +221,13 @@ function parseTextToObjects(text) {
         result.push(currentObject);
     }
 
-    result.forEach(obj => {
+    result.forEach((obj) => {
         obj.content = obj.content.trim();
-        obj.headersInside.forEach(subObj => {
+        obj.headersInside.forEach((subObj) => {
             subObj.content = subObj.content.trim();
-            subObj.headersInside.forEach(subSubObj => {
+            subObj.headersInside.forEach((subSubObj) => {
                 subSubObj.content = subSubObj.content.trim();
-                subSubObj.headersInside.forEach(subSubSubObj => {
+                subSubObj.headersInside.forEach((subSubSubObj) => {
                     subSubSubObj.content = subSubSubObj.content.trim();
                 });
             });
@@ -231,15 +238,14 @@ function parseTextToObjects(text) {
 }
 
 function parseObjectsToText(objects) {
-    let result = '';
-    objects.forEach(obj => {
-        
+    let result = "";
+    objects.forEach((obj) => {
         result += `# ${obj.headerName}\n${obj.content}\n`;
-        obj.headersInside.forEach(subObj => {
+        obj.headersInside.forEach((subObj) => {
             result += `## ${subObj.headerName}\n${subObj.content}\n`;
-            subObj.headersInside.forEach(subSubObj => {
+            subObj.headersInside.forEach((subSubObj) => {
                 result += `### ${subSubObj.headerName}\n${subSubObj.content}\n`;
-                subSubObj.headersInside.forEach(subSubSubObj => {
+                subSubObj.headersInside.forEach((subSubSubObj) => {
                     result += `#### ${subSubSubObj.headerName}\n${subSubSubObj.content}\n`;
                 });
             });
