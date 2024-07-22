@@ -44,8 +44,6 @@ function getPopular(num) {
         .slice(0, num)
         .map((id) => data[id]);
     
-        console.log(list);
-    // transform list to a JSON to send it
     return JSON.stringify(list);
 }
 
