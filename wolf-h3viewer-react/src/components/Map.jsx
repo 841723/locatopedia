@@ -8,32 +8,32 @@ import { useEffect, useState, useRef } from "react";
  *
  */
 export function Map({ selected, className }) {
-    const [map, setMap] = useState(undefined);
-    var hexLayer = useRef(null);
     const [selectedCellsIDs, setSelectedCellsIDs] = useState([]);
+
+    var map = useRef(null);
+    var hexLayer = useRef(null);
+
     const allowSelectingCells =
         !selected || (selected.isArr && selected.length === 0);
 
     useEffect(() => {
-        const m = L.map("mapid");
+        map.current = L.map("mapid");
 
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
             minZoom: 5,
             maxZoom: 24,
             attribution:
                 '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>',
-        }).addTo(m);
+        }).addTo(map.current);
 
-        m.setView([41.64731, -0.89001], 13);
+        map.current.setView([41.64731, -0.89001], 13);
 
         if (selected) {
             for (const h3id of selected) {
                 setSelectedCellsIDs((prev) => [...prev, h3id]);
             }
         }
-
-        setMap(m);
-    }, [selected]);
+    }, []);
 
     const GeoUtils = {
         EARTH_RADIUS_METERS: 6371000,
@@ -106,18 +106,18 @@ export function Map({ selected, className }) {
     }
 
     useEffect(() => {
-        if (!map) return;
-
         function updateMapDisplay() {
+            if (!map.current) return;
+
             if (hexLayer.current) {
                 hexLayer.current.remove();
             }
 
-            hexLayer.current = L.layerGroup().addTo(map);
+            hexLayer.current = L.layerGroup().addTo(map.current);
 
-            const zoom = map.getZoom();
+            const zoom = map.current.getZoom();
             const currentH3Res = getH3ResForMapZoom(zoom);
-            const { _southWest: sw, _northEast: ne } = map.getBounds();
+            const { _southWest: sw, _northEast: ne } = map.current.getBounds();
 
             const padding = 0.1;
             const extraPaddingLat = (ne.lat - sw.lat) * padding;
@@ -158,16 +158,18 @@ export function Map({ selected, className }) {
             }
         }
 
+        if (!map.current) return;
+
         const debouncedUpdateMapDisplay = debounce(updateMapDisplay, 200);
 
-        map.on("moveend", debouncedUpdateMapDisplay);
+        map.current.on("moveend", debouncedUpdateMapDisplay);
 
         updateMapDisplay();
 
         return () => {
-            map.off("moveend", debouncedUpdateMapDisplay);
+            map.current.off("moveend", debouncedUpdateMapDisplay);
         };
-    }, [map, selectedCellsIDs]);
+    }, [map.current, selectedCellsIDs]);
 
     return (
         <>
