@@ -1,6 +1,7 @@
+import { GoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 
-export function LogIn({hideLogIn}) {
+export function LogIn({loggedIn}) {
     const navigate = useNavigate();
     
     const toggleViewLogIn = () => {
@@ -22,9 +23,10 @@ export function LogIn({hideLogIn}) {
                     </button>
                 </div>
                 <div className='w-full grow flex justify-center items-center'>
-                    <button className='text-slate-900 bg-slate-200 rounded p-2 text-lg hover:bg-slate-50 transition-colors'>
-                        Log In with Google
-                    </button>
+                    <GoogleLogin
+                        onSuccess={(res) => {console.log(res); loggedIn(res);}}
+                        onFailure={(res) => console.log(res)}
+                    />
                 </div>
             </div>
         </>
