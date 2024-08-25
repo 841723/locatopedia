@@ -1,16 +1,17 @@
 from flask import Flask, request, jsonify
-from lib.common import AUIDGenerator
+from flask_cors import CORS
 
-app = Flask(__name__)
+from lib.common import AUIDGenerator
 AUIDGenerator = AUIDGenerator()
 
-
+app = Flask(__name__)
+CORS(app)
 
 
 @app.route('/api/dggstools/generate-auid-hash', methods=['get'])
 def generateAuidHash():
-    data = request.get_json()
-    cuids = data['cuids']
+    cuids_string = request.args.get('cuids', '')
+    cuids = [s for s in cuids_string.split(',') if s]
 
     auid_comp_b64, hashed_b64 = AUIDGenerator.generate_auid_hash_b64(cuids)
     return jsonify({'auid_comp_b64': auid_comp_b64, 'hashed_b64': hashed_b64})
@@ -18,8 +19,7 @@ def generateAuidHash():
 
 @app.route('/api/dggstools/cuids-from-auid', methods=['get'])
 def getCuidsFromAuid():
-    data = request.get_json()
-    auid = data['auid']
+    auid = request.args.get('auid')
 
     cuids = AUIDGenerator.cuids_from_auid_b64(auid)
     return jsonify({'cuids': cuids})
@@ -27,11 +27,10 @@ def getCuidsFromAuid():
 
 @app.route('/api/dggstools/hash', methods=['get'])
 def hash():
-    data = request.get_json()
-    auid = data['auid']
+    auid = request.args.get('auid')
 
     hashed = AUIDGenerator.hash_b64_from_auid(auid)
-    return jsonify({'hashed': hashed})
+    return jsonify({'hashed_b64': hashed})
 
 
 if __name__ == '__main__':

@@ -1,54 +1,67 @@
 const textContent = require("./data.js").textContent;
 
-const data = {
-    d22r081: {
-        id: "d22r081",
+let DB_INFO = {
+    "HYXEGM7k7y5RX13g0uD1_eFnL4I=": {
         title: "Hexágono de la ciudad de Zaragoza",
-        subtitle: "Este es tu hexágono favorito de mi cuidad natal",
+        subtitle: "Este es mi hexágono favorito de mi cuidad natal",
         content: textContent,
+        auid: "eJyLs7AwtjQ3MDQyTUoDARV7OLBIMTJEFTMzh_ABhoQO3A==",
+        hash: "HYXEGM7k7y5RX13g0uD1_eFnL4I=",
     },
-    d22r082: {
-        id: "d22r082",
-        title: "Pentágono de la ciudad de Zaragoza",
-        subtitle: "Este es tu hexágono favorito de mi cuidad natal",
-        content: textContent,
-    },
-    d22r083: {
-        id: "d22r083",
-        title: "Triángulo de la ciudad de Zaragoza",
-        subtitle: "Este es tu hexágono favorito de mi cuidad natal",
-        content: textContent,
-    },
-    d22r084: {
-        id: "d22r084",
-        title: "Cuadrado de la ciudad de Zaragoza",
-        subtitle: "Este es tu hexágono favorito de mi cuidad natal",
-        content: textContent,
-    },
+    // d22r082: {
+    //     id: "d22r082",
+    //     title: "Pentágono de la ciudad de Zaragoza",
+    //     subtitle: "Este es mi pentágono favorito de mi cuidad natal",
+    //     content: textContent,
+    //     auid: "eJyLs7AwtjQ3MDQyTUoDARV7VJBoamGZbGlhYm4KlgUAK2UMpg==",
+    // },
+    // d22r083: {
+    //     id: "d22r083",
+    //     title: "Cuadrado de la ciudad de Zaragoza",
+    //     subtitle: "Este es mi cuadrado favorito de mi cuidad natal",
+    //     content: textContent,
+    //     auid: "eJyLs7AwtjQ3MDQyTUoDARV7VJBoamGZbGlhYm4KlgUAK2UMpg==",
+    // },
+    // d22r084: {
+    //     id: "d22r084",
+    //     title: "Triángulo de la ciudad de Zaragoza",
+    //     subtitle: "Este es mi triángulo favorito de mi cuidad natal",
+    //     content: textContent,
+    //     auid: "eJyLs7AwtjQ3MDQyTUoDARV7VJBoamGZbGlhYm4KlgUAK2UMpg==",
+    // },
 };
 
-function checkValidId(id) {
-    return data.hasOwnProperty(id);
+function checkValidHash(hash) {
+    return DB_INFO.hasOwnProperty(hash);
 }
 
-function getDataFromId(id) {
-    if (checkValidId(id)) {
-        return data[id];
+function getDataFromHash(hash) {
+    if (checkValidHash(hash)) {
+        return DB_INFO[hash];
     }
 
     return {};
 }
 
+function setDataFromHash(hash, data) {
+    DB_INFO[hash].title = data.title;
+    DB_INFO[hash].subtitle = data.subtitle;
+    DB_INFO[hash].content = data.content;
+
+    console.log(DB_INFO[hash].title, DB_INFO[hash].subtitle);
+}
+
 function getPopular(num) {
-    const list = Object.keys(data)
+    const list = Object.keys(DB_INFO)
         .slice(0, num)
-        .map((id) => data[id]);
-    
+        .map((hash) => DB_INFO[hash]);
+
     return JSON.stringify(list);
 }
 
 module.exports = {
-    checkValidId,
-    getDataFromId,
+    checkValidHash,
+    getDataFromHash,
     getPopular,
+    setDataFromHash,
 };

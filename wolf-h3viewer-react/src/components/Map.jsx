@@ -1,6 +1,65 @@
 /* eslint-disable no-undef */
 import { useEffect, useState, useRef } from "react";
 
+const GeoUtils = {
+    EARTH_RADIUS_METERS: 6371000,
+    radiansToDegrees: (r) => (r * 180) / Math.PI,
+    degreesToRadians: (d) => (d * Math.PI) / 180,
+    getDistanceOnEarthInMeters: (lat1, lon1, lat2, lon2) => {
+        const lat1Rad = GeoUtils.degreesToRadians(lat1);
+        const lat2Rad = GeoUtils.degreesToRadians(lat2);
+        const lonDelta = GeoUtils.degreesToRadians(lon2 - lon1);
+        const x =
+            Math.sin(lat1Rad) * Math.sin(lat2Rad) +
+            Math.cos(lat1Rad) * Math.cos(lat2Rad) * Math.cos(lonDelta);
+        return (
+            GeoUtils.EARTH_RADIUS_METERS *
+            Math.acos(Math.max(Math.min(x, 1), -1))
+        );
+    },
+};
+
+const ZOOM_TO_H3_RES_CORRESPONDENCE = {
+    4: 0,
+    5: 1,
+    6: 2,
+    7: 3,
+    8: 3,
+    9: 4,
+    10: 5,
+    11: 6,
+    12: 6,
+    13: 7,
+    14: 8,
+    15: 9,
+    16: 9,
+    17: 10,
+    18: 10,
+    19: 11,
+    20: 11,
+    21: 12,
+    22: 13,
+    23: 14,
+    24: 15,
+};
+
+const H3_RES_TO_ZOOM_CORRESPONDENCE = {};
+for (const [zoom, res] of Object.entries(ZOOM_TO_H3_RES_CORRESPONDENCE)) {
+    H3_RES_TO_ZOOM_CORRESPONDENCE[res] = zoom;
+}
+
+const getH3ResForMapZoom = (mapZoom) => {
+    return (
+        ZOOM_TO_H3_RES_CORRESPONDENCE[mapZoom] ??
+        Math.floor((mapZoom - 1) * 0.7)
+    );
+};
+
+const h3BoundsToPolygon = (lngLatH3Bounds) => {
+    lngLatH3Bounds.push(lngLatH3Bounds[0]); // "close" the polygon
+    return lngLatH3Bounds;
+};
+
 /**
  *
  * @param selected the selected cells are highlighted in the map, user cannot select cells. If empty or undefined, user can select cells
@@ -8,90 +67,79 @@ import { useEffect, useState, useRef } from "react";
  *
  */
 export function Map({ selected, className }) {
-    const [selectedCellsIDs, setSelectedCellsIDs] = useState([]);
+    const [selectedCellsIDs, setSelectedCellsIDs] = useState(selected);
 
     var map = useRef(null);
     var hexLayer = useRef(null);
 
     const allowSelectingCells =
-        !selected || (selected.isArr && selected.length === 0);
+        !selected || (Array.isArray(selected) && selected.length === 0);
 
     useEffect(() => {
         map.current = L.map("mapid");
 
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            minZoom: 5,
+            minZoom: 4,
             maxZoom: 24,
             attribution:
                 '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>',
         }).addTo(map.current);
 
-        map.current.setView([41.64731, -0.89001], 13);
-
-        if (selected) {
-            for (const h3id of selected) {
-                setSelectedCellsIDs((prev) => [...prev, h3id]);
-            }
-        }
+        map.current.setView([41.64731, -0.89001], 4);
     }, []);
 
-    const GeoUtils = {
-        EARTH_RADIUS_METERS: 6371000,
-        radiansToDegrees: (r) => (r * 180) / Math.PI,
-        degreesToRadians: (d) => (d * Math.PI) / 180,
-        getDistanceOnEarthInMeters: (lat1, lon1, lat2, lon2) => {
-            const lat1Rad = GeoUtils.degreesToRadians(lat1);
-            const lat2Rad = GeoUtils.degreesToRadians(lat2);
-            const lonDelta = GeoUtils.degreesToRadians(lon2 - lon1);
-            const x =
-                Math.sin(lat1Rad) * Math.sin(lat2Rad) +
-                Math.cos(lat1Rad) * Math.cos(lat2Rad) * Math.cos(lonDelta);
-            return (
-                GeoUtils.EARTH_RADIUS_METERS *
-                Math.acos(Math.max(Math.min(x, 1), -1))
-            );
-        },
-    };
+    useEffect(() => {
+        if (!selected || (Array.isArray(selected) && selected.length === 0))
+            return;
 
-    const ZOOM_TO_H3_RES_CORRESPONDENCE = {
-        5: 1,
-        6: 2,
-        7: 3,
-        8: 3,
-        9: 4,
-        10: 5,
-        11: 6,
-        12: 6,
-        13: 7,
-        14: 8,
-        15: 9,
-        16: 9,
-        17: 10,
-        18: 10,
-        19: 11,
-        20: 11,
-        21: 12,
-        22: 13,
-        23: 14,
-        24: 15,
-    };
+        for (const h3id of selected) {
+            if (!h3.isValidCell(h3id)) {
+                console.error(`Invalid H3 ID: ${h3id}`);
+                return;
+            }
+        }
 
-    const H3_RES_TO_ZOOM_CORRESPONDENCE = {};
-    for (const [zoom, res] of Object.entries(ZOOM_TO_H3_RES_CORRESPONDENCE)) {
-        H3_RES_TO_ZOOM_CORRESPONDENCE[res] = zoom;
-    }
+        const polygonVertex = h3.cellsToMultiPolygon(selected, false);
+        const bounds = L.latLngBounds(polygonVertex);
 
-    const getH3ResForMapZoom = (mapZoom) => {
-        return (
-            ZOOM_TO_H3_RES_CORRESPONDENCE[mapZoom] ??
-            Math.floor((mapZoom - 1) * 0.7)
-        );
-    };
+        map.current.fitBounds(bounds);
 
-    const h3BoundsToPolygon = (lngLatH3Bounds) => {
-        lngLatH3Bounds.push(lngLatH3Bounds[0]); // "close" the polygon
-        return lngLatH3Bounds;
-    };
+        setSelectedCellsIDs(selected);
+    }, [selected]);
+
+    // useEffect(() => {
+    //     console.log("fetching dggstools");
+    //     const queryString = ["883970125bfffff", "8a589c98475ffff"]
+    //         .map(encodeURIComponent)
+    //         .join(",");
+
+    //     let auid_comp_b64 = "";
+
+    //     fetch(
+    //         `http://localhost:3000/api/dggstools/generate-auid-hash?cuids=${queryString}`
+    //     )
+    //         .then((res) => res.json())
+    //         .then((data) => {
+    //             console.log(
+    //                 "should be: eJyLs7AwtjQ3MDQyTUoDARV7VJBoamGZbGlhYm4KlgUAK2UMpg== is ",
+    //                 data.auid_comp_b64
+    //             );
+    //             auid_comp_b64 = data.auid_comp_b64;
+    //         })
+
+    //         .then(() =>
+    //             fetch(
+    //                 `http://localhost:3000/api/dggstools/cuids-from-auid?auid=${auid_comp_b64}==`
+    //             )
+    //                 .then((res) => res.json())
+    //                 .then((data) => {
+    //                     console.log(
+    //                         "should be: 883970125bfffff,8a589c98475ffff is ",
+    //                         data.cuids
+    //                     );
+    //                 })
+    //         );
+    // }, []);
 
     function handleClickCell(h3id) {
         if (!allowSelectingCells) return;
@@ -141,6 +189,11 @@ export function Map({ selected, className }) {
                     fillOpacity: 1,
                     stroke: false,
                 }).addTo(polygonLayer);
+            }
+
+            if (selectedCellsIDs.length > 0) {
+                const multiPolygon = h3.cellsToMultiPolygon(selected, false);
+                L.polygon(multiPolygon, {}).addTo(hexLayer.current);
             }
 
             if (allowSelectingCells) {
