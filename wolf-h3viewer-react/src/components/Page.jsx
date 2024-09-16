@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Map } from "@/components/Map";
 import { PageContent } from "@/components/PageContent";
 import { Button } from "@/components/basic/Button";
-import useFetch from "@/hooks/useFetch.jsx";
+import { useFetch } from "@/hooks/useFetch.jsx";
 import { parseObjectsToText, parseTextToObjects } from "@/lib/markdown.js";
 
 export function Page() {
@@ -91,9 +91,7 @@ export function Page() {
                     .then((res) => res.json())
                     .then((res) => {
                         setTitles({ title: res.title, subtitle: res.subtitle });
-                        setContents(
-                            parseTextToObjects(res.content).result
-                        );
+                        setContents(parseTextToObjects(res.content).result);
                         setEditing(false);
                     });
             }

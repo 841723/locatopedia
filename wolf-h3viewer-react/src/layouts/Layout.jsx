@@ -1,4 +1,4 @@
-import { UserIcon } from "@/components/basic/icons/UserIcon"
+import { Header } from '@/components/Header';
 
 export function Layout({ children }) {
     return (
@@ -8,22 +8,11 @@ export function Layout({ children }) {
                 {children}
             </main>
             <Footer />
-        </> 
-    )   
+        </>
+    );
 }
 
-function Header() {
-    return (
-        <header className='bg-slate-300 p-4 px-32 flex justify-between items-center '>
-            <a href="/">
-                <h1 className='text-2xl'>H3 Viewer</h1>
-            </a>
-            <a href="/account">
-                <UserIcon className={"w-8 hover:bg-blue-300 rounded-full transition-colors "}/>
-            </a>
-        </header>
-    )
-}
+
 
 function Footer() {
     return (

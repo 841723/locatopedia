@@ -3,6 +3,7 @@ import { Layout } from "@/layouts/Layout";
 import { useRoutes } from "react-router-dom";
 import { Home } from "@/components/Home";
 import { Account } from "@/components/Account";
+import { NotFound404 } from "@/components/NotFound404";
 
 function App() {
     const element = useRoutes([
@@ -24,12 +25,7 @@ function App() {
         },
         {
             path: "*",
-            element: (
-                <div className='text-8xl my-10 font-medium'>
-                    <span className='text-[15rem] font-bold tracking-wider'>404</span> <br />
-                    Page not found
-                </div>
-            ),
+            element: <NotFound404 />,
         },
     ]);
 

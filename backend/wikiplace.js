@@ -56,6 +56,16 @@ function getPopular(num) {
         .slice(0, num)
         .map((hash) => DB_INFO[hash]);
 
+    if (true) {
+        const popular = list[0];
+        const list2send = [
+            popular,
+            popular,
+            popular,
+        ];
+        return JSON.stringify(list2send);
+    }
+
     return JSON.stringify(list);
 }
 

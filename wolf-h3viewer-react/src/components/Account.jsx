@@ -1,23 +1,79 @@
-import { useState } from "react";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { LogIn } from "@/components/LogIn";
+import { useCookie } from "@/lib/useCookie";
+import { useFetch } from "@/hooks/useFetch";
+import { ArticleCard } from "@/components/ArticleCard";
 
 export function Account() {
-    // TODO: recuperar el estado de sessionStorage/cookie y si no hay definirle null
-    const [profile, setProfile] = useState(null);
+    const [credentialCookie, credentialUpdateCookie, credentialDeleteCookie] =
+        useCookie("credential");
+    const credential = credentialCookie ? jwtDecode(credentialCookie) : null;
 
     const loggedIn = (res) => {
-        const decoded = jwtDecode(res.credential);
-        setProfile(decoded)
+        credentialUpdateCookie(res.credential, { expires: 1 });
     };
 
+    const loggedOut = () => {
+        credentialDeleteCookie();
+    }
+
+    const { data } = useFetch("http://localhost:3000/api/wiki/popular?limit=4");
+
+
     return (
-        <main>
-            {profile === null && <LogIn loggedIn={loggedIn}/>}
-            <h1>Account</h1>
-            <h2>mail:</h2>
-            <h3>{profile?.email}</h3>
-            <img src={profile?.picture} alt="" />
+        <main className='w-full'>
+            {!credentialCookie && <LogIn loggedIn={loggedIn} />}
+            <div className='flex w-full justify-between items-center'>
+                <h1 className='text-5xl font-bold'>
+                    {credential ? credential.email : "Your email"}
+                </h1>
+                <button
+                    onClick={loggedOut}
+                    className='w-fit bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 self-end'
+                >
+                    Log Out
+                </button>
+            </div>
+
+            <div className='flex flex-col gap-20 mt-10'>
+                <section className='bg-zinc-100 rounded p-2'>
+                    <h1 className='text-4xl font-bold mb-2'>Own articles</h1>
+                    <ul className='grid grid-cols-3 gap-5'>
+                        {data?.map((item) => (
+                            // WARNING: this should be item.id
+                            <li key={crypto.randomUUID()}>
+                                <ArticleCard item={item} />
+                            </li>
+                        ))}
+                    </ul>
+                </section>
+
+                <section className='bg-zinc-100 rounded p-2'>
+                    <h1 className='text-4xl font-bold mb-2'>Edited by you</h1>
+                    <ul className='grid grid-cols-3 gap-5'>
+                        {data?.map((item) => (
+                            // WARNING: this should be item.id
+                            <li key={crypto.randomUUID()}>
+                                <ArticleCard item={item} />
+                            </li>
+                        ))}
+                    </ul>
+                </section>
+
+                <section className='bg-zinc-100 rounded p-2'>
+                    <h1 className='text-4xl font-bold mb-2'>
+                        Discussions you are in
+                    </h1>
+                    <ul className='grid grid-cols-3 gap-5'>
+                        {data?.map((item) => (
+                            // WARNING: this should be item.id
+                            <li key={crypto.randomUUID()}>
+                                <ArticleCard item={item} />
+                            </li>
+                        ))}
+                    </ul>
+                </section>
+            </div>
         </main>
     );
 }
