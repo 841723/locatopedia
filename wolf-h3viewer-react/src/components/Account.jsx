@@ -3,22 +3,24 @@ import { LogIn } from "@/components/LogIn";
 import { useCookie } from "@/lib/useCookie";
 import { useFetch } from "@/hooks/useFetch";
 import { ArticleCard } from "@/components/ArticleCard";
+import { useNavigate } from "react-router-dom";
 
 export function Account() {
     const [credentialCookie, credentialUpdateCookie, credentialDeleteCookie] =
         useCookie("credential");
     const credential = credentialCookie ? jwtDecode(credentialCookie) : null;
+    const navigate = useNavigate();
 
     const loggedIn = (res) => {
         credentialUpdateCookie(res.credential, { expires: 1 });
     };
 
     const loggedOut = () => {
+        navigate("/");
         credentialDeleteCookie();
-    }
+    };
 
     const { data } = useFetch("http://localhost:3000/api/wiki/popular?limit=4");
-
 
     return (
         <main className='w-full'>
@@ -27,12 +29,14 @@ export function Account() {
                 <h1 className='text-5xl font-bold'>
                     {credential ? credential.email : "Your email"}
                 </h1>
-                <button
-                    onClick={loggedOut}
-                    className='w-fit bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 self-end'
-                >
-                    Log Out
-                </button>
+                {credential && (
+                    <button
+                        onClick={loggedOut}
+                        className='w-fit bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 self-end'
+                    >
+                        Log Out
+                    </button>
+                )}
             </div>
 
             <div className='flex flex-col gap-20 mt-10'>

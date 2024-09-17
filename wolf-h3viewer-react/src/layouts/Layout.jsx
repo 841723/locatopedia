@@ -1,6 +1,11 @@
 import { Header } from '@/components/Header';
+import { useEffect } from 'react';
 
-export function Layout({ children }) {
+export function Layout({ children, documentTitle }) {
+    useEffect(() => {
+        document.title = documentTitle ? `${documentTitle} | Locatopedia` : 'Locatopedia';
+    }, [documentTitle]);
+
     return (
         <>
             <Header />

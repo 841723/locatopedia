@@ -6,12 +6,12 @@ export function Home() {
 
     return (
         <>
-            <a
+            {/* <a
                 href='/new'
-                className='w-fit text-sm border border-gray-900 px-2 py-1 rounded-md transition hover:bg-gray-200'
+                className='w-fit text-sm border border-gray-900 px-2 py-1 rounded-md transition hover:bg-slate-100 bg-slate-300'
             >
                 create new article
-            </a>
+            </a> */}
             <div className='flex flex-col gap-20 mt-10'>
                 <section className='bg-zinc-100 rounded p-2'>
                     <h1 className='text-4xl font-bold mb-2'>Popular</h1>

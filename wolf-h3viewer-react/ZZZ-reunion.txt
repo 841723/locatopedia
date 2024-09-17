@@ -1,0 +1,18 @@
+[] pagina de articulo con clic para ocultar
+
+[] como sacar id de conjunto de celdas 
+    opciones:
+        - ordenar el array de celdas + concatenar + hash
+        - usar una tabla para relacionar celdas con id
+
+[] ¿se pueden editar las celdas de una página?
+
+[] ¿que pasa con configuraciones con celdas ocultas (celdas completamente dentro de otras)?
+
+
+[] de paginas extra, ¿solo HOME o alguna mas?
+
+
+[] backend
+[] ¿que BBDD usar?
+[] ¿habrá usuarios con username+password?

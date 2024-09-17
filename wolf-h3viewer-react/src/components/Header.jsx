@@ -1,22 +1,22 @@
 import { UserIcon } from "@/components/basic/icons/UserIcon.jsx";
 import { useCookie } from "@/lib/useCookie";
 import { jwtDecode } from "jwt-decode";
+import { AppIcon } from "@/components/basic/icons/AppIcon";
 
 export function Header() {
 
     const [credential] = useCookie("credential");
     const profile = credential ? jwtDecode(credential) : null;
 
-    console.log(profile);
-
     return (
-        <header className='bg-slate-300 p-4 px-32 flex justify-between items-center '>
-            <a href='/'>
-                <h1 className='text-2xl'>H3 Viewer</h1>
+        <header className='bg-slate-300 p-4 px-32 flex justify-between items-center'>
+            <a href='/' className="flex items-center gap-4">
+                <AppIcon className='size-20' />
+                <h1 className='text-3xl font-medium tracking-wide'>Locatopedia</h1>
             </a>
             <a
                 href='/account'
-                className='flex justify-end gap-3 items-center hover:bg-slate-200 px-2 rounded-full'
+                className='flex justify-end gap-3 items-center hover:bg-slate-200 px-2 py-1 rounded-full'
             >
                 {profile ? (
                     <>
