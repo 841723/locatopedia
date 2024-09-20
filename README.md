@@ -1,12 +1,21 @@
+
+
+
 in /wolf-h3viewer-react
 
-```npm run dev```
+```
+npm install
+npm run dev
+```
 
 ---
 
 in /backend
 
-```npm run dev```
+```
+npm install
+npm run dev
+```
 
 ---
 
