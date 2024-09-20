@@ -21,4 +21,6 @@ npm run dev
 
 in /backend/services/dggstools
 
-```python app.py```
+```
+python app.py
+```
