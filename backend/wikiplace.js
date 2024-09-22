@@ -1,46 +1,52 @@
-const textContent = require("./data.js").textContent;
+const { Client } = require("pg");
 
-let DB_INFO = {
-    "HYXEGM7k7y5RX13g0uD1_eFnL4I=": {
-        title: "Hexágono de la ciudad de Zaragoza",
-        subtitle: "Este es mi hexágono favorito de mi cuidad natal",
-        content: textContent,
-        auid: "eJyLs7AwtjQ3MDQyTUoDARV7OLBIMTJEFTMzh_ABhoQO3A==",
-        hash: "HYXEGM7k7y5RX13g0uD1_eFnL4I=",
+const client = new Client({
+    host: process.env.PGHOST,
+    database: process.env.PGDATABASE,
+    user: process.env.PGUSER,
+    password: process.env.PGPASSWORD,
+    port: 5432,
+    ssl: {
+        rejectUnauthorized: false,
     },
-    // d22r082: {
-    //     id: "d22r082",
-    //     title: "Pentágono de la ciudad de Zaragoza",
-    //     subtitle: "Este es mi pentágono favorito de mi cuidad natal",
-    //     content: textContent,
-    //     auid: "eJyLs7AwtjQ3MDQyTUoDARV7VJBoamGZbGlhYm4KlgUAK2UMpg==",
-    // },
-    // d22r083: {
-    //     id: "d22r083",
-    //     title: "Cuadrado de la ciudad de Zaragoza",
-    //     subtitle: "Este es mi cuadrado favorito de mi cuidad natal",
-    //     content: textContent,
-    //     auid: "eJyLs7AwtjQ3MDQyTUoDARV7VJBoamGZbGlhYm4KlgUAK2UMpg==",
-    // },
-    // d22r084: {
-    //     id: "d22r084",
-    //     title: "Triángulo de la ciudad de Zaragoza",
-    //     subtitle: "Este es mi triángulo favorito de mi cuidad natal",
-    //     content: textContent,
-    //     auid: "eJyLs7AwtjQ3MDQyTUoDARV7VJBoamGZbGlhYm4KlgUAK2UMpg==",
-    // },
-};
+});
 
-function checkValidHash(hash) {
-    return DB_INFO.hasOwnProperty(hash);
+client.connect();
+
+// let DB_INFO = {
+//     "HYXEGM7k7y5RX13g0uD1_eFnL4I=": {
+//         title: "Hexágono de la ciudad de Zaragoza",
+//         subtitle: "Este es mi hexágono favorito de mi cuidad natal",
+//         content: textContent,
+//         auid: "eJyLs7AwtjQ3MDQyTUoDARV7OLBIMTJEFTMzh_ABhoQO3A==",
+//         hash: "HYXEGM7k7y5RX13g0uD1_eFnL4I=",
+//     },
+// };
+
+async function checkValidHash(hash) {
+    try {
+        const res = await client.query(
+            "SELECT * FROM article WHERE hash = $1",
+            [hash]
+        );
+        return res.rows.length > 0;
+    } catch (err) {
+        console.log("Error in checkValidHash");
+        console.log(err);
+        return false;
+    }
 }
 
-function getDataFromHash(hash) {
-    if (checkValidHash(hash)) {
-        return DB_INFO[hash];
+async function getDataFromHash(hash) {
+    const res = await client.query("SELECT * FROM article WHERE hash = $1", [
+        hash,
+    ]);
+    if (res.rows.length > 0) {
+        return res.rows[0];
     }
-
-    return {};
+    else {
+        throw new Error("No data found for hash: " + hash);
+    }
 }
 
 function setDataFromHash(hash, data) {
@@ -51,22 +57,17 @@ function setDataFromHash(hash, data) {
     console.log(DB_INFO[hash].title, DB_INFO[hash].subtitle);
 }
 
-function getPopular(num) {
-    const list = Object.keys(DB_INFO)
-        .slice(0, num)
-        .map((hash) => DB_INFO[hash]);
+async function getPopular(num) {
+    try {
+        console.log("Getting popular");
 
-    if (true) {
-        const popular = list[0];
-        const list2send = [
-            popular,
-            popular,
-            popular,
-        ];
-        return JSON.stringify(list2send);
+        const res = await client.query("SELECT * FROM article LIMIT $1", [num]);
+        return [res.rows[0], res.rows[0], res.rows[0]];
+    } catch (err) {
+        console.log("Error in getPopular");
+        console.log(err);
+        return [];
     }
-
-    return JSON.stringify(list);
 }
 
 module.exports = {

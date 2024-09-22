@@ -9,7 +9,16 @@ app.use(cors());
 
 app.use("/", routes);
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`);
 });
+
+// catch sigint
+process.on("SIGINT", () => {
+    console.log("Caught interrupt signal");
+    client.end();
+    process.exit();
+});
+
+

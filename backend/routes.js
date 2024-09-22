@@ -21,7 +21,7 @@ router.get("/api/wiki", async (req, res) => {
         return;
     }
 
-    const data = getDataFromHash(hash);
+    const data = await getDataFromHash(hash);
 
     if (!data.auid) {
         res.status(500).send("Internal server error");
@@ -36,9 +36,9 @@ router.get("/api/wiki", async (req, res) => {
     res.status(200).send(data);
 });
 
-router.get("/api/wiki/popular", (req, res) => {
+router.get("/api/wiki/popular", async (req, res) => {
     const { limit = 2 } = req.query;
-    const popular = getPopular(limit);
+    const popular = await getPopular(limit);
     res.status(200).send(popular);
 });
 
@@ -54,12 +54,6 @@ router.put("/api/wiki/update", (req, res) => {
 
     res.status(200).send({ hash, title, subtitle, content });
 });
-
-
-
-
-
-
 
 router.get("/api/dggstools/generate-auid-hash", async (req, res) => {
     const { cuids } = req.query;
