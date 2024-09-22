@@ -4,13 +4,15 @@ import { useCookie } from "@/lib/useCookie";
 import { useFetch } from "@/hooks/useFetch";
 import { ArticleCard } from "@/components/ArticleCard";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 export function Account() {
+    const [openLogin, setOpenLogin] = useState(true);
     const [credentialCookie, credentialUpdateCookie, credentialDeleteCookie] =
         useCookie("credential");
     const credential = credentialCookie ? jwtDecode(credentialCookie) : null;
     const navigate = useNavigate();
-
+    
     const loggedIn = (res) => {
         credentialUpdateCookie(res.credential, { expires: 1 });
     };
@@ -20,11 +22,16 @@ export function Account() {
         credentialDeleteCookie();
     };
 
+    useEffect(() => {
+        setOpenLogin(credential ? false : true);
+    }, [credential]);
+
     const { data } = useFetch("http://localhost:3000/api/wiki/popular?limit=4");
+    document.body.style.overflow = !openLogin ? "auto" : "hidden";
 
     return (
         <main className='w-full'>
-            {!credentialCookie && <LogIn loggedIn={loggedIn} />}
+            {openLogin && <LogIn loggedIn={loggedIn} />}
             <div className='flex w-full justify-between items-center'>
                 <h1 className='text-5xl font-bold'>
                     {credential ? credential.email : "Your email"}
