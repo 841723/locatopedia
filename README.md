@@ -1,15 +1,27 @@
+
+
+
 in /wolf-h3viewer-react
 
-```npm run dev```
+```
+npm install
+npm run dev
+```
 
 ---
 
 in /backend
 
-```npm run dev```
+```
+npm install
+npm run dev
+```
 
 ---
 
 in /backend/services/dggstools
 
-```python app.py```
+```
+pip install -r requirements.txt
+python app.py
+```
