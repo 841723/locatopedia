@@ -13,15 +13,6 @@ const client = new Client({
 
 client.connect();
 
-// let DB_INFO = {
-//     "HYXEGM7k7y5RX13g0uD1_eFnL4I=": {
-//         title: "Hexágono de la ciudad de Zaragoza",
-//         subtitle: "Este es mi hexágono favorito de mi cuidad natal",
-//         content: textContent,
-//         auid: "eJyLs7AwtjQ3MDQyTUoDARV7OLBIMTJEFTMzh_ABhoQO3A==",
-//         hash: "HYXEGM7k7y5RX13g0uD1_eFnL4I=",
-//     },
-// };
 
 async function checkValidHash(hash) {
     try {
@@ -49,12 +40,18 @@ async function getDataFromHash(hash) {
     }
 }
 
-function setDataFromHash(hash, data) {
-    DB_INFO[hash].title = data.title;
-    DB_INFO[hash].subtitle = data.subtitle;
-    DB_INFO[hash].content = data.content;
-
-    console.log(DB_INFO[hash].title, DB_INFO[hash].subtitle);
+async function setDataFromHash(hash, data) {
+    try {
+        const res = await client.query(
+            "UPDATE article SET title = $1, subtitle = $2, content = $3 WHERE hash = $4",
+            [data.title, data.subtitle, data.content, hash]
+        );
+        return res;
+    } catch (err) {
+        console.log("Error in setDataFromHash");
+        console.log(err);
+        return [];
+    }
 }
 
 async function getPopular(num) {

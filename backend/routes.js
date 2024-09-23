@@ -9,10 +9,14 @@ const {
 const router = express.Router();
 module.exports = router;
 
+
+// test
 router.post("/test", (req, res) => {
     res.status(200).send("Server is up and running");
 });
 
+// PARAMS: hash
+// RETURNS: data from hash
 router.get("/api/wiki", async (req, res) => {
     const { hash } = req.query;
 
@@ -36,13 +40,19 @@ router.get("/api/wiki", async (req, res) => {
     res.status(200).send(data);
 });
 
+
+// PARAMS: limit
+// RETURNS: [limit] popular articles
 router.get("/api/wiki/popular", async (req, res) => {
     const { limit = 2 } = req.query;
     const popular = await getPopular(limit);
     res.status(200).send(popular);
 });
 
-router.put("/api/wiki/update", (req, res) => {
+
+// PARAMS: hash, title, subtitle, content
+// RETURNS: updated data
+router.put("/api/wiki/update", async (req, res) => {
     const { hash, title, subtitle, content } = req.body;
 
     if (!checkValidHash(hash)) {
@@ -50,11 +60,14 @@ router.put("/api/wiki/update", (req, res) => {
         return;
     }
 
-    setDataFromHash(hash, { title, subtitle, content });
+    await setDataFromHash(hash, { title, subtitle, content });
 
     res.status(200).send({ hash, title, subtitle, content });
 });
 
+
+// PARAMS: cuids
+// RETURNS: auid and hash
 router.get("/api/dggstools/generate-auid-hash", async (req, res) => {
     const { cuids } = req.query;
 
@@ -71,6 +84,9 @@ router.get("/api/dggstools/generate-auid-hash", async (req, res) => {
     res.status(200).send(auid_hash);
 });
 
+
+// PARAMS: auid
+// RETURNS: cuids
 router.get("/api/dggstools/cuids-from-auid", async (req, res) => {
     const { auid } = req.query;
 
@@ -87,6 +103,9 @@ router.get("/api/dggstools/cuids-from-auid", async (req, res) => {
     res.status(200).send(cuids);
 });
 
+
+// PARAMS: auid
+// RETURNS: hash
 router.get("/api/dggstools/hash", async (req, res) => {
     const { auid } = req.query;
 

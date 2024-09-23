@@ -4,7 +4,6 @@ import { Map } from "@/components/Map";
 import { PageContent } from "@/components/PageContent";
 import { Button } from "@/components/basic/Button";
 import { useFetch } from "@/hooks/useFetch.jsx";
-import { parseObjectsToText, parseTextToObjects } from "@/lib/markdown.js";
 
 export function Page() {
     const { hash } = useParams();
@@ -25,12 +24,7 @@ export function Page() {
 
     useEffect(() => {
         if (data) {
-            const res = parseTextToObjects(data.content);
-            if (!res.OK) {
-                console.error(res.error);
-            } else {
-                setContents(res.result);
-            }
+            setContents(data.content);
 
             setTitles({ title: data.title, subtitle: data.subtitle });
             if (data.cuids) {
@@ -62,39 +56,34 @@ export function Page() {
 
             console.log("Saving changes...");
 
-            const textParsedToObjects = parseTextToObjects(contentsTA);
-            if (!textParsedToObjects.OK) {
-                console.error(textParsedToObjects.error);
-            } else {
-                if (
-                    titleTA === titles.title &&
-                    subtitleTA === titles.subtitle &&
-                    contentsTA === parseObjectsToText(contents)
-                ) {
-                    console.log("No changes detected");
-                    setEditing(false);
-                    return;
-                }
-                // TODO update BBDD
-                fetch(`http://localhost:3000/api/wiki/update`, {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        hash: hash,
-                        title: titleTA,
-                        subtitle: subtitleTA,
-                        content: contentsTA,
-                    }),
-                })
-                    .then((res) => res.json())
-                    .then((res) => {
-                        setTitles({ title: res.title, subtitle: res.subtitle });
-                        setContents(parseTextToObjects(res.content).result);
-                        setEditing(false);
-                    });
+            if (
+                titleTA === titles.title &&
+                subtitleTA === titles.subtitle &&
+                contentsTA === contents
+            ) {
+                console.log("No changes detected");
+                setEditing(false);
+                return;
             }
+            // TODO update BBDD
+            fetch(`http://localhost:3000/api/wiki/update`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    hash: hash,
+                    title: titleTA,
+                    subtitle: subtitleTA,
+                    content: contentsTA,
+                }),
+            })
+                .then((res) => res.json())
+                .then((res) => {
+                    setTitles({ title: res.title, subtitle: res.subtitle });
+                    setContents((res.content));
+                    setEditing(false);
+                });
         } else {
             setEditing(true);
         }
@@ -103,8 +92,6 @@ export function Page() {
     if (loading || !titles.title) {
         return <div>Loading..</div>;
     }
-
-    // const { title, subtitle } = data;
 
     return (
         <>
@@ -155,7 +142,7 @@ export function Page() {
                 <textarea
                     id='contents-textarea'
                     className='w-full h-80 p-2 outline'
-                    defaultValue={parseObjectsToText(contents)}
+                    defaultValue={contents}
                     autoComplete='off'
                     autoFocus
                 />
@@ -165,13 +152,3 @@ export function Page() {
         </>
     );
 }
-
-// e.preventDefault();
-// const writtenText = e.target[0].value;
-// const res = parseTextToObjects(writtenText);
-// if (!res.OK) {
-//     console.error(res.error);
-// } else {
-//     setContents(res.result);
-//     setEditing(false);
-// }

@@ -23,6 +23,10 @@ function App() {
             element: <Page />,
         },
         {
+            path: "/wiki/:hash/new",
+            element: <div>work in progress</div>,
+        },
+        {
             path: "*",
             element: (
                 <div className='text-8xl my-10 font-medium'>

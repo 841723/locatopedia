@@ -66,8 +66,14 @@ const h3BoundsToPolygon = (lngLatH3Bounds) => {
  * @param className the class name of the map container
  *
  */
-export function Map({ selected, className }) {
+export function Map({ selected, className, handleMakeBig, handleSetSelectedCells }) {
+    handleMakeBig = handleMakeBig || (() => {});
+    handleSetSelectedCells = handleSetSelectedCells || (() => {});
+
     const [selectedCellsIDs, setSelectedCellsIDs] = useState(selected);
+    useEffect(() => {
+        handleSetSelectedCells(selectedCellsIDs);
+    }, [selectedCellsIDs]);
 
     var map = useRef(null);
     var hexLayer = useRef(null);
@@ -85,7 +91,11 @@ export function Map({ selected, className }) {
                 '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>',
         }).addTo(map.current);
 
-        map.current.setView([41.64731, -0.89001], 4);
+        map.current.setView([51.509865, -0.118092], 14);
+        if (selectedCellsIDs.length === 0) {
+            // get user gps position
+            map.current.locate({ setView: true });
+        }
     }, []);
 
     useEffect(() => {
@@ -107,40 +117,6 @@ export function Map({ selected, className }) {
         setSelectedCellsIDs(selected);
     }, [selected]);
 
-    // useEffect(() => {
-    //     console.log("fetching dggstools");
-    //     const queryString = ["883970125bfffff", "8a589c98475ffff"]
-    //         .map(encodeURIComponent)
-    //         .join(",");
-
-    //     let auid_comp_b64 = "";
-
-    //     fetch(
-    //         `http://localhost:3000/api/dggstools/generate-auid-hash?cuids=${queryString}`
-    //     )
-    //         .then((res) => res.json())
-    //         .then((data) => {
-    //             console.log(
-    //                 "should be: eJyLs7AwtjQ3MDQyTUoDARV7VJBoamGZbGlhYm4KlgUAK2UMpg== is ",
-    //                 data.auid_comp_b64
-    //             );
-    //             auid_comp_b64 = data.auid_comp_b64;
-    //         })
-
-    //         .then(() =>
-    //             fetch(
-    //                 `http://localhost:3000/api/dggstools/cuids-from-auid?auid=${auid_comp_b64}==`
-    //             )
-    //                 .then((res) => res.json())
-    //                 .then((data) => {
-    //                     console.log(
-    //                         "should be: 883970125bfffff,8a589c98475ffff is ",
-    //                         data.cuids
-    //                     );
-    //                 })
-    //         );
-    // }, []);
-
     function handleClickCell(h3id) {
         if (!allowSelectingCells) return;
 
@@ -156,6 +132,8 @@ export function Map({ selected, className }) {
     useEffect(() => {
         function updateMapDisplay() {
             if (!map.current) return;
+
+            console.log("updating map display");
 
             if (hexLayer.current) {
                 hexLayer.current.remove();
@@ -227,7 +205,7 @@ export function Map({ selected, className }) {
     return (
         <>
             <div id='mapid' className={`relative ${className}`}>
-                {allowSelectingCells && (
+                {/*allowSelectingCells && (
                     <div className='w-32 absolute z-[2000] p-1 right-0 mt-[10px] mr-[10px] bg-white text-black shadow-black/65 shadow-md rounded-[4px]'>
                         <button onClick={() => setSelectedCellsIDs([])}>
                             Clear selected
@@ -239,8 +217,18 @@ export function Map({ selected, className }) {
                                 <li key={id}>{id}</li>
                             ))}
                         </ul>
+                        <h3>
+                            zoom:{}
+                            {map.current && map.current.getZoom()}
+                        </h3>
                     </div>
-                )}
+                )*/}
+                <button
+                    className='absolute z-[2000] p-1 right-0 mt-[10px] mr-[10px] bg-slate-100 rounded'
+                    onClick={handleMakeBig}
+                >
+                    make big
+                </button>
             </div>
         </>
     );
