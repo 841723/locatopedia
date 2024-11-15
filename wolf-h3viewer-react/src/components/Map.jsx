@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 import { useEffect, useState, useRef } from "react";
+import * as h3 from "h3-js";
 
 const GeoUtils = {
     EARTH_RADIUS_METERS: 6371000,

@@ -1,27 +1,6 @@
-
-
-
-in /wolf-h3viewer-react
+To run the project:
 
 ```
-npm install
-npm run dev
-```
-
----
-
-in /backend
-
-```
-npm install
-npm run dev
-```
-
----
-
-in /backend/services/dggstools
-
-```
-pip install -r requirements.txt
-python app.py
+docker compose build
+docker compose up
 ```

@@ -32,6 +32,9 @@ def hash():
     hashed = AUIDGenerator.hash_b64_from_auid(auid)
     return jsonify({'hashed_b64': hashed})
 
+@app.route('/test', methods=['get'])
+def test():
+    return jsonify({'message': 'Hello World!'})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)

@@ -1,0 +1,34 @@
+services:
+    dggstools:
+        image: dggstools
+        build:
+            context: backend/services/dggstools
+            dockerfile: Dockerfile
+        ports:
+            - "5000:5000"
+        networks:
+            - mynetwork
+
+    backend:
+        image: backend
+        build:
+            context: backend/
+            dockerfile: Dockerfile
+        ports:
+            - "3000:3000"
+        networks:
+            - mynetwork
+
+    www:
+        image: www
+        build:
+            context: wolf-h3viewer-react/
+            dockerfile: Dockerfile
+        ports:
+            - "80:80"
+        networks:
+            - mynetwork
+
+networks:
+    mynetwork:
+        driver: bridge

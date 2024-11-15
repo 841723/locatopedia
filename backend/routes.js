@@ -26,13 +26,14 @@ router.get("/api/wiki", async (req, res) => {
     }
 
     const data = await getDataFromHash(hash);
+    console.log(data);
 
     if (!data.auid) {
         res.status(500).send("Internal server error");
         return;
     }
     const response = await fetch(
-        `http://127.0.0.1:5000/api/dggstools/cuids-from-auid?auid=${data.auid}`
+        `http://dggstools:5000/api/dggstools/cuids-from-auid?auid=${data.auid}`
     );
     const cuids = await response.json();
     data.cuids = cuids.cuids;
@@ -77,7 +78,7 @@ router.get("/api/dggstools/generate-auid-hash", async (req, res) => {
     }
 
     const response = await fetch(
-        `http://127.0.0.1:5000/api/dggstools/generate-auid-hash?cuids=${cuids}`
+        `http://dggstools:5000/api/dggstools/generate-auid-hash?cuids=${cuids}`
     );
 
     const auid_hash = await response.json();
@@ -96,7 +97,7 @@ router.get("/api/dggstools/cuids-from-auid", async (req, res) => {
     }
 
     const response = await fetch(
-        `http://127.0.0.1:5000/api/dggstools/cuids-from-auid?auid=${auid}`
+        `http://dggstools:5000/api/dggstools/cuids-from-auid?auid=${auid}`
     );
 
     const cuids = await response.json();
@@ -115,7 +116,7 @@ router.get("/api/dggstools/hash", async (req, res) => {
     }
 
     const response = await fetch(
-        `http://127.0.0.1:5000/api/dggstools/hash?auid=${auid}`
+        `http://dggstools:5000/api/dggstools/hash?auid=${auid}`
     );
 
     const hash = await response.json();
