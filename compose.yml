@@ -4,8 +4,6 @@ services:
         build:
             context: backend/services/dggstools
             dockerfile: Dockerfile
-        ports:
-            - "5000:5000"
         networks:
             - mynetwork
 
