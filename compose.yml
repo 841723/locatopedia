@@ -1,11 +1,22 @@
 services:
+    postgresql:
+        image: postgres:latest
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: postgres
+        volumes:
+            - postgresql-data:/var/lib/postgresql/data
+        ports:
+            - "5432:5432" 
+
+
     dggstools:
         image: dggstools
         build:
             context: backend/services/dggstools
             dockerfile: Dockerfile
-        networks:
-            - mynetwork
+
 
     backend:
         image: backend
@@ -14,8 +25,9 @@ services:
             dockerfile: Dockerfile
         ports:
             - "3000:3000"
-        networks:
-            - mynetwork
+
+        depends_on:
+            - postgresql
 
     www:
         image: www
@@ -24,9 +36,8 @@ services:
             dockerfile: Dockerfile
         ports:
             - "80:80"
-        networks:
-            - mynetwork
 
-networks:
-    mynetwork:
-        driver: bridge
+
+
+volumes:
+    postgresql-data:

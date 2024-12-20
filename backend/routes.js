@@ -11,8 +11,8 @@ module.exports = router;
 
 
 // test
-router.post("/test", (req, res) => {
-    res.status(200).send("Server is up and running");
+router.get("/test", (req, res) => {
+    res.status(200).send("<h1>Server is up and running</h1>");
 });
 
 // PARAMS: hash
