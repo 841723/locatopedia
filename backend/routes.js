@@ -6,6 +6,8 @@ const {
     setDataFromHash,
 } = require("./wikiplace");
 
+const { DGGS_ENDPOINT } = process.env;
+
 const router = express.Router();
 module.exports = router;
 
@@ -33,7 +35,7 @@ router.get("/api/wiki", async (req, res) => {
         return;
     }
     const response = await fetch(
-        `http://dggstools:5000/api/dggstools/cuids-from-auid?auid=${data.auid}`
+        `${DGGS_ENDPOINT}/api/dggstools/cuids-from-auid?auid=${data.auid}`
     );
     const cuids = await response.json();
     data.cuids = cuids.cuids;
@@ -78,7 +80,7 @@ router.get("/api/dggstools/generate-auid-hash", async (req, res) => {
     }
 
     const response = await fetch(
-        `http://dggstools:5000/api/dggstools/generate-auid-hash?cuids=${cuids}`
+        `${DGGS_ENDPOINT}/api/dggstools/generate-auid-hash?cuids=${cuids}`
     );
 
     const auid_hash = await response.json();
@@ -97,7 +99,7 @@ router.get("/api/dggstools/cuids-from-auid", async (req, res) => {
     }
 
     const response = await fetch(
-        `http://dggstools:5000/api/dggstools/cuids-from-auid?auid=${auid}`
+        `${DGGS_ENDPOINT}/api/dggstools/cuids-from-auid?auid=${auid}`
     );
 
     const cuids = await response.json();
@@ -116,7 +118,7 @@ router.get("/api/dggstools/hash", async (req, res) => {
     }
 
     const response = await fetch(
-        `http://dggstools:5000/api/dggstools/hash?auid=${auid}`
+        `${DGGS_ENDPOINT}/api/dggstools/hash?auid=${auid}`
     );
 
     const hash = await response.json();

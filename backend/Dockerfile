@@ -35,4 +35,4 @@ COPY . .
 EXPOSE 3000
 
 # Run the application.
-CMD ["node", "--env-file=.env", "index.js"]
+CMD ["node", "--env-file=.env.docker", "index.js"]

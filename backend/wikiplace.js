@@ -1,11 +1,19 @@
 const { Pool } = require("pg");
 
+const {
+    PG_HOST,
+    PG_DATABASE,
+    PG_USER,
+    PG_PASSWORD,
+    PG_PORT
+} = process.env;
+
 const pool = new Pool({
-    host: process.env.PG_HOST,
-    database: process.env.PG_DATABASE,
-    user: process.env.PG_USER,
-    password: process.env.PG_PASSWORD,
-    port: process.env.PG_PORT,
+    host:PG_HOST,
+    database:PG_DATABASE,
+    user:PG_USER,
+    password:PG_PASSWORD,
+    port:PG_PORT,
 });
 
 async function checkValidHash(hash) {
