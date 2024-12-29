@@ -53,8 +53,8 @@ async function setDataFromHash(hash, data) {
 async function insertDataFromHash(hash, auid, data) {
     try {
         const res = await pool.query(
-            "INSERT INTO article (hash, auid, title, subtitle, content) VALUES ($1, $2, $3, $4, $5)",
-            [hash, auid, data.title, data.subtitle, data.content]
+            "INSERT INTO article (hash, auid, title, subtitle, content, img) VALUES ($1, $2, $3, $4, $5, $6)",
+            [hash, auid, data.title, data.subtitle, data.content, data.imgData]
         );
         return res;
     }

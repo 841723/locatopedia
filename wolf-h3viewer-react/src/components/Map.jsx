@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useImperativeHandle } from "react";
 import * as h3 from "h3-js";
 
 const GeoUtils = {
@@ -72,6 +72,7 @@ export function Map({
     className,
     handleMakeBig,
     handleSetSelectedCells,
+    ref,
 }) {
     handleMakeBig = handleMakeBig || (() => {});
     handleSetSelectedCells = handleSetSelectedCells || (() => {});
@@ -85,14 +86,34 @@ export function Map({
     var map = useRef(null);
     var hexLayer = useRef(null);
 
+    useImperativeHandle(ref, () => ({
+        async clean2save() {
+            console.log("clean2save");
+            // centrate the map on selected cells
+            const multiPolygon = h3.cellsToMultiPolygon(selectedCellsIDs, false);
+            const bounds = L.latLngBounds(multiPolygon);
+            map.current.fitBounds(bounds, { duration: 0 });
+
+            // remove blue layer
+            if (hexLayer.current) {
+                hexLayer.current.remove();
+            }
+
+            // show selected cells
+            hexLayer.current = L.layerGroup().addTo(map.current);
+            L.polygon(multiPolygon, {}).addTo(hexLayer.current);
+
+            return true;
+        }
+    }));
 
     useEffect(() => {
         map.current = L.map("mapid");
-        const isSelectingCells = !selectedInicialCellsIDs || (Array.isArray(selectedInicialCellsIDs) && selectedInicialCellsIDs.length === 0);
+        // const isSelectingCells = !selectedInicialCellsIDs || (Array.isArray(selectedInicialCellsIDs) && selectedInicialCellsIDs.length === 0);
 
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            minZoom: isSelectingCells ? 8 : 4,
-            maxZoom: isSelectingCells ? 8 : 24,
+            minZoom: 4,
+            maxZoom: 24,
             attribution:
                 '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>',
         }).addTo(map.current);
@@ -121,7 +142,7 @@ export function Map({
 
         const polygonVertex = h3.cellsToMultiPolygon(selectedCellsIDs, false);
         const bounds = L.latLngBounds(polygonVertex);
-
+        
         map.current.fitBounds(bounds);
 
         setSelectedCellsIDs(selectedCellsIDs);
@@ -133,6 +154,7 @@ export function Map({
             (Array.isArray(selectedInicialCellsIDs) && selectedInicialCellsIDs.length === 0);
 
         if (!allowSelectingCells) return;
+
 
         setSelectedCellsIDs((prev) => {
             if (prev.includes(h3id)) {

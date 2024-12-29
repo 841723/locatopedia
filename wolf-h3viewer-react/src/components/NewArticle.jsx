@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { Map } from "@/components/Map";
-import { PageContent } from "@/components/PageContent";
 import { Button } from "@/components/basic/Button";
+import { AutoSaveImage } from "@/components/AutoSaveImage";
 
 export function NewArticle() {
+    const mapImageRef = useRef(null);
+    const mapRef = useRef(null);
+    
     const navigate = useNavigate();
 
     const [selectedCells, setSelectedCells] = useState([]);
@@ -19,6 +22,20 @@ export function NewArticle() {
             return;
         }
 
+        await mapRef.current.clean2save();
+        // document.render(
+        //     <Map
+        //         ref={mapRef}
+        //         className={"w-full h-80"}
+        //         selectedInitial={selectedCells}
+        //         handleSetSelectedCells={setSelectedCells}
+        //     ></Map>
+        // );
+
+        // await mapRef.current.clean2save();
+        const imgData = await mapImageRef.current.saveImage(mapRef);
+        console.log("lenght imgData", imgData.length);
+
         const res = await fetch(`http://localhost:3000/api/wiki/add`, {
             method: "POST",
             headers: {
@@ -29,6 +46,7 @@ export function NewArticle() {
                 title: titleTA,
                 subtitle: subtitleTA,
                 content: contentsTA,
+                imgData: imgData,
             }),
         });
         if (res.status !== 201) {
@@ -67,12 +85,26 @@ export function NewArticle() {
                     <Button onClick={handleClick}>publish</Button>
                 </div>
             </div>
+            <Button
+                onClick={async () => {
+                    await mapRef.current.clean2save();
+                    const r = await mapImageRef.current.saveImage();
+                    const img = document.createElement("img");
+                    img.src = r;
+                    document.body.appendChild(img);
+                }}
+            >
+                cancel
+            </Button>
 
-            <Map
-                className={"w-full h-80"}
-                selectedInitial={[]}
-                handleSetSelectedCells={setSelectedCells}
-            />
+            <AutoSaveImage ref={mapImageRef}>
+                <Map
+                    ref={mapRef}
+                    className={"w-full h-80"}
+                    selectedInitial={[]}
+                    handleSetSelectedCells={setSelectedCells}
+                />
+            </AutoSaveImage>
 
             <hr className='w-full my-4 border border-gray-900' />
 

@@ -64,7 +64,7 @@ router_wiki.put("/update", async (req, res) => {
 });
 
 router_wiki.post("/add", async (req, res) => {
-    const { cuids, title, subtitle, content } = req.body;
+    const { cuids, title, subtitle, content, imgData } = req.body;
 
     const response = await fetch(
         `${DGGS_ENDPOINT}/api/dggstools/generate-auid-hash?cuids=${cuids}`
@@ -77,7 +77,8 @@ router_wiki.post("/add", async (req, res) => {
         title,
         subtitle,
         content,
+        imgData,
     });
 
-    res.status(201).send({ hashed_b64, title, subtitle, content });
+    res.status(201).send({ hashed_b64, title, subtitle, content, imgData });
 });
