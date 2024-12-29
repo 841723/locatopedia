@@ -39,7 +39,7 @@ async function setDataFromHash(hash, data) {
     try {
         console.log("setDataFromHash, hash: ", hash, "data: ", data);
         const res = await pool.query(
-            "CREATE OR UPDATE article SET title = $1, subtitle = $2, content = $3 WHERE hash = $4",
+            "UPDATE article SET title = $1, subtitle = $2, content = $3 WHERE hash = $4",
             [data.title, data.subtitle, data.content, hash]
         );
         return res;
