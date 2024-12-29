@@ -29,6 +29,7 @@ export function Page() {
                 console.error("No data returned");
                 return;
             }
+            document.title = `${data.title} - Locatopedia`;
             setContents(data.content);
             setTitles({ title: data.title, subtitle: data.subtitle });
             if (data.cuids) {
@@ -47,38 +48,6 @@ export function Page() {
     }, [editing]);
 
     async function handleClick () {
-        // if (isNewArticle) {
-        if (false) {
-            const titleTA = document.getElementById("title-textarea").value;
-            const subtitleTA =
-                document.getElementById("subtitle-textarea").value;
-            const contentsTA =
-                document.getElementById("contents-textarea").value;
-
-            if (!titleTA || !subtitleTA || !contentsTA) {
-                console.error("All fields are required");
-                return;
-            }
-
-            const res = await fetch(`http://localhost:3000/api/wiki/add`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    hash: hash,
-                    title: titleTA,
-                    subtitle: subtitleTA,
-                    content: contentsTA,
-                }),
-            });
-            if (res.status !== 201) {
-                console.error("Error adding new article");
-                return;
-            }
-            navigate(`/wiki/${hash}`);
-            return;
-        }
         if (editing) {
             const titleTA = document.getElementById("title-textarea").value;
             const subtitleTA =
