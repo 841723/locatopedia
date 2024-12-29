@@ -86,26 +86,26 @@ export function Map({
     var map = useRef(null);
     var hexLayer = useRef(null);
 
-    useImperativeHandle(ref, () => ({
-        async clean2save() {
-            console.log("clean2save");
-            // centrate the map on selected cells
-            const multiPolygon = h3.cellsToMultiPolygon(selectedCellsIDs, false);
-            const bounds = L.latLngBounds(multiPolygon);
-            map.current.fitBounds(bounds, { duration: 0 });
+    // useImperativeHandle(ref, () => ({
+    //     async clean2save() {
+    //         console.log("clean2save");
+    //         // centrate the map on selected cells
+    //         const multiPolygon = h3.cellsToMultiPolygon(selectedCellsIDs, false);
+    //         const bounds = L.latLngBounds(multiPolygon);
+    //         map.current.fitBounds(bounds, { duration: 0 });
 
-            // remove blue layer
-            if (hexLayer.current) {
-                hexLayer.current.remove();
-            }
+    //         // remove blue layer
+    //         if (hexLayer.current) {
+    //             hexLayer.current.remove();
+    //         }
 
-            // show selected cells
-            hexLayer.current = L.layerGroup().addTo(map.current);
-            L.polygon(multiPolygon, {}).addTo(hexLayer.current);
+    //         // show selected cells
+    //         hexLayer.current = L.layerGroup().addTo(map.current);
+    //         L.polygon(multiPolygon, {}).addTo(hexLayer.current);
 
-            return true;
-        }
-    }));
+    //         return true;
+    //     }
+    // }));
 
     useEffect(() => {
         map.current = L.map("mapid");

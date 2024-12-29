@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import ReactDOM from "react-dom/client";
 import { useNavigate } from "react-router-dom";
 import { Map } from "@/components/Map";
 import { Button } from "@/components/basic/Button";
@@ -22,42 +23,47 @@ export function NewArticle() {
             return;
         }
 
-        await mapRef.current.clean2save();
-        // document.render(
-        //     <Map
-        //         ref={mapRef}
-        //         className={"w-full h-80"}
-        //         selectedInitial={selectedCells}
-        //         handleSetSelectedCells={setSelectedCells}
-        //     ></Map>
-        // );
-
-        // await mapRef.current.clean2save();
-        const imgData = await mapImageRef.current.saveImage(mapRef);
-        console.log("lenght imgData", imgData.length);
-
-        const res = await fetch(`http://localhost:3000/api/wiki/add`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                cuids: selectedCells,
-                title: titleTA,
-                subtitle: subtitleTA,
-                content: contentsTA,
-                imgData: imgData,
-            }),
-        });
-        if (res.status !== 201) {
-            console.error("Error adding new article");
+        const oldMap = document.getElementById("mapid");
+        oldMap.remove();
+        const div = document.createElement("div");
+        div.id = "mapid2";
+        document.body.appendChild(div);
+        ReactDOM.createRoot(document.getElementById("mapid2")).render(
+            <AutoSaveImage ref={mapImageRef}>
+                <Map
+                    ref={mapRef}
+                    className={"w-full h-80"}
+                    selectedInitial={selectedCells}
+                    handleSetSelectedCells={setSelectedCells}
+                    img
+                />
+            </AutoSaveImage>
+        );
+        setTimeout(async () => {
+            const imgData = await mapImageRef.current.saveImage();
+            const res = await fetch(`http://localhost:3000/api/wiki/add`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    cuids: selectedCells,
+                    title: titleTA,
+                    subtitle: subtitleTA,
+                    content: contentsTA,
+                    imgData: imgData,
+                }),
+            });
+            if (res.status !== 201) {
+                console.error("Error adding new article");
+                return;
+            }
+            console.log("res", res);
+            const data = await res.json();
+            console.log("data", data);
+            navigate(`/wiki/${data.hashed_b64}`);
             return;
-        }
-        console.log("res", res);
-        const data = await res.json();
-        console.log("data", data);
-        navigate(`/wiki/${data.hashed_b64}`);
-        return;
+        }, 1);
     }
 
     return (
@@ -85,26 +91,37 @@ export function NewArticle() {
                     <Button onClick={handleClick}>publish</Button>
                 </div>
             </div>
-            <Button
+            {/* <Button
                 onClick={async () => {
-                    await mapRef.current.clean2save();
-                    const r = await mapImageRef.current.saveImage();
-                    const img = document.createElement("img");
-                    img.src = r;
-                    document.body.appendChild(img);
+                    const oldMap = document.getElementById('mapid');
+                    oldMap.remove();
+                    const div = document.createElement("div");
+                    div.id = "mapid2"; 
+                    document.body.appendChild(div);
+                    ReactDOM.createRoot(document.getElementById('mapid2')).render(
+                        <AutoSaveImage ref={mapImageRef}>
+                            <Map
+                                ref={mapRef}
+                                className={"w-full h-80"}
+                                selectedInitial={selectedCells}
+                                handleSetSelectedCells={setSelectedCells}
+                                img
+                            />
+                        </AutoSaveImage>
+                    );
+                    setTimeout(async() => {
+                        const imgData = await mapImageRef.current.saveImage();
+                    }, 1);
                 }}
             >
                 cancel
-            </Button>
+            </Button> */}
 
-            <AutoSaveImage ref={mapImageRef}>
-                <Map
-                    ref={mapRef}
-                    className={"w-full h-80"}
-                    selectedInitial={[]}
-                    handleSetSelectedCells={setSelectedCells}
-                />
-            </AutoSaveImage>
+            <Map
+                className={"w-full h-80"}
+                selectedInitial={[]}
+                handleSetSelectedCells={setSelectedCells}
+            />
 
             <hr className='w-full my-4 border border-gray-900' />
 

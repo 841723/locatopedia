@@ -21,7 +21,7 @@ export function AutoSaveImage ({children, ref: mapImageRef}) {
                 const buttons = ref.current.querySelectorAll("button");
                 buttons.forEach((button) => button.remove());
 
-                return toSvg(ref.current)
+                return toSvg(ref.current, { quality: 1 })
                     .then((dataUrl) => {
                         return dataUrl;
                     })
@@ -33,7 +33,7 @@ export function AutoSaveImage ({children, ref: mapImageRef}) {
     }));
 
     return (
-        <div ref={mapImageRef}>
+        <div>
             <div ref={ref}>
                 {children}
             </div>
