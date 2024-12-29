@@ -7,28 +7,33 @@ import { useFetch } from "@/hooks/useFetch.jsx";
 
 export function Page() {
     const { hash } = useParams();
+
     const navigate = useNavigate();
     let url = `http://localhost:3000/api/wiki?hash=${hash}`;
 
     const { data, loading, error } = useFetch(url);
     const [contents, setContents] = useState([]);
     const [editing, setEditing] = useState(false);
-    const [selectedCells, setSelectedCells] = useState([]);
     const [titles, setTitles] = useState({ title: "", subtitle: "" });
 
     useEffect(() => {
         if (error) {
+            console.error(error);
             navigate("/");
         }
     }, [error]);
 
     useEffect(() => {
-        if (data) {
+        if (!loading) {
+            if (!data) {
+                console.error("No data returned");
+                return;
+            }
             setContents(data.content);
-
             setTitles({ title: data.title, subtitle: data.subtitle });
             if (data.cuids) {
-                setSelectedCells(data.cuids);
+                console.log("setting selected cells");
+                // setSelectedCells(data.cuids);
             }
         }
     }, [data]);
@@ -41,7 +46,39 @@ export function Page() {
         }
     }, [editing]);
 
-    function handleClick() {
+    async function handleClick () {
+        // if (isNewArticle) {
+        if (false) {
+            const titleTA = document.getElementById("title-textarea").value;
+            const subtitleTA =
+                document.getElementById("subtitle-textarea").value;
+            const contentsTA =
+                document.getElementById("contents-textarea").value;
+
+            if (!titleTA || !subtitleTA || !contentsTA) {
+                console.error("All fields are required");
+                return;
+            }
+
+            const res = await fetch(`http://localhost:3000/api/wiki/add`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    hash: hash,
+                    title: titleTA,
+                    subtitle: subtitleTA,
+                    content: contentsTA,
+                }),
+            });
+            if (res.status !== 201) {
+                console.error("Error adding new article");
+                return;
+            }
+            navigate(`/wiki/${hash}`);
+            return;
+        }
         if (editing) {
             const titleTA = document.getElementById("title-textarea").value;
             const subtitleTA =
@@ -65,7 +102,6 @@ export function Page() {
                 setEditing(false);
                 return;
             }
-            // TODO update BBDD
             fetch(`http://localhost:3000/api/wiki/update`, {
                 method: "PUT",
                 headers: {
@@ -81,15 +117,16 @@ export function Page() {
                 .then((res) => res.json())
                 .then((res) => {
                     setTitles({ title: res.title, subtitle: res.subtitle });
-                    setContents((res.content));
+                    setContents(res.content);
                     setEditing(false);
                 });
-        } else {
+        } 
+        else {
             setEditing(true);
         }
     }
 
-    if (loading || !titles.title) {
+    if (loading) {
         return <div>Loading..</div>;
     }
 
@@ -101,7 +138,7 @@ export function Page() {
                         <>
                             <textarea
                                 id='title-textarea'
-                                defaultValue={titles.title}
+                                defaultValue={titles.title ?? ""}
                                 className='resize-none hover:resize-y w-full text-4xl font-medium h-12 outline'
                                 minLength={1}
                                 placeholder='Page title'
@@ -109,7 +146,7 @@ export function Page() {
                             />
                             <textarea
                                 id='subtitle-textarea'
-                                defaultValue={titles.subtitle}
+                                defaultValue={titles.subtitle ?? ""}
                                 className='resize-none hover:resize-y w-full mt-2 text-xl text-gray-600 h-8 outline'
                                 minLength={1}
                                 placeholder='Page subtitle'
@@ -119,10 +156,10 @@ export function Page() {
                     ) : (
                         <>
                             <h1 className='text-4xl font-medium h-12'>
-                                {titles.title}
+                                {titles.title ?? ""}
                             </h1>
                             <h2 className='mt-2 text-xl text-gray-600 h-8'>
-                                {titles.subtitle}
+                                {titles.subtitle ?? ""}
                             </h2>
                         </>
                     )}
@@ -134,7 +171,9 @@ export function Page() {
                 </div>
             </div>
 
-            <Map className={"w-full h-80"} selected={selectedCells} />
+            {data?.cuids && (
+                <Map className={"w-full h-80"} selectedInitial={data.cuids} />
+            )}
 
             <hr className='w-full my-4 border border-gray-900' />
 

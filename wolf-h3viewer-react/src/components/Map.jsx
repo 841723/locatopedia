@@ -63,62 +63,75 @@ const h3BoundsToPolygon = (lngLatH3Bounds) => {
 
 /**
  *
- * @param selected the selected cells are highlighted in the map, user cannot select cells. If empty or undefined, user can select cells
+ * @param selectedInitial the selectedCellsIDs cells are highlighted in the map, user cannot select cells. If empty or undefined, user can select cells
  * @param className the class name of the map container
  *
  */
-export function Map({ selected, className, handleMakeBig, handleSetSelectedCells }) {
+export function Map({
+    selectedInitial,
+    className,
+    handleMakeBig,
+    handleSetSelectedCells,
+}) {
     handleMakeBig = handleMakeBig || (() => {});
     handleSetSelectedCells = handleSetSelectedCells || (() => {});
 
-    const [selectedCellsIDs, setSelectedCellsIDs] = useState(selected);
+    const [selectedInicialCellsIDs] = useState(selectedInitial ? selectedInitial : []);
+    const [selectedCellsIDs, setSelectedCellsIDs] = useState(selectedInitial ? selectedInitial : []);
     useEffect(() => {
         handleSetSelectedCells(selectedCellsIDs);
-    }, [selectedCellsIDs]);
+    }, [selectedCellsIDs, handleSetSelectedCells]);
 
     var map = useRef(null);
     var hexLayer = useRef(null);
 
-    const allowSelectingCells =
-        !selected || (Array.isArray(selected) && selected.length === 0);
 
     useEffect(() => {
         map.current = L.map("mapid");
+        const isSelectingCells = !selectedInicialCellsIDs || (Array.isArray(selectedInicialCellsIDs) && selectedInicialCellsIDs.length === 0);
 
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            minZoom: 4,
-            maxZoom: 24,
+            minZoom: isSelectingCells ? 8 : 4,
+            maxZoom: isSelectingCells ? 8 : 24,
             attribution:
                 '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>',
         }).addTo(map.current);
 
-        map.current.setView([51.509865, -0.118092], 14);
+        map.current.setView([51.509865, -0.118092], 10);
         if (selectedCellsIDs.length === 0) {
             // get user gps position
-            map.current.locate({ setView: true });
+            map.current.locate({ setView: true, maxZoom: 13 });
         }
     }, []);
 
     useEffect(() => {
-        if (!selected || (Array.isArray(selected) && selected.length === 0))
-            return;
+        const allowSelectingCells =
+            !selectedInicialCellsIDs ||
+            (Array.isArray(selectedInicialCellsIDs) &&
+                selectedInicialCellsIDs.length === 0);
 
-        for (const h3id of selected) {
+        if (allowSelectingCells) return;
+
+        for (const h3id of selectedCellsIDs) {
             if (!h3.isValidCell(h3id)) {
                 console.error(`Invalid H3 ID: ${h3id}`);
                 return;
             }
         }
 
-        const polygonVertex = h3.cellsToMultiPolygon(selected, false);
+        const polygonVertex = h3.cellsToMultiPolygon(selectedCellsIDs, false);
         const bounds = L.latLngBounds(polygonVertex);
 
         map.current.fitBounds(bounds);
 
-        setSelectedCellsIDs(selected);
-    }, [selected]);
+        setSelectedCellsIDs(selectedCellsIDs);
+    }, [selectedCellsIDs]);
 
     function handleClickCell(h3id) {
+        const allowSelectingCells =
+            !selectedInicialCellsIDs ||
+            (Array.isArray(selectedInicialCellsIDs) && selectedInicialCellsIDs.length === 0);
+
         if (!allowSelectingCells) return;
 
         setSelectedCellsIDs((prev) => {
@@ -134,7 +147,13 @@ export function Map({ selected, className, handleMakeBig, handleSetSelectedCells
         function updateMapDisplay() {
             if (!map.current) return;
 
-            console.log("updating map display");
+            const allowSelectingCells =
+                !selectedInicialCellsIDs ||
+                (Array.isArray(selectedInicialCellsIDs) &&
+                    selectedInicialCellsIDs.length === 0);
+
+            // console.log("updating map display");
+            // console.log("selectedCellsIDs", selectedCellsIDs);
 
             if (hexLayer.current) {
                 hexLayer.current.remove();
@@ -158,6 +177,24 @@ export function Map({ selected, className, handleMakeBig, handleSetSelectedCells
                 [sw.lat - extraPaddingLat, sw.lng - extraPaddingLng],
             ];
 
+            if (!allowSelectingCells) {
+                if (selectedCellsIDs.length > 0) {
+                    const multiPolygon = h3
+                        .cellsToMultiPolygon(selectedCellsIDs, false)
+                    const p = L.polygon(multiPolygon, {
+                        fillColor: "blue",
+                        fillOpacity: 0,
+                        stroke: true,
+                        color: "blue",
+                        weight: 15,
+                    })
+                    
+                    const b = p.getBounds();
+                    console.log(b);
+                    p.addTo(hexLayer.current);
+                }
+            }
+
             for (const h3id of selectedCellsIDs) {
                 const polygonLayer = L.layerGroup().addTo(hexLayer.current);
 
@@ -165,17 +202,24 @@ export function Map({ selected, className, handleMakeBig, handleSetSelectedCells
 
                 L.polygon(h3BoundsToPolygon(h3Bounds), {
                     fillColor: "black",
-                    fillOpacity: 1,
+                    fillOpacity: 0.5,
                     stroke: false,
                 }).addTo(polygonLayer);
             }
 
-            if (selectedCellsIDs.length > 0) {
-                const multiPolygon = h3.cellsToMultiPolygon(selected, false);
-                L.polygon(multiPolygon, {}).addTo(hexLayer.current);
-            }
-
             if (allowSelectingCells) {
+                if (selectedCellsIDs.length > 0) {
+                    const multiPolygon = h3.cellsToMultiPolygon(
+                        selectedCellsIDs,
+                        false
+                    );
+                    L.polygon(multiPolygon, {}).addTo(hexLayer.current);
+                }
+            }
+            
+            // console.log("allowSelectingCells");
+            if (allowSelectingCells) {
+                
                 const h3s = h3.polygonToCells(boundsPolygon, currentH3Res);
 
                 for (const h3id of h3s) {
@@ -209,10 +253,10 @@ export function Map({ selected, className, handleMakeBig, handleSetSelectedCells
                 {/*allowSelectingCells && (
                     <div className='w-32 absolute z-[2000] p-1 right-0 mt-[10px] mr-[10px] bg-white text-black shadow-black/65 shadow-md rounded-[4px]'>
                         <button onClick={() => setSelectedCellsIDs([])}>
-                            Clear selected
+                            Clear selectedCellsIDs
                         </button>
                         <hr className='my-1' />
-                        <h3>Selected cells:</h3>
+                        <h3>selectedCellsIDs cells:</h3>
                         <ul className='ml-2'>
                             {selectedCellsIDs.map((id) => (
                                 <li key={id}>{id}</li>

@@ -18,7 +18,7 @@ export function useFetch(url) {
                 if (!res.ok) {
                     throw new Error("Network response was not ok");
                 }
-                return res.json()
+                return res.json();
             })
             .then((data) => {
                 setData(data);

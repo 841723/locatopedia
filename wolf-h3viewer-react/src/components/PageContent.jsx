@@ -9,6 +9,7 @@ export function PageContent({ contents }) {
     }
 
     return (
-        <Markdown className='markdown'>{contents}</Markdown>
+        // <Markdown className='markdown'>{contents}</Markdown>
+        null
     );
 }

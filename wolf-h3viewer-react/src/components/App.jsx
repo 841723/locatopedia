@@ -1,10 +1,9 @@
-import { useRoutes } from "react-router-dom";
-import { Layout } from "@/layouts/Layout";
-import { Home } from "@/components/Home";
 import { Page } from "@/components/Page";
-import { NewArticle } from "@/components/NewArticle";
+import { Layout } from "@/layouts/Layout";
+import { useRoutes } from "react-router-dom";
+import { Home } from "@/components/Home";
 import { Account } from "@/components/Account";
-import { NotFound404 } from "@/components/NotFound404";
+import { NewArticle } from "@/components/NewArticle";
 
 function App() {
     const element = useRoutes([
@@ -13,12 +12,16 @@ function App() {
             element: <Home />,
         },
         {
-            path: "/new",
+            path: "/account",
+            element: <Account />,
+        },
+        {
+            path: "/wiki/new",
             element: <NewArticle />,
         },
         {
-            path: "/account",
-            element: <Account />,
+            path: "/wiki/new/:hash",
+            element: <Page />,
         },
         {
             path: "/wiki/:hash",
@@ -26,7 +29,15 @@ function App() {
         },
         {
             path: "*",
-            element: <NotFound404 />,
+            element: (
+                <div className='text-8xl my-10 font-medium'>
+                    <span className='text-[15rem] font-bold tracking-wider'>
+                        404
+                    </span>{" "}
+                    <br />
+                    Page not found
+                </div>
+            ),
         },
     ]);
 
