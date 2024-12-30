@@ -1,0 +1,87 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "npm: install - backend",
+            "type": "npm",
+            "script": "install",
+            "path": "backend",
+            "problemMatcher": [],
+            "detail": "npm install backend" 
+        },
+        {
+            "type": "npm",
+            "script": "dev",
+            "path": "backend",
+            "problemMatcher": [],
+            "label": "npm: dev - backend",
+            "detail": "node --watch --env-file=.env.local index.js"
+        },
+        {
+            "label": "npm: run - backend",
+            "type": "shell",
+            "dependsOn": [
+                "npm: install - backend",
+                "npm: dev - backend"
+            ],
+            "problemMatcher": [],
+            "dependsOrder": "sequence",
+        },
+
+        {
+            "label": "npm: install - frontend",
+            "type": "npm",
+            "script": "install",
+            "path": "wolf-h3viewer-react",
+            "problemMatcher": [],
+            "detail": "npm install frontend"
+        },
+        {
+            "type": "npm",
+            "script": "dev",
+            "path": "wolf-h3viewer-react",
+            "problemMatcher": [],
+            "label": "npm: dev - frontend",
+            "detail": "npm run dev"
+        },
+        {
+            "label": "npm: run - frontend",
+            "type": "shell",
+            "dependsOn": [
+                "npm: install - frontend",
+                "npm: dev - frontend"
+            ],
+            "problemMatcher": [],
+            "dependsOrder": "sequence",
+        },
+
+
+        {
+            "type": "shell",
+            "label": "python: dggstools",
+            "detail": "python backend/services/dggstools/app.py",
+            "command": "python backend/services/dggstools/app.py"
+        },
+        {
+            "label": "docker-compose: up",
+            "type": "shell",
+            "command": "docker-compose up",
+            "detail": "docker-compose up",
+            "problemMatcher": []
+        },
+        {
+            "label": "Set Up Local Project",
+            "detail": "Set up local project with other tasks",
+            "dependsOn": [
+                "npm: run - backend",
+                "npm: run - frontend",
+                "python: dggstools",
+                "docker-compose: up"
+            ],
+            "dependsOrder": "parallel",
+            "type": "shell",
+            "command": "echo All tasks completed in parallel!",
+            "problemMatcher": []
+        }
+    ]
+}
