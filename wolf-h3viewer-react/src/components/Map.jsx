@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef } from "react";
 import { union, featureCollection } from "@turf/turf";
 import * as h3 from "h3-js";
+import { WindowSizeDecrease, WindowSizeIncrease } from "@/components/basic/icons/WindowResize";
 
 const GeoUtils = {
     EARTH_RADIUS_METERS: 6371000,
@@ -289,10 +290,10 @@ export function Map({
                 <div id='mapid' className='w-fill h-full'>
                     {allowMapResize && (
                         <button
-                            className='absolute z-[2000] p-1 right-0 mt-[10px] mr-[10px] bg-slate-100 rounded'
+                            className='absolute z-[2000] p-1 right-0 mt-[10px] mr-[10px] bg-slate-100 rounded flex items-center justify-center'
                             onClick={handleToggleMapSize}
                         >
-                            make {mapSize === "big" ? "small" : "big"}
+                            {mapSize === "big" ? <WindowSizeDecrease /> : <WindowSizeIncrease />}
                         </button>
                     )}
                 </div>
