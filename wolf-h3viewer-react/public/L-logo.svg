@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 -1.781 77.791 93.823" xmlns="http://www.w3.org/2000/svg">
+  <g transform="matrix(0.9999999999999999, 0, 0, 0.9999999999999999, -125.32660675048828, -177.81472778320312)">
+    <path stroke="blue" strokeopacity="1" strokewidth="0" strokelinecap="round" strokelinejoin="round" fill="rgba(0,0,255,0.805)" fillrule="evenodd" d="M 128 205 L 129 216 L 139 220 L 141 231 L 133 237 L 135 248 L 144 252 L 146 263 L 156 267 L 164 261 L 173 265 L 181 258 L 191 262 L 199 255 L 197 244 L 188 240 L 180 247 L 170 243 L 162 250 L 152 246 L 151 235 L 159 228 L 157 217 L 147 213 L 145 202 L 153 195 L 152 184 L 142 180 L 134 187 L 136 198 L 128 205 Z"/>
+  </g>
+</svg>

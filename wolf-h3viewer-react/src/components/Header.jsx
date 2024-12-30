@@ -11,8 +11,7 @@ export function Header() {
     return (
         <header className='bg-slate-300 p-4 px-32 flex justify-between items-center'>
             <a href='/' className="flex items-center gap-4">
-                <AppIcon className='size-20' />
-                <h1 className='text-3xl font-medium tracking-wide'>Locatopedia</h1>
+                <AppIcon className='' />
             </a>
             <a
                 href='/account'
