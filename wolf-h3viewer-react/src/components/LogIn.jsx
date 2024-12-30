@@ -1,4 +1,4 @@
-import { useGoogleLogin } from "@react-oauth/google";
+import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/basic/Button";
 
@@ -8,11 +8,6 @@ export function LogIn({ loggedIn }) {
     const toggleViewLogIn = () => {
         navigate("/");
     };
-    const login = useGoogleLogin({
-        onSuccess: (res) => loggedIn(res),
-        onFailure: (res) => console.error(res),
-        flow: "auth-code",
-    });
 
     return (
         <>
@@ -41,13 +36,14 @@ export function LogIn({ loggedIn }) {
                 onClick={toggleViewLogIn}
             /> */}
             <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-md z-10 p-8 bg-white flex flex-col gap-4 items-center justify-center'>
-                <button
-                    onClick={login}
-                    className='h-fit bg-white text-black px-4 py-2 rounded-md hover:bg-gray-200 border border-gray-300 flex items-center font-normal text-lg'
-                >
-                    {GoogleLogo("w-6 h-6 mr-2 inline-block")}
-                    Sign up / Log In with Google
-                </button>
+                <GoogleLogin
+                    locale="en"
+                    shape='rect'
+                    width="300"
+                    text='continue_with'
+                    onSuccess={(res) => loggedIn(res)}
+                    onFailure={(res) => console.error(res)}
+                />
 
                 <button
                     onClick={toggleViewLogIn}
