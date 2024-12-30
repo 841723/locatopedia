@@ -107,9 +107,10 @@ export function NewArticle() {
             
             {!published ? 
                 <Map
-                    className={"w-full h-80"}
                     selectedInitial={[]}
                     handleSetSelectedCells={setSelectedCells}
+                    allowMapResize={true}
+                    initialMapSize={"small"}
                 />
             : 
                 <div className="w-full h-80"/>

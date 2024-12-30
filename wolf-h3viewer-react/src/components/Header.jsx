@@ -1,15 +1,15 @@
 import { UserIcon } from "@/components/basic/icons/UserIcon.jsx";
-import { useCookie } from "@/lib/useCookie";
-import { jwtDecode } from "jwt-decode";
 import { AppIcon } from "@/components/basic/icons/AppIcon";
+import { AccountContext } from "@/context/Account";
+import { use } from "react";
 
 export function Header() {
 
-    const [credential] = useCookie("credential");
-    const profile = credential ? jwtDecode(credential) : null;
+    const { getData } = use(AccountContext);
+    const profile = getData();
 
     return (
-        <header className='bg-slate-300 p-4 px-32 flex justify-between items-center'>
+        <header className='bg-slate-300 p-4 px-32 flex justify-between items-center h-32'>
             <a href='/' className="flex items-center gap-4">
                 <AppIcon className='' />
             </a>
@@ -29,7 +29,7 @@ export function Header() {
                     </>
                 ) : (
                     <>
-                        <p>Log In</p>
+                        <p>Sign Up / Sign In</p>
                         <UserIcon
                             className={
                                 "w-9 rounded-full transition-colors min-w-10 min-h-10"

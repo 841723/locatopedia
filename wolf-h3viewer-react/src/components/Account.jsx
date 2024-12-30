@@ -1,29 +1,31 @@
-import { jwtDecode } from "jwt-decode";
 import { LogIn } from "@/components/LogIn";
-import { useCookie } from "@/lib/useCookie";
 import { useFetch } from "@/hooks/useFetch";
 import { ArticleCard } from "@/components/ArticleCard";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { use } from "react";
+
+import { AccountContext } from "@/context/Account";
 
 export function Account() {
     const [openLogin, setOpenLogin] = useState(true);
-    const [credentialCookie, credentialUpdateCookie, credentialDeleteCookie] =
-        useCookie("credential");
-    const credential = credentialCookie ? jwtDecode(credentialCookie) : null;
+
+    const { login, logout, getData, isLoggedIn } = use(AccountContext);
+    const credential = getData();
+    const isLogged = isLoggedIn();
     const navigate = useNavigate();
     
     const loggedIn = (res) => {
-        credentialUpdateCookie(res.credential, { expires: 1 });
+        login(res);
     };
 
     const loggedOut = () => {
+        logout();
         navigate("/");
-        credentialDeleteCookie();
     };
 
     useEffect(() => {
-        setOpenLogin(credential ? false : true);
+        setOpenLogin(!isLogged);
     }, [credential]);
 
     const { data } = useFetch("http://localhost:3000/api/wiki/popular?limit=4");

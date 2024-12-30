@@ -141,7 +141,11 @@ export function Page() {
             </div>
 
             {data?.cuids && (
-                <Map className={"w-full h-80"} selectedInitial={data.cuids} />
+                <Map
+                    selectedInitial={data.cuids}
+                    allowMapResize={true}
+                    initialMapSize={"small"}
+                />
             )}
 
             <hr className='w-full my-4 border border-gray-900' />
