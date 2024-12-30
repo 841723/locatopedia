@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { useNavigate } from "react-router-dom";
 import { Map } from "@/components/Map";
@@ -12,6 +12,7 @@ export function NewArticle() {
     const navigate = useNavigate();
 
     const [selectedCells, setSelectedCells] = useState([]);
+    const [published, setPublished] = useState(false);
 
     async function handleClick() {
         const titleTA = document.getElementById("title-textarea").value;
@@ -23,48 +24,60 @@ export function NewArticle() {
             return;
         }
 
-        const oldMap = document.getElementById("mapid");
-        oldMap.remove();
-        const div = document.createElement("div");
-        div.id = "mapid2";
-        document.body.appendChild(div);
-        ReactDOM.createRoot(document.getElementById("mapid2")).render(
-            <AutoSaveImage ref={mapImageRef}>
-                <Map
-                    ref={mapRef}
-                    className={"w-full h-80"}
-                    selectedInitial={selectedCells}
-                    handleSetSelectedCells={setSelectedCells}
-                    img
-                />
-            </AutoSaveImage>
-        );
-        setTimeout(async () => {
-            const imgData = await mapImageRef.current.saveImage();
-            const res = await fetch(`http://localhost:3000/api/wiki/add`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    cuids: selectedCells,
-                    title: titleTA,
-                    subtitle: subtitleTA,
-                    content: contentsTA,
-                    imgData: imgData,
-                }),
-            });
-            if (res.status !== 201) {
-                console.error("Error adding new article");
-                return;
-            }
-            console.log("res", res);
-            const data = await res.json();
-            console.log("data", data);
-            navigate(`/wiki/${data.hashed_b64}`);
-            return;
-        }, 1);
+        setPublished(true);
     }
+
+    useEffect(() => {
+        if (published) {
+            const titleTA = document.getElementById("title-textarea").value;
+            const subtitleTA = document.getElementById("subtitle-textarea").value;
+            const contentsTA = document.getElementById("contents-textarea").value;
+
+            document.body.style.overflow = "hidden";
+            const div = document.createElement("div");
+            div.id = "mapid2";
+            document.body.appendChild(div);
+            ReactDOM.createRoot(document.getElementById("mapid2")).render(
+                <AutoSaveImage ref={mapImageRef}>
+                    <Map
+                        ref={mapRef}
+                        className={"w-full h-80"}
+                        selectedInitial={selectedCells}
+                        handleSetSelectedCells={setSelectedCells}
+                        img
+                    />
+                </AutoSaveImage>
+            );
+            setTimeout(async () => {
+                const imgData = await mapImageRef.current.saveImage();
+                document.body.style.overflow = "auto";
+                div.remove();
+                const res = await fetch(`http://localhost:3000/api/wiki/add`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        cuids: selectedCells,
+                        title: titleTA,
+                        subtitle: subtitleTA,
+                        content: contentsTA,
+                        imgData: imgData,
+                    }),
+                });
+                if (res.status !== 201) {
+                    console.error("Error adding new article");
+                    return;
+                }
+                console.log("res", res);
+                const data = await res.json();
+                console.log("data", data);
+                navigate(`/wiki/${data.hashed_b64}`);
+                console.log("published");
+                return;
+            }, 500);
+        }
+    }, [published]);
 
     return (
         <>
@@ -91,37 +104,16 @@ export function NewArticle() {
                     <Button onClick={handleClick}>publish</Button>
                 </div>
             </div>
-            {/* <Button
-                onClick={async () => {
-                    const oldMap = document.getElementById('mapid');
-                    oldMap.remove();
-                    const div = document.createElement("div");
-                    div.id = "mapid2"; 
-                    document.body.appendChild(div);
-                    ReactDOM.createRoot(document.getElementById('mapid2')).render(
-                        <AutoSaveImage ref={mapImageRef}>
-                            <Map
-                                ref={mapRef}
-                                className={"w-full h-80"}
-                                selectedInitial={selectedCells}
-                                handleSetSelectedCells={setSelectedCells}
-                                img
-                            />
-                        </AutoSaveImage>
-                    );
-                    setTimeout(async() => {
-                        const imgData = await mapImageRef.current.saveImage();
-                    }, 1);
-                }}
-            >
-                cancel
-            </Button> */}
-
-            <Map
-                className={"w-full h-80"}
-                selectedInitial={[]}
-                handleSetSelectedCells={setSelectedCells}
-            />
+            
+            {!published ? 
+                <Map
+                    className={"w-full h-80"}
+                    selectedInitial={[]}
+                    handleSetSelectedCells={setSelectedCells}
+                />
+            : 
+                <div className="w-full h-80"/>
+            }
 
             <hr className='w-full my-4 border border-gray-900' />
 

@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
-import { useEffect, useState, useRef, useImperativeHandle } from "react";
+import { useEffect, useState, useRef } from "react";
+import { union, featureCollection } from "@turf/turf";
 import * as h3 from "h3-js";
 
 const GeoUtils = {
@@ -200,34 +201,46 @@ export function Map({
             ];
 
             if (!allowSelectingCells) {
+                const config = {
+                    fillColor: "blue",
+                    fillOpacity: 0.3,
+                    stroke: true,
+                    color: "blue",
+                    weight: 5,
+                };
                 if (selectedCellsIDs.length > 0) {
-                    const multiPolygon = h3
-                        .cellsToMultiPolygon(selectedCellsIDs, false)
-                    const p = L.polygon(multiPolygon, {
-                        fillColor: "blue",
-                        fillOpacity: 0,
-                        stroke: true,
-                        color: "blue",
-                        weight: 15,
-                    })
-                    
-                    const b = p.getBounds();
-                    console.log(b);
-                    p.addTo(hexLayer.current);
+                    const selectedCellsJSON = selectedCellsIDs.map((id) => {
+                        const h3Bounds = h3.cellToBoundary(id);
+
+                        const h3BoundsPolygon = h3BoundsToPolygon(h3Bounds);
+                        return L.polygon(h3BoundsPolygon, {}).toGeoJSON();
+                    });
+
+                    if (selectedCellsJSON.length === 1) {
+                        L.geoJSON(selectedCellsJSON[0], config).addTo(hexLayer.current);
+                    } 
+                    else {
+                        const unioned = union(featureCollection(selectedCellsJSON));
+                        const multiPolygon = L.geoJSON(unioned).getLayers()[0].getLatLngs();
+
+                        L.polygon(multiPolygon,config).addTo(hexLayer.current);
+                    }
+                }
+            }
+            else {
+                for (const h3id of selectedCellsIDs) {
+                    const polygonLayer = L.layerGroup().addTo(hexLayer.current);
+    
+                    const h3Bounds = h3.cellToBoundary(h3id);
+    
+                    L.polygon(h3BoundsToPolygon(h3Bounds), {
+                        fillColor: "black",
+                        fillOpacity: 0.5,
+                        stroke: false,
+                    }).addTo(polygonLayer);
                 }
             }
 
-            for (const h3id of selectedCellsIDs) {
-                const polygonLayer = L.layerGroup().addTo(hexLayer.current);
-
-                const h3Bounds = h3.cellToBoundary(h3id);
-
-                L.polygon(h3BoundsToPolygon(h3Bounds), {
-                    fillColor: "black",
-                    fillOpacity: 0.5,
-                    stroke: false,
-                }).addTo(polygonLayer);
-            }
 
             if (allowSelectingCells) {
                 if (selectedCellsIDs.length > 0) {
