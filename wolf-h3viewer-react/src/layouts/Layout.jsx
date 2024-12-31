@@ -9,7 +9,7 @@ export function Layout({ children, documentTitle }) {
     return (
         <>
             <Header />
-            <main className='flex flex-col max-w-screen-lg mx-auto py-4 text-gray-900'>
+            <main className='flex flex-col max-w-screen-lg mx-auto py-4 text-gray-900 bg-white'>
                 {children}
             </main>
             <Footer />
@@ -21,7 +21,7 @@ export function Layout({ children, documentTitle }) {
 
 function Footer() {
     return (
-        <footer className='bg-slate-300 p-4 px-32'>
+        <footer className='bg-[var(--color-primary)] p-4 px-32'>
             <p>Footer</p>
         </footer>
     );

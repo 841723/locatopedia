@@ -7,19 +7,20 @@ import { AutoSaveImage } from "@/components/AutoSaveImage";
 
 export function NewArticle() {
     const mapImageRef = useRef(null);
-    const mapRef = useRef(null);
-    
     const navigate = useNavigate();
-
+    
+    const [disabled, setDisabled] = useState(true);
+    const [validCuids, setValidCuids] = useState(false);
     const [selectedCells, setSelectedCells] = useState([]);
     const [published, setPublished] = useState(false);
 
-    async function handleClick() {
-        const titleTA = document.getElementById("title-textarea").value;
-        const subtitleTA = document.getElementById("subtitle-textarea").value;
-        const contentsTA = document.getElementById("contents-textarea").value;
+    const [title, setTitle] = useState("");
+    const [subtitle, setSubtitle] = useState("");
+    const [contents, setContents] = useState("");
 
-        if (!titleTA || !subtitleTA || !contentsTA) {
+
+    async function handleClick() {
+        if (!title || !subtitle || !contents) {
             console.error("All fields are required");
             return;
         }
@@ -29,10 +30,6 @@ export function NewArticle() {
 
     useEffect(() => {
         if (published) {
-            const titleTA = document.getElementById("title-textarea").value;
-            const subtitleTA = document.getElementById("subtitle-textarea").value;
-            const contentsTA = document.getElementById("contents-textarea").value;
-
             document.body.style.overflow = "hidden";
             const div = document.createElement("div");
             div.id = "mapid2";
@@ -40,11 +37,9 @@ export function NewArticle() {
             ReactDOM.createRoot(document.getElementById("mapid2")).render(
                 <AutoSaveImage ref={mapImageRef}>
                     <Map
-                        ref={mapRef}
-                        className={"w-full h-80"}
                         selectedInitial={selectedCells}
-                        handleSetSelectedCells={setSelectedCells}
-                        img
+                        handleSetSelectedCells={() => {}}
+                        map4DownloadImage={true}
                     />
                 </AutoSaveImage>
             );
@@ -59,9 +54,9 @@ export function NewArticle() {
                     },
                     body: JSON.stringify({
                         cuids: selectedCells,
-                        title: titleTA,
-                        subtitle: subtitleTA,
-                        content: contentsTA,
+                        title: title,
+                        subtitle: subtitle,
+                        content: contents,
                         imgData: imgData,
                     }),
                 });
@@ -79,51 +74,103 @@ export function NewArticle() {
         }
     }, [published]);
 
+    useEffect(() => {
+        (async () => {
+            if (selectedCells.length === 0) {
+                setDisabled(true);
+                return;
+            }
+            console.log("selectedCells", selectedCells);
+
+            fetch(
+                `http://localhost:3000/api/wiki/validnewcuids?cuids=${selectedCells.join(",")}`
+            )
+                .then((res) => res.json())
+                .then((res) => {
+                    setValidCuids(res.valid);
+                })
+                .catch((err) => {
+                    console.error(err);
+                    setDisabled(true);
+                });
+        })();
+    }, [selectedCells]);
+
+    useEffect(() => {
+        setDisabled(
+            title.length === 0 || subtitle.length === 0 || contents.length === 0 || selectedCells.length === 0 || !validCuids
+        )
+    }, [title, subtitle, contents, selectedCells, validCuids]);
     return (
         <>
+            {/* <button onClick={() => setShowSecondMap(!showSecondMap)}>
+                toggle showSecondMap
+            </button>
+            {showSecondMap && (
+                <>
+                    <button
+                        onClick={() => mapImageRef2.current.downloadImage()}
+                    >
+                        download Image
+                    </button>
+                    <AutoSaveImage ref={mapImageRef2}>
+                        <Map
+                            selectedInitial={selectedCells}
+                            handleSetSelectedCells={() => {}}
+                            map4DownloadImage={true}
+                        />
+                    </AutoSaveImage>
+                </>
+            )} */}
             <div className='flex justify-between mb-4'>
                 <div className='flex-1 flex flex-col mr-10'>
                     <textarea
                         id='title-textarea'
                         defaultValue={""}
-                        className='resize-none hover:resize-y w-full text-4xl font-medium h-12 outline'
+                        className='resize-none w-full text-4xl font-medium h-12 outline'
                         minLength={1}
                         placeholder='Page title'
                         required
+                        onChange={(e) => setTitle(e.target.value)}
                     />
                     <textarea
                         id='subtitle-textarea'
                         defaultValue={""}
-                        className='resize-none hover:resize-y w-full mt-2 text-xl text-gray-600 h-8 outline'
+                        className='resize-none w-full mt-2 text-xl text-gray-600 h-8 outline'
                         minLength={1}
                         placeholder='Page subtitle'
                         required
+                        onChange={(e) => setSubtitle(e.target.value)}
                     />
                 </div>
                 <div className='flex flex-col justify-end'>
-                    <Button onClick={handleClick}>publish</Button>
+                    <Button disabled={disabled} onClick={handleClick}>
+                        publish
+                    </Button>
                 </div>
             </div>
-            
-            {!published ? 
+
+            {!published ? (
                 <Map
                     selectedInitial={[]}
                     handleSetSelectedCells={setSelectedCells}
                     allowMapResize={true}
                     initialMapSize={"small"}
                 />
-            : 
-                <div className="w-full h-80"/>
-            }
+            ) : (
+                <div className='w-full h-80' />
+            )}
 
             <hr className='w-full my-4 border border-gray-900' />
 
             <textarea
                 id='contents-textarea'
                 className='w-full h-80 p-2 outline'
-                defaultValue={"contents"}
+                defaultValue={""}
                 autoComplete='off'
                 autoFocus
+                required
+                onChange={(e) => setContents(e.target.value)}
             />
         </>
     );

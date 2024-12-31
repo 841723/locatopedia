@@ -50,6 +50,21 @@ async function setDataFromHash(hash, data) {
     }
 }
 
+async function setDataFromHashWithImgData(hash, data) {
+    try {
+        console.log("setDataFromHash, hash: ", hash, "data: ", data);
+        const res = await pool.query(
+            "UPDATE article SET title = $1, subtitle = $2, content = $3, img = $4 WHERE hash = $5",
+            [data.title, data.subtitle, data.content, data.imgData, hash]
+        );
+        return res;
+    } catch (err) {
+        console.log("Error in setDataFromHashWithImgData");
+        console.log(err);
+        return [];
+    }
+}
+
 async function insertDataFromHash(hash, auid, data) {
     try {
         const res = await pool.query(
@@ -76,10 +91,37 @@ async function getPopular(num) {
     }
 }
 
+async function getAll() {
+    try {
+        const res = await pool.query("SELECT * FROM article ORDER BY RANDOM()");
+        return res.rows;
+    } catch (err) {
+        console.log("Error in getAll");
+        console.log(err);
+        return [];
+    }
+}
+
+async function validNewHash(hash) {
+    try {
+        const res = await pool.query("SELECT * FROM article WHERE hash = $1", [
+            hash,
+        ]);
+        return res.rows.length === 0;
+    } catch (err) {
+        console.log("Error in validNewHash");
+        console.log(err);
+        return false;
+    }
+}
+
 module.exports = {
     checkValidHash,
     getDataFromHash,
     getPopular,
     setDataFromHash,
+    setDataFromHashWithImgData,
     insertDataFromHash,
+    getAll,
+    validNewHash,
 };

@@ -3,7 +3,7 @@ export function AppIcon({ className }) {
         <picture className={className} alt='Locatopedia icon'>
             <svg
                 viewBox='120 50 780 220'
-                className='w-80 rotate-[9.9deg] text-blue-800'
+                className='w-80 rotate-[9.9deg] text-[var(--color-secondary)]'
             >
                 <g>
                     <path

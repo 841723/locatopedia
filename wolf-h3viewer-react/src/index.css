@@ -10,6 +10,20 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --color-primary: 
+  #d1d9f7;
+  --color-secondary: 
+  #122a98;
+  --color-button: 
+  #070707;
+  --color-button-hover: 
+  #1a1a1a;
+
+  --color-quaternary: 
+  #E4F0D0;
+  --color-quinary: 
+  #A1B5D8;
 }
 
 body {
@@ -19,5 +33,5 @@ body {
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  backdrop-filter: contrast(113%) grayscale(100%); */
+  backdrop-filter: contrast(112%) grayscale(100%); */
 }

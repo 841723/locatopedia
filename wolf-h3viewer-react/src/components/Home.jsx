@@ -16,7 +16,7 @@ export function Home() {
         <>
             <a
                 href='/wiki/new'
-                className='w-fit bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 self-end'
+                className='w-fit bg-[var(--color-button)] text-white px-4 py-2 rounded-md hover:bg-[var(--color-button-hover)] self-end transition-colors'
             >
                 Create new article
             </a>
@@ -26,7 +26,7 @@ export function Home() {
                     <ul className='grid grid-cols-3 gap-5'>
                         {data1?.map((item) => (
                             // WARNING: this should be item.id
-                            <li key={crypto.randomUUID()}>
+                            <li key={item.hash}>
                                 <ArticleCard item={item} />
                             </li>
                         ))}
@@ -38,7 +38,7 @@ export function Home() {
                     <ul className='grid grid-cols-3 gap-5'>
                         {data2?.map((item) => (
                             // WARNING: this should be item.id
-                            <li key={crypto.randomUUID()}>
+                            <li key={item.hash}>
                                 <ArticleCard item={item} />
                             </li>
                         ))}

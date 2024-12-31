@@ -1,8 +1,9 @@
-export function Button({ children, onClick }) {
+export function Button(props) {
+    const { children, className, ...rest } = props;
     return (
         <button
-            className='text-sm border border-gray-900 px-2 py-1 rounded-md transition hover:bg-gray-200'
-            onClick={onClick}
+            className={`w-fit bg-[var(--color-button)] text-white px-4 py-2 rounded-md hover:bg-[var(--color-button-hover)] self-end transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed ${className}`}
+            {...rest}
         >
             {children}
         </button>

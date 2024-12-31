@@ -52,12 +52,12 @@ export function ArticleCard({ item }) {
                 className='flex flex-col gap-2 justify-between h-full'
             >
                 <img
-                    src={item.img || '/sample.jpg'}
+                    src={item.img || "/sample.jpg"}
                     alt=''
                     className='object-cover h-40 flex-grow rounded'
                 />
                 <div className='flex flex-col justify-end'>
-                    <h2 className='text-blue-500 hover:underline hover:text-blue-900 text-lg font-semibold'>
+                    <h2 className='text-[var(--color-secondary)] hover:underline hover:text-blue-900 text-lg font-semibold'>
                         {item.title}
                     </h2>
                     <h3 className='text-sm text-gray-500'>{item.subtitle}</h3>

@@ -9,8 +9,8 @@ export function Header() {
     const profile = getData();
 
     return (
-        <header className='bg-slate-300 p-4 px-32 flex justify-between items-center h-32'>
-            <a href='/' className="flex items-center gap-4">
+        <header className='bg-[var(--color-primary)] p-4 px-32 flex justify-between items-center h-32'>
+            <a href='/' className='flex items-center gap-4'>
                 <AppIcon className='' />
             </a>
             <a
