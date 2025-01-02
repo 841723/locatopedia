@@ -5,16 +5,31 @@ import { PageContent } from "@/components/PageContent";
 import { Button } from "@/components/basic/Button";
 import { useFetch } from "@/hooks/useFetch.jsx";
 
-export function Page() {
-    const { hash } = useParams();
+import { AccountContext } from "@/context/Account";
+import { use } from "react";
 
+function formatDate(date) {
+    return new Date(date).toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+
+        hour: "numeric",
+        minute: "numeric",
+    });
+}
+
+export function Page() {
+    const { getData } = use(AccountContext);
+    const { hash } = useParams();
+    
     const navigate = useNavigate();
     let url = `http://localhost:3000/api/wiki?hash=${hash}`;
-
+    
+    const [emailUser] = useState(getData()?.email);
     const { data, loading, error } = useFetch(url);
-    const [contents, setContents] = useState([]);
+    const [content, setContent] = useState({ title: "", subtitle: "" , content: "", date: "", email_user: "" });
     const [editing, setEditing] = useState(false);
-    const [titles, setTitles] = useState({ title: "", subtitle: "" });
 
     useEffect(() => {
         if (error) {
@@ -30,8 +45,13 @@ export function Page() {
                 return;
             }
             document.title = `${data.title} - Locatopedia`;
-            setContents(data.content);
-            setTitles({ title: data.title, subtitle: data.subtitle });
+            setContent({
+                title: data.title,
+                subtitle: data.subtitle,
+                content: data.content,
+                date: formatDate(data.date),
+                email_user: data.email_user,
+            });
         }
     }, [data]);
 
@@ -43,7 +63,7 @@ export function Page() {
         }
     }, [editing]);
 
-    async function handleClick () {
+    async function handleClick() {
         if (editing) {
             const titleTA = document.getElementById("title-textarea").value;
             const subtitleTA =
@@ -59,15 +79,15 @@ export function Page() {
             console.log("Saving changes...");
 
             if (
-                titleTA === titles.title &&
-                subtitleTA === titles.subtitle &&
-                contentsTA === contents
+                titleTA === content.title &&
+                subtitleTA === content.subtitle &&
+                contentsTA === content.content
             ) {
                 console.log("No changes detected");
                 setEditing(false);
                 return;
             }
-            fetch(`http://localhost:3000/api/wiki/update`, {
+            fetch(`http://localhost:3000/api/wiki/newversion`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -77,16 +97,23 @@ export function Page() {
                     title: titleTA,
                     subtitle: subtitleTA,
                     content: contentsTA,
+                    email_user: emailUser,
                 }),
             })
                 .then((res) => res.json())
                 .then((res) => {
-                    setTitles({ title: res.title, subtitle: res.subtitle });
-                    setContents(res.content);
+
+                    console.log(res.date);
+                    setContent({
+                        title: res.title,
+                        subtitle: res.subtitle,
+                        content: res.content,
+                        date: formatDate(res.date),
+                        email_user: res.email_user,
+                    });
                     setEditing(false);
                 });
-        } 
-        else {
+        } else {
             setEditing(true);
         }
     }
@@ -97,13 +124,22 @@ export function Page() {
 
     return (
         <>
+            {content &&
+                content.email_user &&
+                content.email_user !== "" &&
+                content.date &&
+                content.date !== "" && (
+                    <div className='text-sm text-gray-500 self-end'>
+                        Last changes made by <em>{content.email_user}</em> on {content.date}
+                    </div>
+                )}
             <div className='flex justify-between mb-4'>
                 <div className='flex-1 flex flex-col mr-10'>
                     {editing ? (
                         <>
                             <textarea
                                 id='title-textarea'
-                                defaultValue={titles.title ?? ""}
+                                defaultValue={content.title ?? ""}
                                 className='resize-none hover:resize-y w-full text-4xl font-medium h-12 outline'
                                 minLength={1}
                                 placeholder='Page title'
@@ -111,7 +147,7 @@ export function Page() {
                             />
                             <textarea
                                 id='subtitle-textarea'
-                                defaultValue={titles.subtitle ?? ""}
+                                defaultValue={content.subtitle ?? ""}
                                 className='resize-none hover:resize-y w-full mt-2 text-xl text-gray-600 h-8 outline'
                                 minLength={1}
                                 placeholder='Page subtitle'
@@ -121,21 +157,22 @@ export function Page() {
                     ) : (
                         <>
                             <h1 className='text-4xl font-medium h-12'>
-                                {titles.title ?? ""}
+                                {content.title ?? ""}
                             </h1>
                             <h2 className='mt-2 text-xl text-gray-600 h-8'>
-                                {titles.subtitle ?? ""}
+                                {content.subtitle ?? ""}
                             </h2>
                         </>
                     )}
                 </div>
-                <div className='flex flex-col justify-end'>
-                    <Button onClick={handleClick}>
-                        {editing ? "save changes" : "edit page"}
-                    </Button>
-                </div>
+                {emailUser && (
+                    <div className='flex flex-col justify-end'>
+                        <Button onClick={handleClick}>
+                            {editing ? "save changes" : "edit page"}
+                        </Button>
+                    </div>
+                )}
             </div>
-
             {data?.cuids && (
                 <Map
                     selectedInitial={data.cuids}
@@ -150,12 +187,12 @@ export function Page() {
                 <textarea
                     id='contents-textarea'
                     className='w-full h-80 p-2 outline'
-                    defaultValue={contents}
+                    defaultValue={content.content}
                     autoComplete='off'
                     autoFocus
                 />
             ) : (
-                <PageContent contents={contents} />
+                <PageContent contents={content.content} />
             )}
         </>
     );

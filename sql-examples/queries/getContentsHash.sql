@@ -1,8 +1,7 @@
 -- fetch to display the latest content of the article
 
 select
-    v.id_version, a.hash, -- ¿?
-    a.auid, -- ¿?
+    a.hash, -- ¿?
     v.title, v.subtitle, v."content", v.email_user, v."date"
 from
     version v

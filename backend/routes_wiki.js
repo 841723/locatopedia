@@ -1,13 +1,11 @@
 const express = require("express");
 const {
-    checkValidHash,
+    checkExistingHash,
     getDataFromHash,
     getPopular,
-    setDataFromHash,
-    insertDataFromHash,
+    createNewVersionFromHash,
+    createNewArticleFromHash,
     getAll,
-    setDataFromHashWithImgData,
-    validNewHash,
 } = require("./wikiplace");
 
 const { DGGS_ENDPOINT } = process.env;
@@ -20,12 +18,15 @@ module.exports = router_wiki;
 router_wiki.get("/", async (req, res) => {
     const { hash } = req.query;
 
-    const validHash = await checkValidHash(hash);
+    console.log("hash", hash);
+
+    const existingHash = await checkExistingHash(hash);
     let statusCode = 200;
-    if (!validHash) {
+    if (!existingHash) {
         statusCode = 204;
     }
     const data = await getDataFromHash(hash);
+    console.log("data", data);
 
     if (!data.auid) {
         res.status(500).send("Internal server error");
@@ -54,12 +55,10 @@ router_wiki.get("/validnewcuids", async (req, res) => {
     );
     const { hashed_b64 } = await response.json();
 
+    const existing = await checkExistingHash(hashed_b64);
 
-    const valid = await validNewHash(hashed_b64);
-
-    res.status(200).send({valid});
+    res.status(200).send({ valid:!existing });
 });
-
 
 // PARAMS: limit
 // RETURNS: [limit] popular articles
@@ -71,56 +70,47 @@ router_wiki.get("/popular", async (req, res) => {
 
 // PARAMS: hash, title, subtitle, content
 // RETURNS: updated data
-router_wiki.put("/update", async (req, res) => {
-    const { hash, title, subtitle, content } = req.body;
+router_wiki.put("/newversion", async (req, res) => {
+    const { hash, title, subtitle, content, email_user, date } = req.body;
 
-    const validHash = await getDataFromHash(hash);
-    if (!validHash) {
-        res.status(404).send("Invalid hash");
+    const existingHash = await checkExistingHash(hash);
+    if (!existingHash) {
+        res.status(404).send("Hash not found");
         return;
     }
 
-    const data = await setDataFromHash(hash, { title, subtitle, content });
+    const data = await createNewVersionFromHash(hash, {
+        title,
+        subtitle,
+        content,
+        email_user,
+        date,
+    });
 
-    res.status(200).send(data);
-});
-
-// PARAMS: hash, title, subtitle, content, imgData
-// RETURNS: updated data
-router_wiki.put("/update/imgData", async (req, res) => {
-    const { hash, title, subtitle, content, imgData } = req.body;
-
-    const validHash = await getDataFromHash(hash);
-    if (!validHash) {
-        res.status(404).send("Invalid hash");
-        return;
-    }
-
-    const data = await setDataFromHashWithImgData(hash, { title, subtitle, content, imgData });
-
-    // { hash, title, subtitle, content, imgData }
     res.status(200).send(data);
 });
 
 // PARAMS: cuids, title, subtitle, content, imgData
 // RETURNS: hash, data
 router_wiki.post("/add", async (req, res) => {
-    const { cuids, title, subtitle, content, imgData } = req.body;
+    const { cuids, title, subtitle, content, imgData,emailUser } = req.body;
 
     const response = await fetch(
         `${DGGS_ENDPOINT}/api/dggstools/generate-auid-hash?cuids=${cuids}`
     );
-    console.log("response", response);
     const { auid_comp_b64, hashed_b64 } = await response.json();
     console.log("{ auid_comp_b64, hashed_b64 }", { auid_comp_b64, hashed_b64 });
 
-    const data = await insertDataFromHash(hashed_b64, auid_comp_b64, {
+    const data = await createNewArticleFromHash(hashed_b64, {
+        auid: auid_comp_b64,
         title,
         subtitle,
         content,
-        imgData,
+        img_url: imgData,
+        email_user: emailUser,
     });
+    data.hash = hashed_b64;
 
-    // { hashed_b64, title, subtitle, content, imgData }
+    // { hash, title, subtitle, content, imgData }
     res.status(201).send(data);
 });

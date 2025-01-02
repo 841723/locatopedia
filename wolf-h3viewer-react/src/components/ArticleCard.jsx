@@ -52,7 +52,7 @@ export function ArticleCard({ item }) {
                 className='flex flex-col gap-2 justify-between h-full'
             >
                 <img
-                    src={item.img || "/sample.jpg"}
+                    src={item.img_url || "/sample.jpg"}
                     alt=''
                     className='object-cover h-40 flex-grow rounded'
                 />

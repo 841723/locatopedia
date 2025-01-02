@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { Map } from "@/components/Map";
 import { Button } from "@/components/basic/Button";
 import { AutoSaveImage } from "@/components/AutoSaveImage";
+import { use } from "react";
+import { AccountContext } from "@/context/Account";
 
 export function NewArticle() {
     const mapImageRef = useRef(null);
@@ -17,6 +19,9 @@ export function NewArticle() {
     const [title, setTitle] = useState("");
     const [subtitle, setSubtitle] = useState("");
     const [contents, setContents] = useState("");
+
+    const { getData } = use(AccountContext);
+    const [email_user] = useState(getData()?.email);
 
 
     async function handleClick() {
@@ -58,6 +63,7 @@ export function NewArticle() {
                         subtitle: subtitle,
                         content: contents,
                         imgData: imgData,
+                        emailUser: email_user
                     }),
                 });
                 if (res.status !== 201) {
@@ -67,7 +73,7 @@ export function NewArticle() {
                 console.log("res", res);
                 const data = await res.json();
                 console.log("data", data);
-                navigate(`/wiki/${data.hashed_b64}`);
+                navigate(`/wiki/${data.hash}`);
                 console.log("published");
                 return;
             }, 500);
@@ -103,25 +109,6 @@ export function NewArticle() {
     }, [title, subtitle, contents, selectedCells, validCuids]);
     return (
         <>
-            {/* <button onClick={() => setShowSecondMap(!showSecondMap)}>
-                toggle showSecondMap
-            </button>
-            {showSecondMap && (
-                <>
-                    <button
-                        onClick={() => mapImageRef2.current.downloadImage()}
-                    >
-                        download Image
-                    </button>
-                    <AutoSaveImage ref={mapImageRef2}>
-                        <Map
-                            selectedInitial={selectedCells}
-                            handleSetSelectedCells={() => {}}
-                            map4DownloadImage={true}
-                        />
-                    </AutoSaveImage>
-                </>
-            )} */}
             <div className='flex justify-between mb-4'>
                 <div className='flex-1 flex flex-col mr-10'>
                     <textarea
