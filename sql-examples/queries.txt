@@ -1,0 +1,9 @@
+get most popular articles +
+get most popular authors ¿?
+
+get info about 1 hash  
+get all versions of 1 hash
+
+get info about 1 version
+
+get all auids and hash

@@ -37,7 +37,6 @@ async function getDataFromHash(hash) {
 
 async function setDataFromHash(hash, data) {
     try {
-        console.log("setDataFromHash, hash: ", hash, "data: ", data);
         const res = await pool.query(
             "UPDATE article SET title = $1, subtitle = $2, content = $3 WHERE hash = $4",
             [data.title, data.subtitle, data.content, hash]
@@ -52,7 +51,6 @@ async function setDataFromHash(hash, data) {
 
 async function setDataFromHashWithImgData(hash, data) {
     try {
-        console.log("setDataFromHash, hash: ", hash, "data: ", data);
         const res = await pool.query(
             "UPDATE article SET title = $1, subtitle = $2, content = $3, img = $4 WHERE hash = $5",
             [data.title, data.subtitle, data.content, data.imgData, hash]

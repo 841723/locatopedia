@@ -25,8 +25,6 @@ router_wiki.get("/", async (req, res) => {
     if (!validHash) {
         statusCode = 204;
     }
-    console.log("validHash", validHash);
-
     const data = await getDataFromHash(hash);
 
     if (!data.auid) {
@@ -58,7 +56,6 @@ router_wiki.get("/validnewcuids", async (req, res) => {
 
 
     const valid = await validNewHash(hashed_b64);
-    console.log("valid", valid);
 
     res.status(200).send({valid});
 });
@@ -83,9 +80,9 @@ router_wiki.put("/update", async (req, res) => {
         return;
     }
 
-    await setDataFromHash(hash, { title, subtitle, content });
+    const data = await setDataFromHash(hash, { title, subtitle, content });
 
-    res.status(200).send({ hash, title, subtitle, content });
+    res.status(200).send(data);
 });
 
 // PARAMS: hash, title, subtitle, content, imgData
@@ -99,9 +96,10 @@ router_wiki.put("/update/imgData", async (req, res) => {
         return;
     }
 
-    await setDataFromHashWithImgData(hash, { title, subtitle, content, imgData });
+    const data = await setDataFromHashWithImgData(hash, { title, subtitle, content, imgData });
 
-    res.status(200).send({ hash, title, subtitle, content, imgData });
+    // { hash, title, subtitle, content, imgData }
+    res.status(200).send(data);
 });
 
 // PARAMS: cuids, title, subtitle, content, imgData
@@ -116,12 +114,13 @@ router_wiki.post("/add", async (req, res) => {
     const { auid_comp_b64, hashed_b64 } = await response.json();
     console.log("{ auid_comp_b64, hashed_b64 }", { auid_comp_b64, hashed_b64 });
 
-    await insertDataFromHash(hashed_b64,auid_comp_b64, {
+    const data = await insertDataFromHash(hashed_b64, auid_comp_b64, {
         title,
         subtitle,
         content,
         imgData,
     });
 
-    res.status(201).send({ hashed_b64, title, subtitle, content, imgData });
+    // { hashed_b64, title, subtitle, content, imgData }
+    res.status(201).send(data);
 });

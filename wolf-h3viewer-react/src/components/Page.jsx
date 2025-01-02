@@ -32,10 +32,6 @@ export function Page() {
             document.title = `${data.title} - Locatopedia`;
             setContents(data.content);
             setTitles({ title: data.title, subtitle: data.subtitle });
-            if (data.cuids) {
-                console.log("setting selected cells");
-                // setSelectedCells(data.cuids);
-            }
         }
     }, [data]);
 
