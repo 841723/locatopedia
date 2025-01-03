@@ -52,6 +52,26 @@ async function getDataFromHash(hash) {
     }
 }
 
+async function getDataFromHashAndVersion(hash, version) {
+    const res = await pool.query(
+        `
+        select 
+            a.hash, a.auid, v.title, v.subtitle, v.content, v.email_user, v.date 
+        from 
+            tfg.version v join tfg.article a on a.hash = v.hash
+        where
+            a.hash = $1 and v.id_version = $2
+        `,
+        [hash, version]
+    );
+    if (res.rows.length > 0) {
+        return res.rows[0];
+    } else {
+        return null;
+    }
+}
+
+
 async function getNextVersionFromHash(hash) {
     try {
         const res = await pool.query(
@@ -208,13 +228,40 @@ async function getAll() {
     }
 }
 
+async function getAllVersionsFromHash(hash) {
+    try {
+        const res = await pool.query(
+            `
+            select 
+                v.hash, v.id_version,
+                v.title, v.subtitle, v.email_user, v.date
+            from 
+                tfg.version v
+            where
+                hash = $1
+            order by v.date DESC
+
+            `,
+            [hash]
+        );
+        return res.rows;
+    }
+    catch (err) {
+        console.log("Error in getVersions");
+        console.log(err);
+        return [];
+    }
+}
+
 module.exports = {
     checkExistingHash,
     getDataFromHash,
+    getDataFromHashAndVersion,
     getPopular,
     createNewVersionFromHash,
 
     createNewArticleFromHash,
 
     getAll,
+    getAllVersionsFromHash,
 };

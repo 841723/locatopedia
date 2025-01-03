@@ -4,6 +4,7 @@ import { useRoutes } from "react-router-dom";
 import { Home } from "@/components/Home";
 import { Account } from "@/components/Account";
 import { NewArticle } from "@/components/NewArticle";
+import { VersionDisplay } from "@/components/VersionDisplay";
 
 function App() {
     const element = useRoutes([
@@ -24,8 +25,16 @@ function App() {
             element: <Page />,
         },
         {
+            path: "/wiki/:hash/:version",
+            element: <Page />,
+        },
+        {
             path: "/wiki/:hash",
             element: <Page />,
+        },
+        {
+            path: "/wiki/:hash/versions",
+            element: <VersionDisplay />,
         },
         {
             path: "*",

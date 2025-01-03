@@ -7,24 +7,15 @@ import { useFetch } from "@/hooks/useFetch.jsx";
 
 import { AccountContext } from "@/context/Account";
 import { use } from "react";
+import { formatDate } from "@/lib/date";
 
-function formatDate(date) {
-    return new Date(date).toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-
-        hour: "numeric",
-        minute: "numeric",
-    });
-}
 
 export function Page() {
     const { getData } = use(AccountContext);
-    const { hash } = useParams();
+    const { hash, version } = useParams();
     
     const navigate = useNavigate();
-    let url = `http://localhost:3000/api/wiki?hash=${hash}`;
+    let url = `http://localhost:3000/api/wiki?hash=${hash}${version ? `&version=${version}` : ""}`;
     
     const [emailUser] = useState(getData()?.email);
     const { data, loading, error } = useFetch(url);
@@ -124,15 +115,21 @@ export function Page() {
 
     return (
         <>
-            {content &&
-                content.email_user &&
-                content.email_user !== "" &&
-                content.date &&
-                content.date !== "" && (
-                    <div className='text-sm text-gray-500 self-end'>
-                        Last changes made by <em>{content.email_user}</em> on {content.date}
-                    </div>
-                )}
+            <header className='flex justify-between text-sm text-gray-500 mb-4'>
+                <a href={`/wiki/${hash}/versions`} className='hover:underline'>
+                    See other versions of this page
+                </a>
+                {content &&
+                    content.email_user &&
+                    content.email_user !== "" &&
+                    content.date &&
+                    content.date !== "" && (
+                        <div className='self-end'>
+                            Last changes made by <em>{content.email_user}</em>{" "}
+                            {content.date}
+                        </div>
+                    )}
+            </header>
             <div className='flex justify-between mb-4'>
                 <div className='flex-1 flex flex-col mr-10'>
                     {editing ? (

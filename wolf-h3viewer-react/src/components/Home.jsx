@@ -24,24 +24,38 @@ export function Home() {
                 <section className='bg-zinc-100 rounded p-2'>
                     <h1 className='text-4xl font-bold mb-2'>Popular</h1>
                     <ul className='grid grid-cols-3 gap-5'>
-                        {data1?.map((item) => (
-                            // WARNING: this should be item.id
-                            <li key={item.hash}>
-                                <ArticleCard item={item} />
+                        {data1?.length === 0 ? (
+                            <li>
+                                <h2 className='text-2xl font-medium'>
+                                    No popular articles yet
+                                </h2>
                             </li>
-                        ))}
+                        ) : (
+                            data1?.map((item) => (
+                                <li key={item.hash}>
+                                    <ArticleCard item={item} />
+                                </li>
+                            ))
+                        )}
                     </ul>
                 </section>
 
                 <section className='bg-zinc-100 rounded p-2'>
                     <h1 className='text-4xl font-bold mb-2'>Close to you</h1>
                     <ul className='grid grid-cols-3 gap-5'>
-                        {data2?.map((item) => (
-                            // WARNING: this should be item.id
-                            <li key={item.hash}>
-                                <ArticleCard item={item} />
+                        {data2?.length === 0 ? (
+                            <li>
+                                <h2 className='text-2xl font-medium'>
+                                    No popular articles yet
+                                </h2>
                             </li>
-                        ))}
+                        ) : (
+                            data2?.map((item) => (
+                                <li key={item.hash}>
+                                    <ArticleCard item={item} />
+                                </li>
+                            ))
+                        )}
                     </ul>
                 </section>
 
@@ -50,7 +64,7 @@ export function Home() {
                         Article of the day
                     </h1>
                     <ul className='grid grid-cols-1 gap-5 mx-[10%]'>
-                        {data3 && <ArticleCard item={data3[0]} />}
+                        {data3 && data3.length>0 && <ArticleCard item={data3[0]} />}
                     </ul>
                 </section>
             </div>

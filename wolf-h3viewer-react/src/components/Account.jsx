@@ -53,9 +53,9 @@ export function Account() {
                                 >
                                     Log Out
                                 </button>
-                                {credential?.email === "841723@unizar.es" && (
+                                {/* {credential?.email === "841723@unizar.es" && (
                                     <SaveNewImagesDB />
-                                )}
+                                )} */}
                             </div>
                         )}
                     </div>

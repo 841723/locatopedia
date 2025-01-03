@@ -2,10 +2,12 @@ const express = require("express");
 const {
     checkExistingHash,
     getDataFromHash,
+    getDataFromHashAndVersion,
     getPopular,
     createNewVersionFromHash,
     createNewArticleFromHash,
     getAll,
+    getAllVersionsFromHash,
 } = require("./wikiplace");
 
 const { DGGS_ENDPOINT } = process.env;
@@ -16,27 +18,31 @@ module.exports = router_wiki;
 // PARAMS: hash
 // RETURNS: data from hash
 router_wiki.get("/", async (req, res) => {
-    const { hash } = req.query;
+    const { hash, version } = req.query;
 
     console.log("hash", hash);
+    console.log("version", version);
 
     const existingHash = await checkExistingHash(hash);
     let statusCode = 200;
     if (!existingHash) {
         statusCode = 204;
     }
-    const data = await getDataFromHash(hash);
-    console.log("data", data);
 
-    if (!data.auid) {
-        res.status(500).send("Internal server error");
-        return;
-    }
-    const response = await fetch(
-        `${DGGS_ENDPOINT}/api/dggstools/cuids-from-auid?auid=${data.auid}`
-    );
-    const cuids = await response.json();
-    data.cuids = cuids.cuids;
+    const data = version ? 
+        await getDataFromHashAndVersion(hash, version)
+        : 
+        await getDataFromHash(hash);
+    
+        if (!data.auid) {
+            res.status(500).send("Internal server error");
+            return;
+        }
+        const response = await fetch(
+            `${DGGS_ENDPOINT}/api/dggstools/cuids-from-auid?auid=${data.auid}`
+        );
+        const { cuids } = await response.json();
+        data.cuids = cuids;
 
     res.status(statusCode).send(data);
 });
@@ -57,7 +63,7 @@ router_wiki.get("/validnewcuids", async (req, res) => {
 
     const existing = await checkExistingHash(hashed_b64);
 
-    res.status(200).send({ valid:!existing });
+    res.status(200).send({ valid: !existing });
 });
 
 // PARAMS: limit
@@ -93,7 +99,7 @@ router_wiki.put("/newversion", async (req, res) => {
 // PARAMS: cuids, title, subtitle, content, imgData
 // RETURNS: hash, data
 router_wiki.post("/add", async (req, res) => {
-    const { cuids, title, subtitle, content, imgData,emailUser } = req.body;
+    const { cuids, title, subtitle, content, imgData, emailUser } = req.body;
 
     const response = await fetch(
         `${DGGS_ENDPOINT}/api/dggstools/generate-auid-hash?cuids=${cuids}`
@@ -113,4 +119,22 @@ router_wiki.post("/add", async (req, res) => {
 
     // { hash, title, subtitle, content, imgData }
     res.status(201).send(data);
+});
+
+// PARAMS: hash
+// RETURNS: all versions of hash
+router_wiki.get("/:hash/versions", async (req, res) => {
+    const { hash } = req.params;
+
+    console.log("hash", hash);
+    const existingHash = await checkExistingHash(hash);
+    if (!existingHash) {
+        res.status(404).send("Hash not found");
+        return;
+    }
+
+    const data = await getAllVersionsFromHash(hash);
+    console.log("data", data);
+
+    res.status(200).send(data);
 });
