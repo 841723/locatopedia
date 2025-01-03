@@ -6,21 +6,46 @@ import { Button } from "@/components/basic/Button";
 import { useFetch } from "@/hooks/useFetch.jsx";
 
 import { AccountContext } from "@/context/Account";
+import { TopInfoDisplayContext } from "@/context/TopInfoDisplay";
 import { use } from "react";
 import { formatDate } from "@/lib/date";
-
+import { Modal } from "@/lib/modal";
 
 export function Page() {
     const { getData } = use(AccountContext);
+    const { setText, setState } = use(TopInfoDisplayContext);
     const { hash, version } = useParams();
-    
+
     const navigate = useNavigate();
     let url = `http://localhost:3000/api/wiki?hash=${hash}${version ? `&version=${version}` : ""}`;
-    
+
     const [emailUser] = useState(getData()?.email);
     const { data, loading, error } = useFetch(url);
-    const [content, setContent] = useState({ title: "", subtitle: "" , content: "", date: "", email_user: "" });
+    const [content, setContent] = useState({
+        title: "",
+        subtitle: "",
+        content: "",
+        date: "",
+        email_user: "",
+    });
+
+    const [editedContent, setEditedContent] = useState({
+        title: "",
+        subtitle: "",
+        content: "",
+    });
+
     const [editing, setEditing] = useState(false);
+
+    useEffect(() => {
+        if (editing) {
+            setEditedContent({
+                title: content.title,
+                subtitle: content.subtitle,
+                content: content.content,
+            });
+        }
+    }, [editing]);
 
     useEffect(() => {
         if (error) {
@@ -47,22 +72,55 @@ export function Page() {
     }, [data]);
 
     useEffect(() => {
-        if (editing) {
-            document
-                .getElementById("contents-textarea")
-                .scrollIntoView({ behavior: "smooth" });
-        }
-    }, [editing]);
+        console.log("editedContent", editedContent);
+    }, [editedContent]);
 
-    async function handleClick() {
-        if (editing) {
-            const titleTA = document.getElementById("title-textarea").value;
-            const subtitleTA =
-                document.getElementById("subtitle-textarea").value;
-            const contentsTA =
-                document.getElementById("contents-textarea").value;
+    async function saveChanges() {
+        fetch(`http://localhost:3000/api/wiki/newversion`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                hash: hash,
+                title: editedContent.title,
+                subtitle: editedContent.subtitle,
+                content: editedContent.content,
+                email_user: emailUser,
+            }),
+        })
+            .then((res) => res.json())
+            .then((res) => {
+                console.log(res.date);
+                setContent({
+                    title: res.title,
+                    subtitle: res.subtitle,
+                    content: res.content,
+                    date: formatDate(res.date),
+                    email_user: res.email_user,
+                });
+                setEditing(false);
+                setText("Changes saved successfully");
+                setState(2);
+                if (version) {
+                    navigate(`/wiki/${hash}`);
+                }
+                else {
+                    // update the content
+                }
+                // navigate(`/wiki/${hash}`);
+            });
+    }
 
-            if (!titleTA || !subtitleTA || !contentsTA) {
+    function handleClick() {
+        if (editing) {
+            console.log("editedContent", editedContent);
+
+            if (
+                editedContent.title === "" ||
+                editedContent.subtitle === "" ||
+                editedContent.content === ""
+            ) {
                 console.error("All fields are required");
                 return;
             }
@@ -70,40 +128,47 @@ export function Page() {
             console.log("Saving changes...");
 
             if (
-                titleTA === content.title &&
-                subtitleTA === content.subtitle &&
-                contentsTA === content.content
+                editedContent.title === content.title &&
+                editedContent.subtitle === content.subtitle &&
+                editedContent.content === content.content
             ) {
                 console.log("No changes detected");
                 setEditing(false);
                 return;
             }
-            fetch(`http://localhost:3000/api/wiki/newversion`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    hash: hash,
-                    title: titleTA,
-                    subtitle: subtitleTA,
-                    content: contentsTA,
-                    email_user: emailUser,
-                }),
-            })
-                .then((res) => res.json())
-                .then((res) => {
 
-                    console.log(res.date);
-                    setContent({
-                        title: res.title,
-                        subtitle: res.subtitle,
-                        content: res.content,
-                        date: formatDate(res.date),
-                        email_user: res.email_user,
-                    });
-                    setEditing(false);
-                });
+            setState(1);
+            Modal.createAndOpenModal({
+                question: "Are you sure you want to publish these changes?",
+                text: "This action cannot be undone. Make sure you have reviewed your changes.",
+                buttons: [
+                    {
+                        text: "Yes",
+                        className: "bg-green-500 text-black hover:bg-green-600",
+                        action: () => {
+                            console.log("Yes");
+                            saveChanges();
+                        },
+                    },
+                    {
+                        text: "No",
+                        className: "bg-red-500 text-white hover:bg-red-600",
+                        action: () => {
+                            console.log("No");
+                        },
+                    },
+                ],
+                options: {
+                    closeButton: false,
+                    closeOnBackgroundClick: true,
+                    closeOnEscape: true,
+                    closeOnButton: true,
+
+                    onClose: () => {
+                        console.log("Modal closed");
+                    },
+                },
+            });
         } else {
             setEditing(true);
         }
@@ -131,7 +196,7 @@ export function Page() {
                     )}
             </header>
             <div className='flex justify-between mb-4'>
-                <div className='flex-1 flex flex-col mr-10'>
+                <div className='flex-1 flex flex-col'>
                     {editing ? (
                         <>
                             <textarea
@@ -141,6 +206,12 @@ export function Page() {
                                 minLength={1}
                                 placeholder='Page title'
                                 required
+                                onChange={(e) => {
+                                    setEditedContent((prev) => ({
+                                        ...prev,
+                                        title: e.target.value,
+                                    }));
+                                }}
                             />
                             <textarea
                                 id='subtitle-textarea'
@@ -149,6 +220,12 @@ export function Page() {
                                 minLength={1}
                                 placeholder='Page subtitle'
                                 required
+                                onChange={(e) => {
+                                    setEditedContent((prev) => ({
+                                        ...prev,
+                                        subtitle: e.target.value,
+                                    }));
+                                }}
                             />
                         </>
                     ) : (
@@ -162,13 +239,6 @@ export function Page() {
                         </>
                     )}
                 </div>
-                {emailUser && (
-                    <div className='flex flex-col justify-end'>
-                        <Button onClick={handleClick}>
-                            {editing ? "save changes" : "edit page"}
-                        </Button>
-                    </div>
-                )}
             </div>
             {data?.cuids && (
                 <Map
@@ -180,16 +250,42 @@ export function Page() {
 
             <hr className='w-full my-4 border border-gray-900' />
 
-            {editing ? (
-                <textarea
-                    id='contents-textarea'
-                    className='w-full h-80 p-2 outline'
-                    defaultValue={content.content}
-                    autoComplete='off'
-                    autoFocus
+            {data?.content && (
+                <PageContent
+                    initialContents={data.content}
+                    onChange={(newContent) =>
+                        setEditedContent((prev) => ({
+                            ...prev,
+                            content: newContent,
+                        }))
+                    }
+                    editing={editing}
                 />
-            ) : (
-                <PageContent contents={content.content} />
+            )}
+
+            {emailUser && (
+                <div className='flex gap-8 justify-end mt-4'>
+                    {editing && (
+                        <Button onClick={() => setEditing(false)}>
+                            cancel
+                        </Button>
+                    )}
+                    <Button
+                        onClick={handleClick}
+                        className='px-14'
+                        disabled={
+                            editing &&
+                            ((editedContent.title === content.title &&
+                                editedContent.subtitle === content.subtitle &&
+                                editedContent.content === content.content) ||
+                                editedContent.title === "" ||
+                                editedContent.subtitle === "" ||
+                                editedContent.content === "")
+                        }
+                    >
+                        {editing ? "save changes" : "edit page"}
+                    </Button>
+                </div>
             )}
         </>
     );

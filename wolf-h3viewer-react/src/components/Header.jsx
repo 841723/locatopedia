@@ -9,7 +9,7 @@ export function Header() {
     const profile = getData();
 
     return (
-        <header className='bg-[var(--color-primary)] p-4 px-32 flex justify-between items-center h-32'>
+        <header className='fixed z-[3000] w-full bg-[var(--color-primary)] p-4 px-32 flex justify-between items-center h-32'>
             <a href='/' className='flex items-center gap-4'>
                 <AppIcon className='' />
             </a>

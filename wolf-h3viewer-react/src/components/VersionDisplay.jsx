@@ -11,17 +11,20 @@ export function VersionDisplay() {
 
     const maxVersion = data?.reduce((acc, version) => {
         return acc.id_version > version.id_version ? acc : version;
-    });
+    }).id_version;
 
-    console.log("data", data);
-    console.log("maxVersion", maxVersion);
+    const minVersion = data?.reduce((acc, version) => {
+        return acc.id_version < version.id_version ? acc : version;
+    }).id_version;
+
     if (loading) return <div>Loading...</div>;
 
     return (
         <ol className='space-y-4'>
             {data.map((version) => (
                 <VersionArticle
-                    current={version.id_version === maxVersion.id_version}
+                    first={version.id_version === minVersion}
+                    current={version.id_version === maxVersion}
                     version={version}
                     key={`${version.hash}-${version.id_version}`}
                 />
@@ -30,7 +33,7 @@ export function VersionDisplay() {
     );
 }
 
-function VersionArticle({ current, version }) {
+function VersionArticle({ first, current, version }) {
     return (
         <li className=''>
             <a
@@ -38,19 +41,28 @@ function VersionArticle({ current, version }) {
                 className='border py-2 px-4 flex flex-row justify-between gap-4 hover:bg-gray-100 rounded-md transition-colors group'
             >
                 <aside>
-                    <h2 className='text-xl font-medium'>{version.title}</h2>
+                    <h2 className='text-xl font-medium hover:underline'>{version.title}</h2>
                     <h3 className='text-base text-gray-500'>
                         {version.subtitle}
                     </h3>
                 </aside>
                 <aside className='grow text-right text-sm text-gray-500 my-auto inline-block'>
+                    { first && (
+                        <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded-full mr-2">
+                            First version
+                        </span>   
+                    )}
                     {current && (
                         <span className="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded-full mr-2">
                             Current version
                         </span>
                     )}
-                    Edited by <em>{version.email_user}</em>{" "}
+                    {
+                        first ? "Created by" : "Edited by"
+                    }
+                    {" "}<em>{version.email_user}</em>{" "}
                     {formatDate(version.date)}
+
                 </aside>
                 <aside className='text-sm text-gray-500 my-auto inline-block rounded-md transition-all group-hover:scale-110'>
                     <svg

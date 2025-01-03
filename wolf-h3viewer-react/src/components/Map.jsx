@@ -147,8 +147,13 @@ export function Map({
         }).addTo(map.current);
         map.current.setView([51.509865, -0.118092], 10);
         if (selectedCellsIDs.length === 0) {
-            // get user gps position
+            // get user gps position 
+            // set zoom to 13
             map.current.locate({ setView: true, maxZoom: 13 });
+            map.current.on("locationfound", (e) => {
+                // set zoom to 13
+                map.current.setView(e.latlng, 13);
+            });
         } else {
             const polygonVertex = h3.cellsToMultiPolygon(
                 selectedCellsIDs,

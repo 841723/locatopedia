@@ -129,20 +129,6 @@ async function createNewVersionFromHash(hash, data) {
     }
 }
 
-// async function setDataFromHashWithImgData(hash, data) {
-//     try {
-//         const res = await pool.query(
-//             "UPDATE article SET title = $1, subtitle = $2, content = $3, img = $4 WHERE hash = $5",
-//             [data.title, data.subtitle, data.content, data.imgData, hash]
-//         );
-//         return res;
-//     } catch (err) {
-//         console.log("Error in setDataFromHashWithImgData");
-//         console.log(err);
-//         return [];
-//     }
-// }
-
 async function createNewArticleFromHash(hash, data) {
     try {
         const res = await pool.query(

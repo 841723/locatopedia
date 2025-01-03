@@ -6,11 +6,13 @@ import { Button } from "@/components/basic/Button";
 import { AutoSaveImage } from "@/components/AutoSaveImage";
 import { use } from "react";
 import { AccountContext } from "@/context/Account";
+import { TopInfoDisplayContext } from "@/context/TopInfoDisplay";
+import { Modal } from "@/lib/modal";
 
 export function NewArticle() {
     const mapImageRef = useRef(null);
     const navigate = useNavigate();
-    
+
     const [disabled, setDisabled] = useState(true);
     const [validCuids, setValidCuids] = useState(false);
     const [selectedCells, setSelectedCells] = useState([]);
@@ -20,9 +22,9 @@ export function NewArticle() {
     const [subtitle, setSubtitle] = useState("");
     const [contents, setContents] = useState("");
 
+    const { setState, setText } = use(TopInfoDisplayContext);
     const { getData } = use(AccountContext);
     const [email_user] = useState(getData()?.email);
-
 
     async function handleClick() {
         if (!title || !subtitle || !contents) {
@@ -30,7 +32,36 @@ export function NewArticle() {
             return;
         }
 
-        setPublished(true);
+        setState(1);
+        Modal.createAndOpenModal({
+            question: "Are you sure you want to create this new article?",
+            text: "This action cannot be undone. Make sure you have reviewed the article before publishing.",
+            buttons: [
+                {
+                    text: "Yes",
+                    className: "bg-green-500 text-black hover:bg-green-600",
+                    action: () => {
+                        setPublished(true);
+                    },
+                },
+                {
+                    text: "No",
+                    className: "bg-red-500 text-white hover:bg-red-600",
+                    action: () => {
+                    },
+                },
+            ],
+            options: {
+                closeButton: false,
+                closeOnBackgroundClick: true,
+                closeOnEscape: true,
+                closeOnButton: true,
+
+                onClose: () => {
+                    console.log("Modal closed");
+                },
+            },
+        });
     }
 
     useEffect(() => {
@@ -63,13 +94,16 @@ export function NewArticle() {
                         subtitle: subtitle,
                         content: contents,
                         imgData: imgData,
-                        emailUser: email_user
+                        emailUser: email_user,
                     }),
                 });
                 if (res.status !== 201) {
                     console.error("Error adding new article");
                     return;
                 }
+                setText("Article created successfully");
+                setState(2);
+
                 console.log("res", res);
                 const data = await res.json();
                 console.log("data", data);
@@ -104,13 +138,17 @@ export function NewArticle() {
 
     useEffect(() => {
         setDisabled(
-            title.length === 0 || subtitle.length === 0 || contents.length === 0 || selectedCells.length === 0 || !validCuids
-        )
+            title.length === 0 ||
+                subtitle.length === 0 ||
+                contents.length === 0 ||
+                selectedCells.length === 0 ||
+                !validCuids
+        );
     }, [title, subtitle, contents, selectedCells, validCuids]);
     return (
         <>
             <div className='flex justify-between mb-4'>
-                <div className='flex-1 flex flex-col mr-10'>
+                <div className='flex-1 flex flex-col'>
                     <textarea
                         id='title-textarea'
                         defaultValue={""}
@@ -129,11 +167,6 @@ export function NewArticle() {
                         required
                         onChange={(e) => setSubtitle(e.target.value)}
                     />
-                </div>
-                <div className='flex flex-col justify-end'>
-                    <Button disabled={disabled} onClick={handleClick}>
-                        publish
-                    </Button>
                 </div>
             </div>
 
@@ -159,6 +192,16 @@ export function NewArticle() {
                 required
                 onChange={(e) => setContents(e.target.value)}
             />
+
+            <div className='flex gap-8 justify-end mt-4'>
+                <Button onClick={() => navigate('/')}>cancel</Button>
+                <Button
+                    onClick={handleClick}
+                    disabled={disabled}
+                >
+                    publish
+                </Button>
+            </div>
         </>
     );
 }

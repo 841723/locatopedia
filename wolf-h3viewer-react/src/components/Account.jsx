@@ -4,18 +4,19 @@ import { ArticleCard } from "@/components/ArticleCard";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { use } from "react";
-
 import { AccountContext } from "@/context/Account";
-import { SaveNewImagesDB } from "./SaveNewImagesDB";
+import { TopInfoDisplayContext } from "@/context/TopInfoDisplay";
 
 export function Account() {
     const [openLogin, setOpenLogin] = useState(true);
+
+    const { setState } = use(TopInfoDisplayContext);
 
     const { login, logout, getData, isLoggedIn } = use(AccountContext);
     const credential = getData();
     const isLogged = isLoggedIn();
     const navigate = useNavigate();
-    
+
     const loggedIn = (res) => {
         login(res);
     };
@@ -53,9 +54,14 @@ export function Account() {
                                 >
                                     Log Out
                                 </button>
-                                {/* {credential?.email === "841723@unizar.es" && (
-                                    <SaveNewImagesDB />
-                                )} */}
+                                <button
+                                    className='w-fit bg-[var(--color-button)] text-white px-4 py-2 rounded-md hover:bg-[var(--color-button-hover)]'
+                                    onClick={() => {
+                                        setState((prev) => (prev+1)%3);
+                                    }}
+                                >
+                                    Change use
+                                </button>
                             </div>
                         )}
                     </div>
