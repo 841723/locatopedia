@@ -6,7 +6,13 @@ const routes_dggs = require("./routes_dggs");
 const app = express();
 
 app.use(express.json({ limit: "50mb" }));
-app.use(cors());
+app.use(cors(
+    {
+        origin: "*",
+        methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+        allowedHeaders: "Content-Type, Authorization, Content-Length, X-Requested-With",
+    }
+));
 
 app.use("/api/wiki", routes_wiki);
 app.use("/api/dggstools", routes_dggs);
