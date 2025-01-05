@@ -2,11 +2,14 @@ import { useParams } from "react-router-dom";
 import { useFetch } from "../hooks/useFetch";
 import { formatDate } from "@/lib/date";
 
+import { BACKEND_API_URL } from "@/lib/env";
+
+
 export function VersionDisplay() {
     const { hash } = useParams();
 
     const { data, loading } = useFetch(
-        `http://localhost:3000/api/wiki/${hash}/versions`
+        `${BACKEND_API_URL}/api/wiki/${hash}/versions`
     );
 
     const maxVersion = data?.reduce((acc, version) => {

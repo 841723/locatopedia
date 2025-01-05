@@ -3,12 +3,14 @@ import ReactDOM from "react-dom/client";
 import { AutoSaveImage } from "@/components/AutoSaveImage";
 import { Map } from "@/components/Map";
 
+import { BACKEND_API_URL } from "@/lib/env";
+
 
 export function SaveNewImagesDB() {
     const mapImageRef = useRef(null);
 
     const handleClick = async () => {
-        const res = await fetch("http://localhost:3000/api/wiki/all", {
+        const res = await fetch(`${BACKEND_API_URL}/api/wiki/all`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -22,7 +24,7 @@ export function SaveNewImagesDB() {
             count++;
             
             const dggsres = await fetch(
-                `http://localhost:3000/api/dggstools/cuids-from-auid?auid=${item.auid}`,
+                `${BACKEND_API_URL}/api/dggstools/cuids-from-auid?auid=${item.auid}`,
                 {
                     method: "GET",
                     headers: {
@@ -52,7 +54,7 @@ export function SaveNewImagesDB() {
             const dataUrl = await mapImageRef.current.saveImage();
 
             const res = await fetch(
-                "http://localhost:3000/api/wiki/update/imgData",
+                `${BACKEND_API_URL}/api/wiki/update/imgData`,
                 {
                     method: "PUT",
                     headers: {

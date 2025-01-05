@@ -11,13 +11,16 @@ import { use } from "react";
 import { formatDate } from "@/lib/date";
 import { Modal } from "@/lib/modal";
 
+import { BACKEND_API_URL } from "@/lib/env";
+
+
 export function Page() {
     const { getData } = use(AccountContext);
     const { setText, setState } = use(TopInfoDisplayContext);
     const { hash, version } = useParams();
 
     const navigate = useNavigate();
-    let url = `http://localhost:3000/api/wiki?hash=${hash}${version ? `&version=${version}` : ""}`;
+    let url = `${BACKEND_API_URL}/api/wiki?hash=${hash}${version ? `&version=${version}` : ""}`;
 
     const [emailUser] = useState(getData()?.email);
     const { data, loading, error } = useFetch(url);
@@ -76,7 +79,7 @@ export function Page() {
     }, [editedContent]);
 
     async function saveChanges() {
-        fetch(`http://localhost:3000/api/wiki/newversion`, {
+        fetch(`${BACKEND_API_URL}/api/wiki/newversion`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -104,8 +107,7 @@ export function Page() {
                 setState(2);
                 if (version) {
                     navigate(`/wiki/${hash}`);
-                }
-                else {
+                } else {
                     // update the content
                 }
                 // navigate(`/wiki/${hash}`);

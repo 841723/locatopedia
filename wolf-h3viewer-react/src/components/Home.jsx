@@ -1,15 +1,17 @@
 import { useFetch } from "@/hooks/useFetch";
 import { ArticleCard } from "@/components/ArticleCard";
 
+import { BACKEND_API_URL } from "@/lib/env";
+
 export function Home() {
     const { data: data1 } = useFetch(
-        "http://localhost:3000/api/wiki/popular?limit=3"
+        `${BACKEND_API_URL}/api/wiki/popular?limit=3`
     );
     const { data: data2 } = useFetch(
-        "http://localhost:3000/api/wiki/popular?limit=3"
+        `${BACKEND_API_URL}/api/wiki/popular?limit=3`
     );
     const { data: data3 } = useFetch(
-        "http://localhost:3000/api/wiki/popular?limit=1"
+        `${BACKEND_API_URL}/api/wiki/popular?limit=3`
     );
 
     return (

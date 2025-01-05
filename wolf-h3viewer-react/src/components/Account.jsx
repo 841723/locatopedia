@@ -7,6 +7,8 @@ import { use } from "react";
 import { AccountContext } from "@/context/Account";
 import { TopInfoDisplayContext } from "@/context/TopInfoDisplay";
 
+import { BACKEND_API_URL } from "@/lib/env";
+
 export function Account() {
     const [openLogin, setOpenLogin] = useState(true);
 
@@ -30,7 +32,7 @@ export function Account() {
         setOpenLogin(!isLogged);
     }, [credential]);
 
-    const { data } = useFetch("http://localhost:3000/api/wiki/popular?limit=4");
+    const { data } = useFetch(`${BACKEND_API_URL}/api/wiki/popular?limit=4`);
     document.body.style.overflow = !openLogin ? "auto" : "hidden";
 
     return (
@@ -57,7 +59,7 @@ export function Account() {
                                 <button
                                     className='w-fit bg-[var(--color-button)] text-white px-4 py-2 rounded-md hover:bg-[var(--color-button-hover)]'
                                     onClick={() => {
-                                        setState((prev) => (prev+1)%3);
+                                        setState((prev) => (prev + 1) % 3);
                                     }}
                                 >
                                     Change use

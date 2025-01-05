@@ -14,28 +14,20 @@ services:
     dggstools:
         image: dggstools
         build:
-            context: backend/services/dggstools
+            context: services/dggstools
             dockerfile: Dockerfile
 
 
     backend:
         image: backend
         build:
-            context: backend/
+            context: .
             dockerfile: Dockerfile
         ports:
             - "3000:3000"
 
         depends_on:
             - postgresql
-
-    www:
-        image: www
-        build:
-            context: wolf-h3viewer-react/
-            dockerfile: Dockerfile
-        ports:
-            - "80:80"
 
 
 

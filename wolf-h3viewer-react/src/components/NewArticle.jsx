@@ -9,6 +9,9 @@ import { AccountContext } from "@/context/Account";
 import { TopInfoDisplayContext } from "@/context/TopInfoDisplay";
 import { Modal } from "@/lib/modal";
 
+import { BACKEND_API_URL } from "@/lib/env";
+
+
 export function NewArticle() {
     const mapImageRef = useRef(null);
     const navigate = useNavigate();
@@ -83,7 +86,7 @@ export function NewArticle() {
                 const imgData = await mapImageRef.current.saveImage();
                 document.body.style.overflow = "auto";
                 div.remove();
-                const res = await fetch(`http://localhost:3000/api/wiki/add`, {
+                const res = await fetch(`${BACKEND_API_URL}/api/wiki/add`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -123,7 +126,7 @@ export function NewArticle() {
             console.log("selectedCells", selectedCells);
 
             fetch(
-                `http://localhost:3000/api/wiki/validnewcuids?cuids=${selectedCells.join(",")}`
+                `${BACKEND_API_URL}/api/wiki/validnewcuids?cuids=${selectedCells.join(",")}`
             )
                 .then((res) => res.json())
                 .then((res) => {

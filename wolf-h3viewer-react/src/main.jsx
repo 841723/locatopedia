@@ -7,8 +7,10 @@ import "@/index.css";
 import { AccountProvider } from "@/context/Account.jsx";
 import { TopInfoDisplayProvider } from "@/context/TopInfoDisplay";
 
+import { GOOGLE_OAUTH_CLIENT_ID } from "@/lib/env";
+
 ReactDOM.createRoot(document.getElementById("root")).render(
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_CLIENT_ID}>
+    <GoogleOAuthProvider clientId={GOOGLE_OAUTH_CLIENT_ID}>
         <BrowserRouter>
             <AccountProvider>
                 <TopInfoDisplayProvider>
