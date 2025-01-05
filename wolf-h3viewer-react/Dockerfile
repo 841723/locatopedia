@@ -4,7 +4,7 @@ FROM node:18 AS build
 # Establece el directorio de trabajo en el contenedor
 WORKDIR /app
 
-# Copia el package.json y el package-lock.json (o yarn.lock) para instalar las dependencias
+# Copia los archivos de configuración para instalar dependencias
 COPY package*.json ./
 
 # Instala las dependencias de la aplicación
@@ -16,17 +16,27 @@ COPY . .
 # Construye la aplicación para producción
 RUN npm run build
 
-# Etapa 2: Servir la aplicación con un servidor estático
+# Etapa 2: Configuración de Nginx y Certbot
 FROM nginx:alpine
 
+# Instala Certbot y dependencias necesarias
+RUN apk add --no-cache certbot certbot-nginx bash
+
+# Establece el directorio raíz del servidor
+WORKDIR /var/www/html
+
 # Copia los archivos construidos desde la etapa anterior
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=build /app/dist /var/www/html
 
-# Expone el puerto 80 para que se pueda acceder a la aplicación
-EXPOSE 80
+# Copia el archivo de configuración de Nginx personalizado
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Comando para iniciar Nginx (no se necesita ejecutar nada en la aplicación React)
-CMD ["nginx", "-g", "daemon off;"]
+# Copia un script para configurar Certbot automáticamente
+COPY certbot_setup.sh /usr/local/bin/certbot_setup.sh
+RUN chmod +x /usr/local/bin/certbot_setup.sh
 
-# Copiar el archivo nginx.conf personalizado
-COPY nginx.conf /etc/nginx/nginx.conf
+# Exposición de puertos HTTP y HTTPS
+EXPOSE 80 443
+
+# Comando inicial para configurar Certbot y luego iniciar Nginx
+CMD ["/bin/bash", "-c", "certbot_setup.sh && nginx -g 'daemon off;'"]
