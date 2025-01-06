@@ -32,7 +32,7 @@ services:
     www:
         image: www
         build:
-            context: wolf-h3viewer-react/
+            context: frontend/
             dockerfile: Dockerfile
         ports:
             - "80:80"

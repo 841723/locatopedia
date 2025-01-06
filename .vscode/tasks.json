@@ -32,14 +32,14 @@
             "label": "npm: install - frontend",
             "type": "npm",
             "script": "install",
-            "path": "wolf-h3viewer-react",
+            "path": "frontend",
             "problemMatcher": [],
             "detail": "npm install frontend"
         },
         {
             "type": "npm",
             "script": "dev",
-            "path": "wolf-h3viewer-react",
+            "path": "frontend",
             "problemMatcher": [],
             "label": "npm: dev - frontend",
             "detail": "npm run dev"

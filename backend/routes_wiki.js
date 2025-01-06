@@ -8,7 +8,7 @@ const {
     createNewArticleFromHash,
     getAll,
     getAllVersionsFromHash,
-} = require("./wikiplace");
+} = require("./locatopedia");
 
 const { saveBase64asWebP } = require("./utils");
 

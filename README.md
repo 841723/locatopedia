@@ -11,7 +11,7 @@ docker compose up
 #### Option 1
 
 ```bash
-cd wolf-h3viewer-react && npm i && npm run dev
+cd frontend && npm i && npm run dev
 
 cd backend && npm i && npm run dev
 
