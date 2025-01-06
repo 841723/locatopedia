@@ -71,7 +71,6 @@ async function getDataFromHashAndVersion(hash, version) {
     }
 }
 
-
 async function getNextVersionFromHash(hash) {
     try {
         const res = await pool.query(
@@ -183,14 +182,16 @@ async function getPopular(num) {
     try {
         const res = await pool.query(
             `
-            select distinct on (a.hash)
-                a.hash, v.title, v.subtitle, a.img_url
-            from
-                tfg.article a
-            join
-                tfg.version v
-            on a.hash = v.hash
-            order by a.hash, random()
+            select 
+                a.hash, a.img_url, v.title, v.subtitle
+            from tfg.article a
+            join tfg.version v ON v.hash = a.hash
+            where v.date = (
+                select MAX(date)
+                from tfg.version
+                where hash = a.hash
+            )
+            order by random()
             limit $1
             `,
             [num]
@@ -231,8 +232,7 @@ async function getAllVersionsFromHash(hash) {
             [hash]
         );
         return res.rows;
-    }
-    catch (err) {
+    } catch (err) {
         console.log("Error in getVersions");
         console.log(err);
         return [];

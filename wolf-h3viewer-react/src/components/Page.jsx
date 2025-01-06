@@ -182,21 +182,6 @@ export function Page() {
 
     return (
         <>
-            <header className='flex justify-between text-sm text-gray-500 mb-4'>
-                <a href={`/wiki/${hash}/versions`} className='hover:underline'>
-                    See other versions of this page
-                </a>
-                {content &&
-                    content.email_user &&
-                    content.email_user !== "" &&
-                    content.date &&
-                    content.date !== "" && (
-                        <div className='self-end'>
-                            Last changes made by <em>{content.email_user}</em>{" "}
-                            {content.date}
-                        </div>
-                    )}
-            </header>
             <div className='flex justify-between mb-4'>
                 <div className='flex-1 flex flex-col'>
                     {editing ? (
@@ -289,6 +274,22 @@ export function Page() {
                     </Button>
                 </div>
             )}
+            <footer className='flex flex-col md:flex-row gap-4 justify-between text-sm text-gray-500 mt-4'>
+                <a href={`/wiki/${hash}/versions`} className='hover:underline'>
+                    See other versions of this page
+                </a>
+                {content &&
+                    content.email_user &&
+                    content.email_user !== "" &&
+                    content.date &&
+                    content.date !== "" && (
+                        <div className=''>
+                            Last changes made by <em>{content.email_user}</em>{" "}
+                            <br className="block md:hidden"/>
+                            {content.date}
+                        </div>
+                    )}
+            </footer>
         </>
     );
 }

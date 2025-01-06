@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 const DEFAULT_OPTIONS = {
     headers: { 
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
     },
 };
 

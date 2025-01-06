@@ -38,37 +38,48 @@ export function VersionDisplay() {
 
 function VersionArticle({ first, current, version }) {
     return (
-        <li className=''>
+        <li>
             <a
                 href={`/wiki/${version.hash}/${version.id_version}`}
-                className='border py-2 px-4 flex flex-row justify-between gap-4 hover:bg-gray-100 rounded-md transition-colors group'
+                className='border py-2 px-4 flex 
+                 gap-4 hover:bg-gray-100 rounded-md transition-colors group'
             >
-                <aside>
-                    <h2 className='text-xl font-medium hover:underline'>{version.title}</h2>
-                    <h3 className='text-base text-gray-500'>
-                        {version.subtitle}
-                    </h3>
-                </aside>
-                <aside className='grow text-right text-sm text-gray-500 my-auto inline-block'>
-                    { first && (
-                        <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded-full mr-2">
-                            First version
-                        </span>   
-                    )}
-                    {current && (
-                        <span className="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded-full mr-2">
-                            Current version
+                <article className='grow flex flex-col md:flex-row md:justify-between gap-4'>
+                    <aside>
+                        <h2 className='text-xl font-medium hover:underline'>
+                            {version.title}
+                        </h2>
+                        <h3 className='text-base text-gray-500'>
+                            {version.subtitle}
+                        </h3>
+                    </aside>
+                    <aside className='md:text-right text-sm text-gray-500 my-auto flex flex-col md:flex-row md:gap-2 md:items-center '>
+                        {first && (
+                            <span className='w-fit text-xs bg-green-200 text-green-800 px-2 py-1 rounded-full mr-0 mb-2 md:mr-2 md:mb-0'>
+                                First version
+                            </span>
+                        )}
+                        {current && (
+                            <span className='w-fit text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded-full mr-0 mb-2 md:mr-2 md:mb-0'>
+                                Current version
+                            </span>
+                        )}
+                        <span className='md:text-right m-0'>
+                            {first ? "Created by" : "Edited by"}{" "}
+                            <em>{version.email_user}</em>{" "}
+                            <span className='hidden md:inline'>
+                                {formatDate(version.date)}
+                            </span>
                         </span>
-                    )}
-                    {
-                        first ? "Created by" : "Edited by"
-                    }
-                    {" "}<em>{version.email_user}</em>{" "}
-                    {formatDate(version.date)}
+                        <span className='md:hidden inline'>
+                            {formatDate(version.date)}
+                        </span>
+                    </aside>
+                </article>
 
-                </aside>
-                <aside className='text-sm text-gray-500 my-auto inline-block rounded-md transition-all group-hover:scale-110'>
+                <aside className='text-sm text-gray-500 my-auto inline-block rounded-md transition-all min-w-fit'>
                     <svg
+                        className='transition-all group-hover:scale-110'
                         width={36}
                         height={36}
                         viewBox='0 0 24 24'

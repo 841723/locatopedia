@@ -1,4 +1,5 @@
 import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
 import { useEffect } from 'react';
 import { TopInfoDisplay } from '@/components/TopInfoDisplay';
 
@@ -9,25 +10,14 @@ export function Layout({ children, documentTitle }) {
 
     return (
         <>
+            <h1 className='absolute opacity-0 select-none transform -translate-x-full'>Locatopedia</h1>
             <Header />
-            <div className='h-32 w-full' />
-
             <TopInfoDisplay />
 
-            <main className='flex flex-col max-w-screen-lg mx-auto py-4 text-gray-900 bg-white'>
+            <main className='flex flex-col max-w-screen-lg mx-auto py-4 text-gray-900 bg-white px-4 md:px-0'>
                 {children}
             </main>
             <Footer />
         </>
-    );
-}
-
-
-
-function Footer() {
-    return (
-        <footer className='bg-[var(--color-primary)] p-4 px-32'>
-            <p>Footer</p>
-        </footer>
     );
 }

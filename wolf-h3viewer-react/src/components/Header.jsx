@@ -9,36 +9,39 @@ export function Header() {
     const profile = getData();
 
     return (
-        <header className='fixed z-[3000] w-full bg-[var(--color-primary)] p-4 px-32 flex justify-between items-center h-32'>
-            <a href='/' className='flex items-center gap-4'>
-                <AppIcon className='' />
-            </a>
-            <a
-                href='/account'
-                className='flex justify-end gap-3 items-center hover:bg-slate-200 px-2 py-1 rounded-full'
-            >
-                {profile ? (
-                    <>
-                        <p>{profile.email}</p>
-                        <img
-                            src={profile.picture}
-                            alt='User profile picture'
-                            className='size-10 rounded-full min-w-10'
-                            referrerPolicy='no-referrer'
-                        />
-                    </>
-                ) : (
-                    <>
-                        <p>Sign Up / Sign In</p>
-                        <UserIcon
-                            className={
-                                "w-9 rounded-full transition-colors min-w-10 min-h-10"
-                            }
-                        />
-                    </>
-                )}
-            </a>
-        </header>
+        <>
+            <header className='fixed z-[3000] w-full bg-[var(--color-primary)] py-4 md:px-32 flex justify-around md:justify-between items-center h-24 md:h-20'>
+                <a href='/' className='flex items-center gap-4'>
+                    <AppIcon className='w-72 md:w-80' />
+                </a>
+                <a
+                    href='/account'
+                    className='flex justify-end gap-3 items-center hover:bg-slate-200 p-2 md:px-2 md:py-1 rounded-full'
+                >
+                    {profile ? (
+                        <>
+                            <p className='hidden md:block'>{profile.email}</p>
+                            <img
+                                src={profile.picture}
+                                alt='User profile picture'
+                                className='size-10 rounded-full min-w-10'
+                                referrerPolicy='no-referrer'
+                            />
+                        </>
+                    ) : (
+                        <>
+                            <p className='hidden md:block'>Sign Up / Sign In</p>
+                            <UserIcon
+                                className={
+                                    "w-9 rounded-full transition-colors min-w-10 min-h-10"
+                                }
+                            />
+                        </>
+                    )}
+                </a>
+            </header>
+            <div className='h-24 md:h-20 w-full' />
+        </>
     );
 }
 

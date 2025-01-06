@@ -10,6 +10,8 @@ const {
     getAllVersionsFromHash,
 } = require("./wikiplace");
 
+const { saveBase64asWebP } = require("./utils");
+
 const { DGGS_ENDPOINT } = process.env;
 
 const router_wiki = express.Router();
@@ -107,12 +109,19 @@ router_wiki.post("/add", async (req, res) => {
     const { auid_comp_b64, hashed_b64 } = await response.json();
     console.log("{ auid_comp_b64, hashed_b64 }", { auid_comp_b64, hashed_b64 });
 
+    const response2 = saveBase64asWebP(imgData, `public/images/${hashed_b64}.webp`);
+    console.log("response2", response2);
+    if (!response2) {
+        res.status(500).send("Internal server error");
+        return;
+    }
+
     const data = await createNewArticleFromHash(hashed_b64, {
         auid: auid_comp_b64,
         title,
         subtitle,
         content,
-        img_url: imgData,
+        img_url: `/api/images/${hashed_b64}.webp`,
         email_user: emailUser,
     });
     data.hash = hashed_b64;

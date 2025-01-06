@@ -86,6 +86,9 @@ export function NewArticle() {
                 const imgData = await mapImageRef.current.saveImage();
                 document.body.style.overflow = "auto";
                 div.remove();
+
+                console.log({imgData});
+
                 const res = await fetch(`${BACKEND_API_URL}/api/wiki/add`, {
                     method: "POST",
                     headers: {

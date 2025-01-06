@@ -80,7 +80,7 @@ export function Map({
 
     const smallMapClassName = "w-full h-80";
     const bigMapClassName =
-        "absolute bottom-0 left-0 w-screen h-[calc(100dvh-128px)] z-10";
+        "absolute bottom-0 left-0 w-screen h-[calc(100dvh-96px)] z-10";
 
     const [mapSize, setMapSize] = useState(initialMapSize);
     const [className, setClassName] = useState(

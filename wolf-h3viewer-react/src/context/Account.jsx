@@ -18,12 +18,12 @@ export function AccountProvider({ children }) {
     const login = (res) => {
         credentialUpdateCookie(res.credential, { expires: 1 });
         const newData = jwtDecode(res.credential);
-        console.log(newData);
         setData(newData);
     };
 
     const logout = () => {
         credentialDeleteCookie();
+        setData(null);
     };
 
     const getData = () => {
@@ -41,6 +41,7 @@ export function AccountProvider({ children }) {
                 logout,
                 getData,
                 isLoggedIn,
+                data,
             }}
         >
             {children}

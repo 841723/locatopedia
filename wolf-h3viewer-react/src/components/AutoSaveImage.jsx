@@ -1,4 +1,4 @@
-import { toPng, toSvg } from "html-to-image";
+import { toPng } from "html-to-image";
 import { useImperativeHandle, useRef } from "react";
 
 export function AutoSaveImage ({children, ref: mapImageRef}) {
@@ -7,8 +7,7 @@ export function AutoSaveImage ({children, ref: mapImageRef}) {
     useImperativeHandle(mapImageRef, () => ({
         async saveImage() {
             if (ref.current) {
-                
-                return toSvg(ref.current, { quality: 1 })
+                return toPng(ref.current, { quality: 1 })
                     .then((dataUrl) => {
                         return dataUrl;
                     })
