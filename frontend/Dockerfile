@@ -39,4 +39,5 @@ RUN chmod +x /usr/local/bin/certbot_setup.sh
 EXPOSE 80 443
 
 # Comando inicial para configurar Certbot y luego iniciar Nginx
-CMD ["/bin/bash", "-c", "certbot_setup.sh && nginx -g 'daemon off;'"]
+# CMD ["nginx -g 'daemon off;'"]
+CMD ["sleep", "infinity"]
