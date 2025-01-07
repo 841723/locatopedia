@@ -41,8 +41,7 @@ function VersionArticle({ first, current, version }) {
         <li>
             <a
                 href={`/wiki/${version.hash}/${version.id_version}`}
-                className='border py-2 px-4 flex 
-                 gap-4 hover:bg-gray-100 rounded-md transition-colors group'
+                className='border py-2 px-4 flex gap-4 hover:bg-gray-100 rounded-md transition-colors group max-w-full overflow-hidden'
             >
                 <article className='grow flex flex-col md:flex-row md:justify-between gap-4'>
                     <aside>
@@ -53,27 +52,27 @@ function VersionArticle({ first, current, version }) {
                             {version.subtitle}
                         </h3>
                     </aside>
-                    <aside className='md:text-right text-sm text-gray-500 my-auto flex flex-col md:flex-row md:gap-2 md:items-center '>
+                    <aside className='text-sm text-gray-500 my-auto flex flex-col md:flex-row md:gap-2 md:items-center '>
+                        <div></div>
                         {first && (
-                            <span className='w-fit text-xs bg-green-200 text-green-800 px-2 py-1 rounded-full mr-0 mb-2 md:mr-2 md:mb-0'>
+                            <span className='min-w-fit text-xs bg-green-200 text-green-800 px-2 py-1 rounded-full mr-0 mb-2 md:mr-2 md:mb-0'>
                                 First version
                             </span>
                         )}
                         {current && (
-                            <span className='w-fit text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded-full mr-0 mb-2 md:mr-2 md:mb-0'>
+                            <span className='min-w-fit text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded-full mr-0 mb-2 md:mr-2 md:mb-0'>
                                 Current version
                             </span>
                         )}
-                        <span className='md:text-right m-0'>
-                            {first ? "Created by" : "Edited by"}{" "}
-                            <em>{version.email_user}</em>{" "}
-                            <span className='hidden md:inline'>
+                        <div className='min-w-fit flex flex-col'>
+                            <span className='min-w-fit md:text-right m-0'>
+                                {first ? "Created by" : "Edited by"}{" "}
+                                <em>{version.email_user}</em>{" "}
+                            </span>
+                            <span className='md:text-right inline'>
                                 {formatDate(version.date)}
                             </span>
-                        </span>
-                        <span className='md:hidden inline'>
-                            {formatDate(version.date)}
-                        </span>
+                        </div>
                     </aside>
                 </article>
 
