@@ -27,7 +27,13 @@ export function PageContent({ initialContents, editing, onChange}) {
             textarea.style.height = `${textarea.scrollHeight}px`;
         }
     }, [editing, showPreviewWhileEditing]);
-            
+
+    useEffect(() => {
+        if (!editing) {
+            console.log('setting contents to initialContents');
+            setContents(initialContents);
+        }
+    }, [editing]);
 
     return editing ? (
         <div className='border border-black p-2'>

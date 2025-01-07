@@ -10,6 +10,7 @@ import { TopInfoDisplayContext } from "@/context/TopInfoDisplay";
 import { Modal } from "@/lib/modal";
 
 import { BACKEND_API_URL } from "@/lib/env";
+import { PageContent } from "./PageContent";
 
 
 export function NewArticle() {
@@ -43,14 +44,12 @@ export function NewArticle() {
                 {
                     text: "No",
                     className: "bg-red-500 text-white hover:bg-red-600",
-                    action: () => {},
+                    action: () => setState(0),
                 },
                 {
                     text: "Yes",
                     className: "bg-green-500 text-black hover:bg-green-600",
-                    action: () => {
-                        setPublished(true);
-                    },
+                    action: () => setPublished(true),
                 },
             ],
             options: {
@@ -60,7 +59,7 @@ export function NewArticle() {
                 closeOnButton: true,
 
                 onClose: () => {
-                    console.log("Modal closed");
+                    setState(0);
                 },
             },
         });
@@ -125,7 +124,6 @@ export function NewArticle() {
                 setDisabled(true);
                 return;
             }
-            console.log("selectedCells", selectedCells);
 
             fetch(
                 `${BACKEND_API_URL}/api/wiki/validnewcuids?cuids=${selectedCells.join(",")}`
@@ -188,7 +186,7 @@ export function NewArticle() {
 
             <hr className='w-full my-4 border border-gray-900' />
 
-            <textarea
+            {/* <textarea
                 id='contents-textarea'
                 className='w-full h-80 p-2 outline'
                 defaultValue={""}
@@ -196,6 +194,12 @@ export function NewArticle() {
                 autoFocus
                 required
                 onChange={(e) => setContents(e.target.value)}
+            /> */}
+
+            <PageContent
+                initialContents={""}
+                editing={true}
+                onChange={(value) => setContents(value)}
             />
 
             <div className='flex gap-8 justify-end mt-4'>

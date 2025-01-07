@@ -20,7 +20,8 @@ export class Modal
             <div class="modal-content z-[10000000] p-4 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-md shadow-lg">
                 ${this.question ? `<h1 class="text-2xl font-bold">${this.question}</h1>` : ""}
                 ${this.text ? `<p class="my-2 ">${this.text}</p>` : ""}
-                <div class="mt-8 buttons w-full flex flex-row justify-end gap-x-10 flex-end">
+                <div class="mt-8 buttons w-full flex flex-row justify-end gap-x-2 md:gap-x-10 flex-end">
+                    ${this.options.closeButton ? `<button class="close mr-auto w-fit px-8 py-2 rounded-md bg-slate-300 hover:bg-slate-400 text-black">Close</button>` : ""}
                     ${this.buttons
                         .map(
                             (option, index) => `
@@ -33,8 +34,6 @@ export class Modal
                     `
                         )
                         .join("")}
-
-                    ${this.options.closeButton ? `<button class="modal-option grow w-fit px-2 py-1 rounded-md bg-slate-300 hover:bg-slate-400 text-black">Close</button>` : ""}
                 </div>
             </div>
         `;

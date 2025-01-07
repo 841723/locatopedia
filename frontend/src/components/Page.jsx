@@ -152,26 +152,31 @@ export function Page() {
                         text: "No",
                         className: "bg-red-500 text-white hover:bg-red-600",
                         action: () => {
-                            console.log("No");
+                            setEditedContent({
+                                title: content.title,
+                                subtitle: content.subtitle,
+                                content: content.content,
+                            });
+                            setState(0);
+                            setEditing(false);
                         },
                     },
                     {
                         text: "Yes",
                         className: "bg-green-600 text-white hover:bg-green-700",
                         action: () => {
-                            console.log("Yes");
                             saveChanges();
                         },
                     },
                 ],
                 options: {
-                    closeButton: false,
+                    closeButton: true,
                     closeOnBackgroundClick: true,
                     closeOnEscape: true,
                     closeOnButton: true,
 
                     onClose: () => {
-                        console.log("Modal closed");
+                        setState(0);
                     },
                 },
             });
@@ -193,7 +198,7 @@ export function Page() {
                             <textarea
                                 id='title-textarea'
                                 defaultValue={content.title ?? ""}
-                                className='resize-none hover:resize-y w-full text-4xl font-medium h-12 outline'
+                                className='flex resize-none hover:resize-y w-full text-4xl font-medium h-12 outline'
                                 minLength={1}
                                 placeholder='Page title'
                                 required
@@ -244,6 +249,9 @@ export function Page() {
                         )}
                 </div>
             </div>
+
+            <hr className='w-full my-4 border border-gray-900' />
+
             {data?.cuids && (
                 <Map
                     selectedInitial={data.cuids}
