@@ -31,6 +31,11 @@ USER node
 # Copy the rest of the source files into the image.
 COPY . .
 
+# Create a directory for images and set the permissions.
+USER root
+RUN mkdir -p /usr/src/app/public/images && chmod -R 777 /usr/src/app/public
+USER node
+
 # Expose the port that the application listens on.
 EXPOSE 3000
 

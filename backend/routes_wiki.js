@@ -107,10 +107,8 @@ router_wiki.post("/add", async (req, res) => {
         `${DGGS_ENDPOINT}/api/dggstools/generate-auid-hash?cuids=${cuids}`
     );
     const { auid_comp_b64, hashed_b64 } = await response.json();
-    console.log("{ auid_comp_b64, hashed_b64 }", { auid_comp_b64, hashed_b64 });
 
     const response2 = saveBase64asWebP(imgData, `public/images/${hashed_b64}.webp`);
-    console.log("response2", response2);
     if (!response2) {
         res.status(500).send("Internal server error");
         return;

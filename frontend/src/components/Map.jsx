@@ -80,7 +80,7 @@ export function Map({
 
     const smallMapClassName = "w-full h-80";
     const bigMapClassName =
-        "absolute bottom-0 left-0 w-screen h-[calc(100dvh-96px)] z-10";
+        "absolute bottom-0 left-0 w-screen h-[calc(100dvh-80px)] md:h-[calc(100dvh-96px)] z-10";
 
     const [mapSize, setMapSize] = useState(initialMapSize);
     const [className, setClassName] = useState(
@@ -303,7 +303,7 @@ export function Map({
                 <div id={idMap} className='w-fill h-full'>
                     {allowMapResize && (
                         <button
-                            className='absolute z-[2000] p-1 right-0 mt-[10px] mr-[10px] bg-slate-100 rounded flex items-center justify-center'
+                            className='absolute z-[2000] p-1 right-0 mt-[10px] mr-[10px] bg-slate-100 rounded flex items-center justify-center text-black'
                             onClick={handleToggleMapSize}
                         >
                             {mapSize === "big" ? (

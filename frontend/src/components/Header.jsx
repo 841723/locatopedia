@@ -10,7 +10,7 @@ export function Header() {
 
     return (
         <>
-            <header className='fixed z-[3000] w-full bg-[var(--color-primary)] py-4 md:px-32 flex justify-around md:justify-between items-center h-24 md:h-20'>
+            <header className='fixed z-[3000] w-full bg-[var(--color-primary)] py-4 md:px-32 flex justify-around md:justify-between items-center h-20 md:h-24'>
                 <a href='/' className='flex items-center gap-4'>
                     <AppIcon className='w-72 md:w-80' />
                 </a>
@@ -40,7 +40,7 @@ export function Header() {
                     )}
                 </a>
             </header>
-            <div className='h-24 md:h-20 w-full' />
+            <div className='h-20 md:h-24 w-full' />
         </>
     );
 }
