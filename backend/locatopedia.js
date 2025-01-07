@@ -178,27 +178,229 @@ async function createNewArticleFromHash(hash, data) {
     }
 }
 
-async function getPopular(num) {
+async function getPopular(limit) {
     try {
-        const res = await pool.query(
+        const res = await getDataOrderedByQuery(
+            `
+            SELECT 
+                l.hash
+            FROM 
+                tfg.likes l
+            GROUP BY 
+                l.hash
+            ORDER BY 
+                COUNT(*) DESC
+            LIMIT $1
+            `,
+            [limit]
+        );
+        const returnedData = res.map((item) => {
+            return {
+                hash: item.hash,
+                title: item.title,
+                subtitle: item.subtitle,
+                img_url: item.img_url,
+            };
+        });
+        return returnedData;
+    } catch (err) {
+        console.log("Error in getPopular");
+        console.log(err);
+        return [];
+    }
+}
+
+async function getRandom(limit) {
+    try {
+        const res = await getDataOrderedByQuery(
             `
             select 
-                a.hash, a.img_url, v.title, v.subtitle
-            from tfg.article a
-            join tfg.version v ON v.hash = a.hash
-            where v.date = (
-                select MAX(date)
-                from tfg.version
-                where hash = a.hash
-            )
+                a.hash
+            from 
+                tfg.article a 
             order by random()
             limit $1
             `,
-            [num]
+            [limit]
         );
-        return res.rows;
+        const returnedData = res.map((item) => {
+            return {
+                hash: item.hash,
+                title: item.title,
+                subtitle: item.subtitle,
+                img_url: item.img_url,
+            };
+        });
+        return returnedData;
+    } 
+    catch (err) {
+        console.log("Error in getRandom");
+        console.log(err);
+        return [];
+    }
+}
+
+async function getLiked(limit, email) {
+    try {
+        const res = await getDataOrderedByQuery(
+            `
+            select 
+                l.hash
+            from 
+                tfg.likes l 
+            where 
+                l.email = $2
+            limit $1
+            `,
+            [limit, email]
+        );
+        const returnedData = res.map((item) => {
+            return {
+                hash: item.hash,
+                title: item.title,
+                subtitle: item.subtitle,
+                img_url: item.img_url,
+            };
+        });
+        return returnedData;
     } catch (err) {
         console.log("Error in getPopular");
+        console.log(err);
+        return [];
+    }
+}
+
+async function getCreated(limit, email) {
+    try {
+        const res = await getDataOrderedByQuery(
+            `
+            select 
+                a.hash
+            from 
+                tfg.article a 
+            where 
+                a.email_user = $2
+            order by a.date DESC
+            limit $1
+            `,
+            [limit, email]
+        );
+        const returnedData = res.map((item) => {
+            return {
+                hash: item.hash,
+                title: item.title,
+                subtitle: item.subtitle,
+                img_url: item.img_url,
+            };
+        });
+        return returnedData;
+    } catch (err) {
+        console.log("Error in getCreated");
+        console.log(err);
+        return [];
+    }
+}
+
+async function getEdited(limit, email) {
+    try {
+        const res = await getDataOrderedByQuery(
+            `   
+            select
+                v.hash
+            from
+                (
+                    select 
+                        v1.hash, max(v1.date) as date
+                    from 
+                        tfg.version v1 
+                    group by
+                        v1.hash, v1.email_user
+                    having
+                        v1.email_user = $2
+                    order by v1.hash
+                ) v
+            order by v.date DESC
+            limit $1
+            `,
+            [limit, email]
+        );
+        const returnedData = res.map((item) => {
+            return {
+                hash: item.hash,
+                title: item.title,
+                subtitle: item.subtitle,
+                img_url: item.img_url,
+            };
+        });
+        return returnedData;
+    } catch (err) {
+        console.log("Error in getEdited");
+        console.log(err);
+        return [];
+    }
+}
+
+async function getNewestVersions(limit) {
+    try {
+        const res = await getDataOrderedByQuery(
+            `
+            select
+                v.hash
+            from
+                (
+                    select 
+                        v1.hash, max(v1.date) as date
+                    from 
+                        tfg.version v1 
+                    group by
+                        v1.hash
+                    order by v1.hash
+                ) v
+            order by v.date DESC
+            limit $1
+            `,
+            [limit]
+        );
+        const returnedData = res.map((item) => {
+            return {
+                hash: item.hash,
+                title: item.title,
+                subtitle: item.subtitle,
+                img_url: item.img_url,
+            };
+        });
+        return returnedData;
+    } catch (err) {
+        console.log("Error in getNewestVersions");
+        console.log(err);
+        return [];
+    }
+}
+
+async function getNewestArticles(limit, email) {
+    try {
+        const res = await getDataOrderedByQuery(
+            `
+            select
+                a.hash
+            from
+                tfg.article a
+            order by a.date DESC
+            limit $1
+            `,
+            [limit]
+        );
+        const returnedData = res.map((item) => {
+            return {
+                hash: item.hash,
+                title: item.title,
+                subtitle: item.subtitle,
+                img_url: item.img_url,
+            };
+        });
+        return returnedData;
+    } catch (err) {
+        console.log("Error in getNewestArticles");
         console.log(err);
         return [];
     }
@@ -239,15 +441,190 @@ async function getAllVersionsFromHash(hash) {
     }
 }
 
+async function getLikesFromHashandEmail(hash, email) {
+    try {
+        const res = await pool.query(
+            `
+            select 
+                count(*) as likes
+            from 
+                tfg.likes
+            where
+                hash = $1
+            `,
+            [hash]
+        );
+        const like_count = res.rows[0].likes;
+
+        const res2 = await pool.query(
+            `
+            select 
+                count(*) as likes
+            from 
+                tfg.likes
+            where
+                hash = $1 and email = $2
+            `,
+            [hash, email]
+        );
+        const user_liked = res2.rows[0].likes > 0;
+        return { like_count, user_liked };
+    } catch (err) {
+        console.log("Error in getLikesFromHashandEmail");
+        console.log(err);
+        return 0;
+    }
+}
+
+async function toggleLike(hash, email) {
+    try {
+        const res = await pool.query(
+            `
+            select 
+                count(*) as likes
+            from 
+                tfg.likes
+            where
+                hash = $1 and email = $2
+            `,
+            [hash, email]
+        );
+
+        if (res.rows[0].likes > 0) {
+            await pool.query(
+                `
+                delete from 
+                    tfg.likes
+                where
+                    hash = $1 and email = $2
+                `,
+                [hash, email]
+            );
+        } else {
+            await pool.query(
+                `
+                insert into 
+                    tfg.likes
+                    (hash, email)
+                values
+                    ($1, $2)
+                `,
+                [hash, email]
+            );
+        }
+    } catch (err) {
+        console.log("Error in toggleLike");
+        console.log(err);
+    }
+}
+
+async function getDataOrderedByQuery(query, params = []) {
+    const res = await pool.query(
+        `
+        WITH ordered_hashes AS (
+            SELECT 
+                l.hash,
+                ROW_NUMBER() OVER () AS row_order -- Mantiene el orden original
+            FROM (
+                ${query}
+            ) l
+        ),
+        latest_versions AS (
+            SELECT DISTINCT ON (v.hash)
+            v.hash, v.id_version, v.title, v.subtitle, v."content", v."date" AS edition_date, v.email_user AS editor_mail
+            FROM 
+                tfg.version v
+            JOIN 
+                ordered_hashes o 
+            ON 
+                v.hash = o.hash
+            ORDER BY 
+                v.hash, v."date" DESC
+        )
+        SELECT 
+            a.hash, a.auid, a."date" AS creation_date, a.email_user AS creator_mail,a.is_deprecated, a.new_hash, a.img_url, lv.id_version, lv.title, lv.subtitle, lv."content", lv.edition_date, lv.editor_mail
+        FROM 
+            latest_versions lv
+        JOIN 
+            tfg.article a 
+        ON 
+            a.hash = lv.hash
+        JOIN 
+            ordered_hashes o
+        ON 
+            a.hash = o.hash
+        ORDER BY 
+            o.row_order; -- Respeta el orden original de la consulta del IN
+        `,
+        params
+    );
+    return res.rows;
+}
+
 module.exports = {
     checkExistingHash,
     getDataFromHash,
     getDataFromHashAndVersion,
-    getPopular,
+    
     createNewVersionFromHash,
-
     createNewArticleFromHash,
-
+    
     getAll,
     getAllVersionsFromHash,
+    
+    getLikesFromHashandEmail,
+    toggleLike,
+    
+    getPopular,
+    getRandom,
+    getLiked,
+    getCreated,
+    getEdited,
+    getNewestVersions,
+    getNewestArticles,
 };
+
+/*
+WITH ordered_hashes AS (
+    SELECT 
+        l.hash,
+        ROW_NUMBER() OVER () AS row_order -- Mantiene el orden original
+    FROM (
+        -- Subconsulta que genera los hashes
+        SELECT 
+            l.hash
+        FROM 
+            tfg.likes l
+        GROUP BY 
+            l.hash
+        ORDER BY 
+            COUNT(*) DESC
+    ) l
+),
+latest_versions AS (
+    SELECT DISTINCT ON (v.hash)
+    v.hash, v.id_version, v.title, v.subtitle, v."content", v."date" AS edition_date, v.email_user AS editor_mail
+    FROM 
+        tfg.version v
+    JOIN 
+        ordered_hashes o 
+    ON 
+        v.hash = o.hash
+    ORDER BY 
+        v.hash, v."date" DESC
+)
+SELECT 
+    a.hash, a.auid, a."date" AS creation_date, a.email_user AS creator_mail,a.is_deprecated, a.new_hash, a.img_url, lv.id_version, lv.title, lv.subtitle, lv."content", lv.edition_date, lv.editor_mail
+FROM 
+    latest_versions lv
+JOIN 
+    tfg.article a 
+ON 
+    a.hash = lv.hash
+JOIN 
+    ordered_hashes o
+ON 
+    a.hash = o.hash
+ORDER BY 
+    o.row_order; -- Respeta el orden original de la consulta del IN
+*/
