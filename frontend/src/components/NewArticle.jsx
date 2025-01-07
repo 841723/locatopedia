@@ -41,16 +41,15 @@ export function NewArticle() {
             text: "This action cannot be undone. Make sure you have reviewed the article before publishing.",
             buttons: [
                 {
+                    text: "No",
+                    className: "bg-red-500 text-white hover:bg-red-600",
+                    action: () => {},
+                },
+                {
                     text: "Yes",
                     className: "bg-green-500 text-black hover:bg-green-600",
                     action: () => {
                         setPublished(true);
-                    },
-                },
-                {
-                    text: "No",
-                    className: "bg-red-500 text-white hover:bg-red-600",
-                    action: () => {
                     },
                 },
             ],

@@ -12,7 +12,7 @@ import { formatDate } from "@/lib/date";
 import { Modal } from "@/lib/modal";
 
 import { BACKEND_API_URL } from "@/lib/env";
-
+import { HeartCounter } from "@/components/HeartCounter";
 
 export function Page() {
     const { getData } = use(AccountContext);
@@ -20,10 +20,8 @@ export function Page() {
     const { hash, version } = useParams();
 
     const navigate = useNavigate();
-    let url = `${BACKEND_API_URL}/api/wiki?hash=${hash}${version ? `&version=${version}` : ""}`;
-
+    
     const [emailUser] = useState(getData()?.email);
-    const { data, loading, error } = useFetch(url);
     const [content, setContent] = useState({
         title: "",
         subtitle: "",
@@ -31,14 +29,17 @@ export function Page() {
         date: "",
         email_user: "",
     });
-
+    
     const [editedContent, setEditedContent] = useState({
         title: "",
         subtitle: "",
         content: "",
     });
-
+    
     const [editing, setEditing] = useState(false);
+    
+    let url = `${BACKEND_API_URL}/api/wiki?hash=${hash}${version ? `&version=${version}` : ""}${emailUser ? `&email=${emailUser}` : ""}`;
+    const { data, loading, error } = useFetch(url);
 
     useEffect(() => {
         if (editing) {
@@ -70,6 +71,8 @@ export function Page() {
                 content: data.content,
                 date: formatDate(data.date),
                 email_user: data.email_user,
+                like_count: data.like_count,
+                user_liked: data.user_liked,
             });
         }
     }, [data]);
@@ -95,13 +98,14 @@ export function Page() {
             .then((res) => res.json())
             .then((res) => {
                 console.log(res.date);
-                setContent({
+                setContent((prev) => ({
+                    ...prev,
                     title: res.title,
                     subtitle: res.subtitle,
                     content: res.content,
                     date: formatDate(res.date),
                     email_user: res.email_user,
-                });
+                }));
                 setEditing(false);
                 setText("Changes saved successfully");
                 setState(2);
@@ -145,18 +149,18 @@ export function Page() {
                 text: "This action cannot be undone. Make sure you have reviewed your changes.",
                 buttons: [
                     {
-                        text: "Yes",
-                        className: "bg-green-500 text-black hover:bg-green-600",
-                        action: () => {
-                            console.log("Yes");
-                            saveChanges();
-                        },
-                    },
-                    {
                         text: "No",
                         className: "bg-red-500 text-white hover:bg-red-600",
                         action: () => {
                             console.log("No");
+                        },
+                    },
+                    {
+                        text: "Yes",
+                        className: "bg-green-600 text-white hover:bg-green-700",
+                        action: () => {
+                            console.log("Yes");
+                            saveChanges();
                         },
                     },
                 ],
@@ -183,7 +187,7 @@ export function Page() {
     return (
         <>
             <div className='flex justify-between mb-4'>
-                <div className='flex-1 flex flex-col'>
+                <div className='flex-1 flex flex-col mr-2'>
                     {editing ? (
                         <>
                             <textarea
@@ -225,6 +229,19 @@ export function Page() {
                             </h2>
                         </>
                     )}
+                </div>
+
+                <div className='flex items-center gap-4'>
+                    {content &&
+                        content.like_count &&
+                        content.user_liked !== undefined && (
+                            <HeartCounter
+                                initialLikes={content.like_count}
+                                initialLiked={content.user_liked}
+                                hash={hash}
+                                email={emailUser}
+                            />
+                        )}
                 </div>
             </div>
             {data?.cuids && (
@@ -285,7 +302,7 @@ export function Page() {
                     content.date !== "" && (
                         <div className=''>
                             Last changes made by <em>{content.email_user}</em>{" "}
-                            <br className="block md:hidden"/>
+                            <br className='block md:hidden' />
                             {content.date}
                         </div>
                     )}

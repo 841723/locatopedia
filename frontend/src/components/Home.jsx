@@ -4,17 +4,25 @@ export function Home() {
 
     return (
         <div className='flex flex-col gap-20'>
-            <ArticleList
-                title='Popular'
-                query='/api/wiki/popular?limit=3'
-            />
-            <ArticleList
+            <ArticleList title='Popular' query='/api/wiki/popular?limit=3' />
+            {/* <ArticleList
                 title='Close to you'
                 query='/api/wiki/popular?limit=3'
+            /> */}
+
+            <ArticleList
+                title='Recently updated'
+                query='/api/wiki/newest/versions?limit=8'
             />
+
+            <ArticleList
+                title='Recently created'
+                query='/api/wiki/newest/articles?limit=8'
+            />
+
             <ArticleList
                 title='Article of the day'
-                query='/api/wiki/popular?limit=1'
+                query='/api/wiki/random?limit=1'
                 showOnlyOne={true}
             />
         </div>
