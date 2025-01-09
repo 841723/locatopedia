@@ -18,72 +18,36 @@ SET default_table_access_method = heap;
 
 
 CREATE TABLE tfg.article (
-    hash character varying NOT NULL,
-    auid character varying NOT NULL,
-    date timestamp without time zone NOT NULL,
-    email_user character varying NOT NULL,
-    is_deprecated boolean NOT NULL,
-    new_hash character varying,
-    img_url character varying
+	hash varchar NOT NULL,
+	auid varchar NOT NULL,
+	"date" timestamp NOT NULL,
+	email_user varchar NOT NULL,
+	is_deprecated bool NOT NULL,
+	new_hash varchar NULL,
+	img_url varchar NULL,
+	CONSTRAINT article_pk PRIMARY KEY (hash)
 );
-ALTER TABLE tfg.article OWNER TO postgres;
-
-
-CREATE TABLE tfg.version (
-    id_version integer NOT NULL,
-    title character varying NOT NULL,
-    subtitle character varying NOT NULL,
-    content character varying NOT NULL,
-    date timestamp without time zone NOT NULL,
-    email_user character varying NOT NULL,
-    hash character varying NOT NULL
-);
-ALTER TABLE tfg.version OWNER TO postgres;
-
-
-CREATE SEQUENCE tfg.version_id_version_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE tfg.version_id_version_seq OWNER TO postgres;
-
-
-ALTER SEQUENCE tfg.version_id_version_seq OWNED BY tfg.version.id_version;
-
-
-
-SELECT pg_catalog.setval('tfg.version_id_version_seq', 1, false);
-
-
-
-ALTER TABLE ONLY tfg.article
-    ADD CONSTRAINT article_pk PRIMARY KEY (hash);
-
-
-
-ALTER TABLE ONLY tfg.version
-    ADD CONSTRAINT version_pk PRIMARY KEY (id_version, hash);
-
-
-
-ALTER TABLE ONLY tfg.version
-    ADD CONSTRAINT version_article_fk FOREIGN KEY (hash) REFERENCES tfg.article(hash);
-
 
 
 CREATE TABLE tfg.likes (
 	email varchar NOT NULL,
 	hash varchar NOT NULL,
 	CONSTRAINT likes_pk PRIMARY KEY (email, hash),
-	CONSTRAINT likes_article_fk FOREIGN KEY (hash) REFERENCES tfg.article(hash)
+	CONSTRAINT likes_article_fk FOREIGN KEY (hash) REFERENCES tfg.article(hash) ON DELETE CASCADE
 );
-ALTER TABLE tfg.likes OWNER TO postgres;
 
+
+CREATE TABLE tfg."version" (
+	id_version int4 NOT NULL,
+	title varchar NOT NULL,
+	subtitle varchar NOT NULL,
+	"content" varchar NOT NULL,
+	"date" timestamp NOT NULL,
+	email_user varchar NOT NULL,
+	hash varchar NOT NULL,
+	CONSTRAINT version_pk PRIMARY KEY (id_version, hash),
+	CONSTRAINT version_article_fk FOREIGN KEY (hash) REFERENCES tfg.article(hash) ON DELETE CASCADE
+);
 
 
 INSERT INTO tfg.article (hash,auid,"date",email_user,is_deprecated,new_hash,img_url) VALUES
@@ -97,20 +61,14 @@ INSERT INTO tfg."version" (id_version,title,subtitle,"content","date",email_user
 
 Zaragoza, capital de la comunidad autónoma de Aragón, es una ciudad española conocida por su rica historia, su impresionante arquitectura y su ubicación estratégica entre Madrid y Barcelona.
 
----
-
 ## Información General
 
-| **Característica**     | **Detalle**                        |
-|-------------------------|------------------------------------|
-| **País**               | España                            |
+| **Característica**     | **Detalle**                        || **País**               | España                            |
 | **Comunidad Autónoma** | Aragón                            |
 | **Población**          | ~700,000 habitantes (2021)        |
 | **Río Principal**      | Ebro                              |
 | **Gentilicio**         | Zaragozano/a                      |
 | **Altitud**            | 199 metros sobre el nivel del mar |
-
----
 
 ## Lugares de Interés
 
@@ -123,44 +81,30 @@ Un palacio islámico del siglo XI que actualmente es sede de las Cortes de Arag�
 ### 3. **Puente de Piedra**
 Un puente histórico que cruza el río Ebro y ofrece unas vistas magníficas de la Basílica del Pilar.
 
----
-
 ## Gastronomía
 
 Zaragoza es famosa por su gastronomía tradicional, que combina ingredientes locales y sabores únicos.
 
-| **Plato Típico**         | **Descripción**                                          |
-|---------------------------|----------------------------------------------------------|
-| **Ternasco de Aragón**    | Cordero asado o guisado, considerado un manjar local.    |
+| **Plato Típico**         | **Descripción**                                          || **Ternasco de Aragón**    | Cordero asado o guisado, considerado un manjar local.    |
 | **Bacalao al Ajoarriero** | Bacalao cocinado con ajo, aceite, y pimientos.           |
 | **Migas Aragonesas**      | Trozos de pan frito con chorizo, huevo y uvas.           |
 | **Melocotón con Vino**    | Postre típico de melocotones marinados en vino tinto.    |
-
----
 
 ## Eventos y Fiestas
 
 ### Fiestas del Pilar
 Se celebran en octubre en honor a la Virgen del Pilar, la patrona de Zaragoza. Incluyen procesiones, conciertos, y espectáculos de fuegos artificiales.
 
-| **Evento**                 | **Fecha**           | **Descripción**                                  |
-|----------------------------|---------------------|-------------------------------------------------|
-| **Ofrenda de Flores**      | 12 de octubre       | Miles de personas ofrecen flores a la Virgen.   |
+| **Evento**                 | **Fecha**           | **Descripción**                                  || **Ofrenda de Flores**      | 12 de octubre       | Miles de personas ofrecen flores a la Virgen.   |
 | **Romería de la Virgen**   | 13 de octubre       | Peregrinación por la ciudad.                    |
 | **Gigantes y Cabezudos**   | Durante las fiestas | Desfile de figuras gigantes y cabezudas.        |
-
----
 
 ## Clima
 
 Zaragoza tiene un clima semiárido, caracterizado por inviernos fríos y veranos calurosos.
 
-| **Estación** | **Temperatura Media (°C)** | **Precipitaciones (mm)** |
-|--------------|-----------------------------|--------------------------|
-| **Invierno** | 5-10                        | ~30                     |
+| **Estación** | **Temperatura Media (°C)** | **Precipitaciones (mm)** || **Invierno** | 5-10                        | ~30                     |
 | **Verano**   | 25-35                       | ~15                     |
-
----
 
 ## Curiosidades
 
@@ -168,24 +112,16 @@ Zaragoza tiene un clima semiárido, caracterizado por inviernos fríos y veranos
 - Es el punto medio entre Madrid y Barcelona, a unas 1:30 horas en tren de alta velocidad (AVE).
 - La Expo 2008 se celebró en Zaragoza, destacando el tema del agua y el desarrollo sostenible.
 
----
-
 ## Imágenes Destacadas
 
 ![Basílica del Pilar](https://upload.wikimedia.org/wikipedia/commons/0/0e/Bas%C3%ADlica_del_Pilar_en_Zaragoza%2C_Espa%C3%B1a%2C_2015-12-16%2C_DD_56.JPG)  
 *Fuente: Wikimedia Commons*
 
----
-
 ## Cómo Llegar
 
-| **Modo de Transporte** | **Duración**            | **Comentario**                               |
-|-------------------------|-------------------------|---------------------------------------------|
-| **Tren (AVE)**          | 1:30 desde Madrid/Barcelona | Alta velocidad, rápido y cómodo.          |
+| **Modo de Transporte** | **Duración**            | **Comentario**                               || **Tren (AVE)**          | 1:30 desde Madrid/Barcelona | Alta velocidad, rápido y cómodo.          |
 | **Avión**               | Aeropuerto de Zaragoza | Conexiones nacionales e internacionales.    |
 | **Coche**               | 3 horas desde Madrid    | Buena red de carreteras.                   |
-
----
 
 ¡Zaragoza es un destino ideal para quienes buscan historia, cultura, y gastronomía en un entorno acogedor!
 
@@ -194,20 +130,14 @@ Zaragoza tiene un clima semiárido, caracterizado por inviernos fríos y veranos
 
 Zaragoza, capital de la comunidad autónoma de Aragón, es una ciudad española conocida por su rica historia, su impresionante arquitectura y su ubicación estratégica entre Madrid y Barcelona.
 
----
-
 ## Información General
 
-| **Característica**     | **Detalle**                        |
-|-------------------------|------------------------------------|
-| **País**               | España                            |
+| **Característica**     | **Detalle**                        || **País**               | España                            |
 | **Comunidad Autónoma** | Aragón                            |
 | **Población**          | ~700,000 habitantes (2021)        |
 | **Río Principal**      | Ebro                              |
 | **Gentilicio**         | Zaragozano/a                      |
 | **Altitud**            | 199 metros sobre el nivel del mar |
-
----
 
 ## Lugares de Interés
 
@@ -220,44 +150,30 @@ Un palacio islámico del siglo XI que actualmente es sede de las Cortes de Arag�
 ### 3. **Puente de Piedra**
 Un puente histórico que cruza el río Ebro y ofrece unas vistas magníficas de la Basílica del Pilar.
 
----
-
 ## Gastronomía
 
 Zaragoza es famosa por su gastronomía tradicional, que combina ingredientes locales y sabores únicos.
 
-| **Plato Típico**         | **Descripción**                                          |
-|---------------------------|----------------------------------------------------------|
-| **Ternasco de Aragón**    | Cordero asado o guisado, considerado un manjar local.    |
+| **Plato Típico**         | **Descripción**                                          || **Ternasco de Aragón**    | Cordero asado o guisado, considerado un manjar local.    |
 | **Bacalao al Ajoarriero** | Bacalao cocinado con ajo, aceite, y pimientos.           |
 | **Migas Aragonesas**      | Trozos de pan frito con chorizo, huevo y uvas.           |
 | **Melocotón con Vino**    | Postre típico de melocotones marinados en vino tinto.    |
-
----
 
 ## Eventos y Fiestas
 
 ### Fiestas del Pilar
 Se celebran en octubre en honor a la Virgen del Pilar, la patrona de Zaragoza. Incluyen procesiones, conciertos, y espectáculos de fuegos artificiales.
 
-| **Evento**                 | **Fecha**           | **Descripción**                                  |
-|----------------------------|---------------------|-------------------------------------------------|
-| **Ofrenda de Flores**      | 12 de octubre       | Miles de personas ofrecen flores a la Virgen.   |
+| **Evento**                 | **Fecha**           | **Descripción**                                  || **Ofrenda de Flores**      | 12 de octubre       | Miles de personas ofrecen flores a la Virgen.   |
 | **Romería de la Virgen**   | 13 de octubre       | Peregrinación por la ciudad.                    |
 | **Gigantes y Cabezudos**   | Durante las fiestas | Desfile de figuras gigantes y cabezudas.        |
-
----
 
 ## Clima
 
 Zaragoza tiene un clima semiárido, caracterizado por inviernos fríos y veranos calurosos.
 
-| **Estación** | **Temperatura Media (°C)** | **Precipitaciones (mm)** |
-|--------------|-----------------------------|--------------------------|
-| **Invierno** | 5-10                        | ~30                     |
+| **Estación** | **Temperatura Media (°C)** | **Precipitaciones (mm)** || **Invierno** | 5-10                        | ~30                     |
 | **Verano**   | 25-35                       | ~15                     |
-
----
 
 ## Curiosidades
 
@@ -265,24 +181,16 @@ Zaragoza tiene un clima semiárido, caracterizado por inviernos fríos y veranos
 - Es el punto medio entre Madrid y Barcelona, a unas 1:30 horas en tren de alta velocidad (AVE).
 - La Expo 2008 se celebró en Zaragoza, destacando el tema del agua y el desarrollo sostenible.
 
----
-
 ## Imágenes Destacadas
 
 ![Basílica del Pilar](https://upload.wikimedia.org/wikipedia/commons/0/0f/Zaragoza_-_Bas%C3%ADlica_del_Pilar_y_r%C3%ADo_Ebro.jpg)  
 *Fuente: Wikimedia Commons*
 
----
-
 ## Cómo Llegar
 
-| **Modo de Transporte** | **Duración**            | **Comentario**                               |
-|-------------------------|-------------------------|---------------------------------------------|
-| **Tren (AVE)**          | 1:30 desde Madrid/Barcelona | Alta velocidad, rápido y cómodo.          |
+| **Modo de Transporte** | **Duración**            | **Comentario**                               || **Tren (AVE)**          | 1:30 desde Madrid/Barcelona | Alta velocidad, rápido y cómodo.          |
 | **Avión**               | Aeropuerto de Zaragoza | Conexiones nacionales e internacionales.    |
 | **Coche**               | 3 horas desde Madrid    | Buena red de carreteras.                   |
-
----
 
 ¡Zaragoza es un destino ideal para quienes buscan historia, cultura, y gastronomía en un entorno acogedor!
 
@@ -291,88 +199,62 @@ Zaragoza tiene un clima semiárido, caracterizado por inviernos fríos y veranos
 
 El **Centro Politécnico Superior (CPS)**, actualmente integrado como la **Escuela de Ingeniería y Arquitectura (EINA)**, es una de las instituciones académicas más destacadas de la Universidad de Zaragoza (UNIZAR). Se especializa en la formación de ingenieros, arquitectos y profesionales altamente cualificados en diversas ramas técnicas.
 
----
-
 ## Información General
 
-| **Característica**             | **Detalle**                                  |
-|--------------------------------|----------------------------------------------|
-| **Nombre actual**              | Escuela de Ingeniería y Arquitectura (EINA) |
+| **Característica**             | **Detalle**                                  || **Nombre actual**              | Escuela de Ingeniería y Arquitectura (EINA) |
 | **Fundación del CPS**          | 1973                                        |
 | **Ubicación**                  | Campus Río Ebro, Zaragoza, España           |
 | **Universidad**                | Universidad de Zaragoza (UNIZAR)            |
 | **Áreas de estudio principales** | Ingeniería, Arquitectura, Tecnologías      |
 
----
-
 ## Grados y Másteres Ofrecidos
 
 El EINA ofrece una amplia gama de programas académicos que abarcan desde titulaciones de grado hasta másteres especializados.
 
-| **Grados**                                       | **Másteres**                                   |
-|-------------------------------------------------|-----------------------------------------------|
-| Ingeniería Mecánica                             | Ingeniería Industrial                         |
+| **Grados**                                       | **Másteres**                                   || Ingeniería Mecánica                             | Ingeniería Industrial                         |
 | Ingeniería Electrónica y Automática            | Ingeniería de Telecomunicación               |
 | Ingeniería Informática                         | Ingeniería Informática                        |
 | Ingeniería Eléctrica                           | Energías Renovables y Eficiencia Energética  |
 | Ingeniería de Tecnologías Industriales         | Arquitectura                                  |
 | Arquitectura                                   | Robótica, Gráficos Computacionales y CAD     |
 
----
-
 ## Instalaciones y Recursos
 
 El EINA cuenta con modernas instalaciones para garantizar la calidad de la enseñanza y la investigación.
 
-| **Instalación/Recurso**       | **Descripción**                                        |
-|-------------------------------|-------------------------------------------------------|
-| **Aulas de docencia**         | Espacios equipados con tecnología audiovisual avanzada.|
+| **Instalación/Recurso**       | **Descripción**                                        || **Aulas de docencia**         | Espacios equipados con tecnología audiovisual avanzada.|
 | **Laboratorios especializados** | Laboratorios de robótica, electrónica y más.         |
 | **Biblioteca Hypatia**        | Acceso a miles de libros, revistas y bases de datos.  |
 | **Salas de estudio**          | Espacios para trabajo en grupo y estudio individual.  |
 | **FabLab**                    | Laboratorio de fabricación para proyectos innovadores.|
 
----
-
 ## Investigación
 
 El EINA es reconocido por su contribución a la investigación técnica y científica en diversas áreas.
 
-| **Área de Investigación**      | **Descripción**                                      |
-|--------------------------------|-----------------------------------------------------|
-| **Inteligencia Artificial**    | Desarrollo de algoritmos avanzados y aprendizaje automático. |
+| **Área de Investigación**      | **Descripción**                                      || **Inteligencia Artificial**    | Desarrollo de algoritmos avanzados y aprendizaje automático. |
 | **Energías Renovables**        | Estudios sobre sostenibilidad y eficiencia energética. |
 | **Ingeniería Biomédica**       | Soluciones tecnológicas para la salud.              |
 | **Robótica y Automatización**  | Innovaciones en robótica industrial y colaborativa. |
 | **Tecnologías de la Información** | Avances en telecomunicaciones y redes.           |
 
----
-
 ## Eventos y Actividades
 
 El EINA organiza y participa en eventos que fomentan la formación integral de sus estudiantes.
 
-| **Evento/Actividad**         | **Descripción**                                      |
-|-------------------------------|-----------------------------------------------------|
-| **Feria de empresas (EmpleaEINA)** | Encuentro entre estudiantes y empresas.          |
+| **Evento/Actividad**         | **Descripción**                                      || **Feria de empresas (EmpleaEINA)** | Encuentro entre estudiantes y empresas.          |
 | **Jornadas de puertas abiertas** | Orientación para futuros estudiantes.             |
 | **Concursos de robótica**    | Promoción de proyectos innovadores en robótica.      |
 | **Charlas y seminarios**     | Conferencias con expertos nacionales e internacionales. |
 | **Talleres de habilidades**  | Formación en comunicación, liderazgo y trabajo en equipo.|
 
----
-
 ## Localización
 
 El EINA está situado en el **Campus Río Ebro**, al norte de Zaragoza. Este campus es conocido por su ambiente tecnológico y moderno.
 
-| **Detalle**                | **Información**                                     |
-|----------------------------|----------------------------------------------------|
-| **Dirección**              | Calle María de Luna, 3, 50018 Zaragoza, España     |
+| **Detalle**                | **Información**                                     || **Dirección**              | Calle María de Luna, 3, 50018 Zaragoza, España     |
 | **Transporte público cercano** | Líneas de autobús urbano y tranvía.              |
 | **Otros servicios del campus** | Comedores, áreas deportivas y zonas verdes.     |
-
----
 
 ## Curiosidades
 
@@ -381,17 +263,11 @@ El EINA está situado en el **Campus Río Ebro**, al norte de Zaragoza. Este cam
 - **Proyección internacional**: El EINA participa en programas de movilidad como **Erasmus** y convenios con universidades de todo el mundo.
 - **Premios y distinciones**: Sus estudiantes han sido galardonados en múltiples competiciones nacionales e internacionales.
 
----
-
 ## Enlaces de Interés
 
-| **Recurso**                 | **Enlace**                                           |
-|-----------------------------|-----------------------------------------------------|
-| **Sitio web oficial de la EINA** | [eina.unizar.es](https://eina.unizar.es)          |
+| **Recurso**                 | **Enlace**                                           || **Sitio web oficial de la EINA** | [eina.unizar.es](https://eina.unizar.es)          |
 | **Universidad de Zaragoza** | [unizar.es](https://www.unizar.es)                  |
 | **Campus Virtual de Unizar** | [moodle.unizar.es](https://moodle.unizar.es)        |
-
----
 
 La Escuela de Ingeniería y Arquitectura de la Universidad de Zaragoza es un referente en formación técnica y un motor de innovación en la región de Aragón. ¡Una excelente elección para quienes desean formarse en el ámbito tecnológico y científico!
 
@@ -400,88 +276,62 @@ La Escuela de Ingeniería y Arquitectura de la Universidad de Zaragoza es un ref
 
 El **Centro Politécnico Superior también llamado (CPS)**, actualmente integrado como la **Escuela de Ingeniería y Arquitectura también llamada (EINA)**, es una de las instituciones académicas más destacadas de la Universidad de Zaragoza (UNIZAR). Se especializa en la formación de ingenieros, arquitectos y profesionales altamente cualificados en diversas ramas técnicas.
 
----
-
 ## Información General
 
-| **Característica**             | **Detalle**                                  |
-|--------------------------------|----------------------------------------------|
-| **Nombre actual**              | Escuela de Ingeniería y Arquitectura (EINA) |
+| **Característica**             | **Detalle**                                  || **Nombre actual**              | Escuela de Ingeniería y Arquitectura (EINA) |
 | **Fundación del CPS**          | 1973                                        |
 | **Ubicación**                  | Campus Río Ebro, Zaragoza, España           |
 | **Universidad**                | Universidad de Zaragoza (UNIZAR)            |
 | **Áreas de estudio principales** | Ingeniería, Arquitectura, Tecnologías      |
 
----
-
 ## Grados y Másteres Ofrecidos
 
 El EINA ofrece una amplia gama de programas académicos que abarcan desde titulaciones de grado hasta másteres especializados.
 
-| **Grados**                                       | **Másteres**                                   |
-|-------------------------------------------------|-----------------------------------------------|
-| Ingeniería Mecánica                             | Ingeniería Industrial                         |
+| **Grados**                                       | **Másteres**                                   || Ingeniería Mecánica                             | Ingeniería Industrial                         |
 | Ingeniería Electrónica y Automática            | Ingeniería de Telecomunicación               |
 | Ingeniería Informática                         | Ingeniería Informática                        |
 | Ingeniería Eléctrica                           | Energías Renovables y Eficiencia Energética  |
 | Ingeniería de Tecnologías Industriales         | Arquitectura                                  |
 | Arquitectura                                   | Robótica, Gráficos Computacionales y CAD     |
 
----
-
 ## Instalaciones y Recursos
 
 El EINA cuenta con modernas instalaciones para garantizar la calidad de la enseñanza y la investigación.
 
-| **Instalación/Recurso**       | **Descripción**                                        |
-|-------------------------------|-------------------------------------------------------|
-| **Aulas de docencia**         | Espacios equipados con tecnología audiovisual avanzada.|
+| **Instalación/Recurso**       | **Descripción**                                        || **Aulas de docencia**         | Espacios equipados con tecnología audiovisual avanzada.|
 | **Laboratorios especializados** | Laboratorios de robótica, electrónica y más.         |
 | **Biblioteca Hypatia**        | Acceso a miles de libros, revistas y bases de datos.  |
 | **Salas de estudio**          | Espacios para trabajo en grupo y estudio individual.  |
 | **FabLab**                    | Laboratorio de fabricación para proyectos innovadores.|
 
----
-
 ## Investigación
 
 El EINA es reconocido por su contribución a la investigación técnica y científica en diversas áreas.
 
-| **Área de Investigación**      | **Descripción**                                      |
-|--------------------------------|-----------------------------------------------------|
-| **Inteligencia Artificial**    | Desarrollo de algoritmos avanzados y aprendizaje automático. |
+| **Área de Investigación**      | **Descripción**                                      || **Inteligencia Artificial**    | Desarrollo de algoritmos avanzados y aprendizaje automático. |
 | **Energías Renovables**        | Estudios sobre sostenibilidad y eficiencia energética. |
 | **Ingeniería Biomédica**       | Soluciones tecnológicas para la salud.              |
 | **Robótica y Automatización**  | Innovaciones en robótica industrial y colaborativa. |
 | **Tecnologías de la Información** | Avances en telecomunicaciones y redes.           |
 
----
-
 ## Eventos y Actividades
 
 El EINA organiza y participa en eventos que fomentan la formación integral de sus estudiantes.
 
-| **Evento/Actividad**         | **Descripción**                                      |
-|-------------------------------|-----------------------------------------------------|
-| **Feria de empresas (EmpleaEINA)** | Encuentro entre estudiantes y empresas.          |
+| **Evento/Actividad**         | **Descripción**                                      || **Feria de empresas (EmpleaEINA)** | Encuentro entre estudiantes y empresas.          |
 | **Jornadas de puertas abiertas** | Orientación para futuros estudiantes.             |
 | **Concursos de robótica**    | Promoción de proyectos innovadores en robótica.      |
 | **Charlas y seminarios**     | Conferencias con expertos nacionales e internacionales. |
 | **Talleres de habilidades**  | Formación en comunicación, liderazgo y trabajo en equipo.|
 
----
-
 ## Localización
 
 El EINA está situado en el **Campus Río Ebro**, al norte de Zaragoza. Este campus es conocido por su ambiente tecnológico y moderno.
 
-| **Detalle**                | **Información**                                     |
-|----------------------------|----------------------------------------------------|
-| **Dirección**              | Calle María de Luna, 3, 50018 Zaragoza, España     |
+| **Detalle**                | **Información**                                     || **Dirección**              | Calle María de Luna, 3, 50018 Zaragoza, España     |
 | **Transporte público cercano** | Líneas de autobús urbano y tranvía.              |
 | **Otros servicios del campus** | Comedores, áreas deportivas y zonas verdes.     |
-
----
 
 ## Curiosidades
 
@@ -490,17 +340,11 @@ El EINA está situado en el **Campus Río Ebro**, al norte de Zaragoza. Este cam
 - **Proyección internacional**: El EINA participa en programas de movilidad como **Erasmus** y convenios con universidades de todo el mundo.
 - **Premios y distinciones**: Sus estudiantes han sido galardonados en múltiples competiciones nacionales e internacionales.
 
----
-
 ## Enlaces de Interés
 
-| **Recurso**                 | **Enlace**                                           |
-|-----------------------------|-----------------------------------------------------|
-| **Sitio web oficial de la EINA** | [eina.unizar.es](https://eina.unizar.es)          |
+| **Recurso**                 | **Enlace**                                           || **Sitio web oficial de la EINA** | [eina.unizar.es](https://eina.unizar.es)          |
 | **Universidad de Zaragoza** | [unizar.es](https://www.unizar.es)                  |
 | **Campus Virtual de Unizar** | [moodle.unizar.es](https://moodle.unizar.es)        |
-
----
 
 La Escuela de Ingeniería y Arquitectura de la Universidad de Zaragoza es un referente en formación técnica y un motor de innovación en la región de Aragón. ¡Una excelente elección para quienes desean formarse en el ámbito tecnológico y científico!
 
@@ -509,20 +353,14 @@ La Escuela de Ingeniería y Arquitectura de la Universidad de Zaragoza es un ref
 
 Zaragoza, capital de la comunidad autónoma aragonesa, es una ciudad española conocida por su rica historia, su impresionante arquitectura y su ubicación estratégica entre Madrid y Barcelona.
 
----
-
 ## Información General
 
-| **Característica**     | **Detalle**                        |
-|-------------------------|------------------------------------|
-| **País**               | España                            |
+| **Característica**     | **Detalle**                        || **País**               | España                            |
 | **Comunidad Autónoma** | Aragón                            |
 | **Población**          | ~700,000 habitantes (2021)        |
 | **Río Principal**      | Ebro                              |
 | **Gentilicio**         | Zaragozano/a                      |
 | **Altitud**            | 199 metros sobre el nivel del mar |
-
----
 
 ## Lugares de Interés
 
@@ -535,44 +373,30 @@ Un palacio islámico del siglo XI que actualmente es sede de las Cortes de Arag�
 ### 3. **Puente de Piedra**
 Un puente histórico que cruza el río Ebro y ofrece unas vistas magníficas de la Basílica del Pilar.
 
----
-
 ## Gastronomía
 
 Zaragoza es famosa por su gastronomía tradicional, que combina ingredientes locales y sabores únicos.
 
-| **Plato Típico**         | **Descripción**                                          |
-|---------------------------|----------------------------------------------------------|
-| **Ternasco de Aragón**    | Cordero asado o guisado, considerado un manjar local.    |
+| **Plato Típico**         | **Descripción**                                          || **Ternasco de Aragón**    | Cordero asado o guisado, considerado un manjar local.    |
 | **Bacalao al Ajoarriero** | Bacalao cocinado con ajo, aceite, y pimientos.           |
 | **Migas Aragonesas**      | Trozos de pan frito con chorizo, huevo y uvas.           |
 | **Melocotón con Vino**    | Postre típico de melocotones marinados en vino tinto.    |
-
----
 
 ## Eventos y Fiestas
 
 ### Fiestas del Pilar
 Se celebran en octubre en honor a la Virgen del Pilar, la patrona de Zaragoza. Incluyen procesiones, conciertos, y espectáculos de fuegos artificiales.
 
-| **Evento**                 | **Fecha**           | **Descripción**                                  |
-|----------------------------|---------------------|-------------------------------------------------|
-| **Ofrenda de Flores**      | 12 de octubre       | Miles de personas ofrecen flores a la Virgen.   |
+| **Evento**                 | **Fecha**           | **Descripción**                                  || **Ofrenda de Flores**      | 12 de octubre       | Miles de personas ofrecen flores a la Virgen.   |
 | **Romería de la Virgen**   | 13 de octubre       | Peregrinación por la ciudad.                    |
 | **Gigantes y Cabezudos**   | Durante las fiestas | Desfile de figuras gigantes y cabezudas.        |
-
----
 
 ## Clima
 
 Zaragoza tiene un clima semiárido, caracterizado por inviernos fríos y veranos calurosos.
 
-| **Estación** | **Temperatura Media (°C)** | **Precipitaciones (mm)** |
-|--------------|-----------------------------|--------------------------|
-| **Invierno** | 5-10                        | ~30                     |
+| **Estación** | **Temperatura Media (°C)** | **Precipitaciones (mm)** || **Invierno** | 5-10                        | ~30                     |
 | **Verano**   | 25-35                       | ~15                     |
-
----
 
 ## Curiosidades
 
@@ -580,24 +404,16 @@ Zaragoza tiene un clima semiárido, caracterizado por inviernos fríos y veranos
 - Es el punto medio entre Madrid y Barcelona, a unas 1:30 horas en tren de alta velocidad (AVE).
 - La Expo 2008 se celebró en Zaragoza, destacando el tema del agua y el desarrollo sostenible.
 
----
-
 ## Imágenes Destacadas
 
 ![Basílica del Pilar](https://upload.wikimedia.org/wikipedia/commons/0/0f/Zaragoza_-_Bas%C3%ADlica_del_Pilar_y_r%C3%ADo_Ebro.jpg)  
 *Fuente: Wikimedia Commons*
 
----
-
 ## Cómo Llegar
 
-| **Modo de Transporte** | **Duración**            | **Comentario**                               |
-|-------------------------|-------------------------|---------------------------------------------|
-| **Tren (AVE)**          | 1:30 desde Madrid/Barcelona | Alta velocidad, rápido y cómodo.          |
+| **Modo de Transporte** | **Duración**            | **Comentario**                               || **Tren (AVE)**          | 1:30 desde Madrid/Barcelona | Alta velocidad, rápido y cómodo.          |
 | **Avión**               | Aeropuerto de Zaragoza | Conexiones nacionales e internacionales.    |
 | **Coche**               | 3 horas desde Madrid    | Buena red de carreteras.                   |
-
----
 
 ¡Zaragoza es un destino ideal para quienes buscan historia, cultura, y gastronomía en un entorno acogedor!
 
@@ -606,88 +422,62 @@ Zaragoza tiene un clima semiárido, caracterizado por inviernos fríos y veranos
 
 El **Centro Politécnico Superior también llamado (CPS)**, actualmente integrado como la **Escuela de Ingeniería y Arquitectura también llamada (EINA)**, es una de las instituciones académicas más destacadas de la Universidad de Zaragoza (UNIZAR). Se especializa en la formación de ingenieros, arquitectos y profesionales altamente cualificados en diversas ramas técnicas.
 
----
-
 ## Información General
 
-| **Característica**             | **Detalle**                                  |
-|--------------------------------|----------------------------------------------|
-| **Nombre actual**              | Escuela de Ingeniería y Arquitectura (EINA) |
+| **Característica**             | **Detalle**                                  || **Nombre actual**              | Escuela de Ingeniería y Arquitectura (EINA) |
 | **Fundación del CPS**          | 1973                                        |
 | **Ubicación**                  | Campus Río Ebro, Zaragoza, España           |
 | **Universidad**                | Universidad de Zaragoza (UNIZAR)            |
 | **Áreas de estudio principales** | Ingeniería, Arquitectura, Tecnologías      |
 
----
-
 ## Grados y Másteres Ofrecidos
 
 El EINA ofrece una amplia gama de programas académicos que abarcan desde titulaciones de grado hasta másteres especializados.
 
-| **Grados**                                       | **Másteres**                                   |
-|-------------------------------------------------|-----------------------------------------------|
-| Ingeniería Mecánica                             | Ingeniería Industrial                         |
+| **Grados**                                       | **Másteres**                                   || Ingeniería Mecánica                             | Ingeniería Industrial                         |
 | Ingeniería Electrónica y Automática            | Ingeniería de Telecomunicación               |
 | Ingeniería Informática                         | Ingeniería Informática                        |
 | Ingeniería Eléctrica                           | Energías Renovables y Eficiencia Energética  |
 | Ingeniería de Tecnologías Industriales         | Arquitectura                                  |
 | Arquitectura                                   | Robótica, Gráficos Computacionales y CAD     |
 
----
-
 ## Instalaciones y Recursos
 
 El EINA cuenta con modernas instalaciones para garantizar la calidad de la enseñanza y la investigación.
 
-| **Instalación/Recurso**       | **Descripción**                                        |
-|-------------------------------|-------------------------------------------------------|
-| **Aulas de docencia**         | Espacios equipados con tecnología audiovisual avanzada.|
+| **Instalación/Recurso**       | **Descripción**                                        || **Aulas de docencia**         | Espacios equipados con tecnología audiovisual avanzada.|
 | **Laboratorios especializados** | Laboratorios de robótica, electrónica y más.         |
 | **Biblioteca Hypatia**        | Acceso a miles de libros, revistas y bases de datos.  |
 | **Salas de estudio**          | Espacios para trabajo en grupo y estudio individual.  |
 | **FabLab**                    | Laboratorio de fabricación para proyectos innovadores.|
 
----
-
 ## Investigación
 
 El EINA es reconocido por su contribución a la investigación técnica y científica en diversas áreas.
 
-| **Área de Investigación**      | **Descripción**                                      |
-|--------------------------------|-----------------------------------------------------|
-| **Inteligencia Artificial**    | Desarrollo de algoritmos avanzados y aprendizaje automático. |
+| **Área de Investigación**      | **Descripción**                                      || **Inteligencia Artificial**    | Desarrollo de algoritmos avanzados y aprendizaje automático. |
 | **Energías Renovables**        | Estudios sobre sostenibilidad y eficiencia energética. |
 | **Ingeniería Biomédica**       | Soluciones tecnológicas para la salud.              |
 | **Robótica y Automatización**  | Innovaciones en robótica industrial y colaborativa. |
 | **Tecnologías de la Información** | Avances en telecomunicaciones y redes.           |
 
----
-
 ## Eventos y Actividades
 
 El EINA organiza y participa en eventos que fomentan la formación integral de sus estudiantes.
 
-| **Evento/Actividad**         | **Descripción**                                      |
-|-------------------------------|-----------------------------------------------------|
-| **Feria de empresas (EmpleaEINA)** | Encuentro entre estudiantes y empresas.          |
+| **Evento/Actividad**         | **Descripción**                                      || **Feria de empresas (EmpleaEINA)** | Encuentro entre estudiantes y empresas.          |
 | **Jornadas de puertas abiertas** | Orientación para futuros estudiantes.             |
 | **Concursos de robótica**    | Promoción de proyectos innovadores en robótica.      |
 | **Charlas y seminarios**     | Conferencias con expertos nacionales e internacionales. |
 | **Talleres de habilidades**  | Formación en comunicación, liderazgo y trabajo en equipo.|
 
----
-
 ## Localización
 
 El EINA está situado en el **Campus Río Ebro**, al norte de Zaragoza. Este campus es conocido por su ambiente tecnológico y moderno.
 
-| **Detalle**                | **Información**                                     |
-|----------------------------|----------------------------------------------------|
-| **Dirección**              | Calle María de Luna, 3, 50018 Zaragoza, España     |
+| **Detalle**                | **Información**                                     || **Dirección**              | Calle María de Luna, 3, 50018 Zaragoza, España     |
 | **Transporte público cercano** | Líneas de autobús urbano y tranvía.              |
 | **Otros servicios del campus** | Comedores, áreas deportivas y zonas verdes.     |
-
----
 
 ## Curiosidades
 
@@ -696,17 +486,11 @@ El EINA está situado en el **Campus Río Ebro**, al norte de Zaragoza. Este cam
 - **Proyección internacional**: El EINA participa en programas de movilidad como **Erasmus** y convenios con universidades de todo el mundo.
 - **Premios y distinciones**: Sus estudiantes han sido galardonados en múltiples competiciones nacionales e internacionales.
 
----
-
 ## Enlaces de Interés
 
-| **Recurso**                 | **Enlace**                                           |
-|-----------------------------|-----------------------------------------------------|
-| **Sitio web oficial de la EINA** | [eina.unizar.es](https://eina.unizar.es)          |
+| **Recurso**                 | **Enlace**                                           || **Sitio web oficial de la EINA** | [eina.unizar.es](https://eina.unizar.es)          |
 | **Universidad de Zaragoza** | [unizar.es](https://www.unizar.es)                  |
 | **Campus Virtual de Unizar** | [moodle.unizar.es](https://moodle.unizar.es)        |
-
----
 
 La Escuela de Ingeniería y Arquitectura de la Universidad de Zaragoza es un referente en formación técnica y un motor de innovación en la región de Aragón. ¡Una excelente elección para quienes desean formarse en el ámbito tecnológico y científico!
 
@@ -715,20 +499,14 @@ La Escuela de Ingeniería y Arquitectura de la Universidad de Zaragoza es un ref
 
 Zaragoza, capital de la comunidad autónoma de Aragón, es una ciudad española conocida por su rica historia, su impresionante arquitectura y su ubicación estratégica entre Madrid y Barcelona.
 
----
-
 ## Información General
 
-| **Característica**     | **Detalle**                        |
-|-------------------------|------------------------------------|
-| **País**               | España                            |
+| **Característica**     | **Detalle**                        || **País**               | España                            |
 | **Comunidad Autónoma** | Aragón                            |
 | **Población**          | ~700,000 habitantes (2021)        |
 | **Río Principal**      | Ebro                              |
 | **Gentilicio**         | Zaragozano/a                      |
 | **Altitud**            | 199 metros sobre el nivel del mar |
-
----
 
 ## Lugares de Interés
 
@@ -741,44 +519,30 @@ Un palacio islámico del siglo XI que actualmente es sede de las Cortes de Arag�
 ### 3. **Puente de Piedra**
 Un puente histórico que cruza el río Ebro y ofrece unas vistas magníficas de la Basílica del Pilar.
 
----
-
 ## Gastronomía
 
 Zaragoza es famosa por su gastronomía tradicional, que combina ingredientes locales y sabores únicos.
 
-| **Plato Típico**         | **Descripción**                                          |
-|---------------------------|----------------------------------------------------------|
-| **Ternasco de Aragón**    | Cordero asado o guisado, considerado un manjar local.    |
+| **Plato Típico**         | **Descripción**                                          || **Ternasco de Aragón**    | Cordero asado o guisado, considerado un manjar local.    |
 | **Bacalao al Ajoarriero** | Bacalao cocinado con ajo, aceite, y pimientos.           |
 | **Migas Aragonesas**      | Trozos de pan frito con chorizo, huevo y uvas.           |
 | **Melocotón con Vino**    | Postre típico de melocotones marinados en vino tinto.    |
-
----
 
 ## Eventos y Fiestas
 
 ### Fiestas del Pilar
 Se celebran en octubre en honor a la Virgen del Pilar, la patrona de Zaragoza. Incluyen procesiones, conciertos, y espectáculos de fuegos artificiales.
 
-| **Evento**                 | **Fecha**           | **Descripción**                                  |
-|----------------------------|---------------------|-------------------------------------------------|
-| **Ofrenda de Flores**      | 12 de octubre       | Miles de personas ofrecen flores a la Virgen.   |
+| **Evento**                 | **Fecha**           | **Descripción**                                  || **Ofrenda de Flores**      | 12 de octubre       | Miles de personas ofrecen flores a la Virgen.   |
 | **Romería de la Virgen**   | 13 de octubre       | Peregrinación por la ciudad.                    |
 | **Gigantes y Cabezudos**   | Durante las fiestas | Desfile de figuras gigantes y cabezudas.        |
-
----
 
 ## Clima
 
 Zaragoza tiene un clima semiárido, caracterizado por inviernos fríos y veranos calurosos.
 
-| **Estación** | **Temperatura Media (°C)** | **Precipitaciones (mm)** |
-|--------------|-----------------------------|--------------------------|
-| **Invierno** | 5-10                        | ~30                     |
+| **Estación** | **Temperatura Media (°C)** | **Precipitaciones (mm)** || **Invierno** | 5-10                        | ~30                     |
 | **Verano**   | 25-35                       | ~15                     |
-
----
 
 ## Curiosidades
 
@@ -786,24 +550,16 @@ Zaragoza tiene un clima semiárido, caracterizado por inviernos fríos y veranos
 - Es el punto medio entre Madrid y Barcelona, a unas 1:30 horas en tren de alta velocidad (AVE).
 - La Expo 2008 se celebró en Zaragoza, destacando el tema del agua y el desarrollo sostenible.
 
----
-
 ## Imágenes Destacadas
 
 ![Basílica del Pilar](https://upload.wikimedia.org/wikipedia/commons/0/0f/Zaragoza_-_Bas%C3%ADlica_del_Pilar_y_r%C3%ADo_Ebro.jpg)  
 *Fuente: Wikimedia Commons*
 
----
-
 ## Cómo Llegar
 
-| **Modo de Transporte** | **Duración**            | **Comentario**                               |
-|-------------------------|-------------------------|---------------------------------------------|
-| **Tren (AVE)**          | 1:30 desde Madrid/Barcelona | Alta velocidad, rápido y cómodo.          |
+| **Modo de Transporte** | **Duración**            | **Comentario**                               || **Tren (AVE)**          | 1:30 desde Madrid/Barcelona | Alta velocidad, rápido y cómodo.          |
 | **Avión**               | Aeropuerto de Zaragoza | Conexiones nacionales e internacionales.    |
 | **Coche**               | 3 horas desde Madrid    | Buena red de carreteras.                   |
-
----
 
 ¡Zaragoza es un destino ideal para quienes buscan historia, cultura, y gastronomía en un entorno acogedor!
 
@@ -812,20 +568,14 @@ Zaragoza tiene un clima semiárido, caracterizado por inviernos fríos y veranos
 
 Zaragoza, capital de la comunidad autónoma de Aragón, es una ciudad española conocida por su rica historia, su impresionante arquitectura y su ubicación estratégica entre Madrid y Barcelona.
 
----
-
 ## Información General
 
-| **Característica**     | **Detalle**                        |
-|-------------------------|------------------------------------|
-| **País**               | España                            |
+| **Característica**     | **Detalle**                        || **País**               | España                            |
 | **Comunidad Autónoma** | Aragón                            |
 | **Población**          | ~700,000 habitantes (2021)        |
 | **Río Principal**      | Ebro                              |
 | **Gentilicio**         | Zaragozano/a                      |
 | **Altitud**            | 199 metros sobre el nivel del mar |
-
----
 
 ## Lugares de Interés
 
@@ -838,44 +588,30 @@ Un palacio islámico del siglo XI que actualmente es sede de las Cortes de Arag�
 ### 3. **Puente de Piedra**
 Un puente histórico que cruza el río Ebro y ofrece unas vistas magníficas de la Basílica del Pilar.
 
----
-
 ## Gastronomía
 
 Zaragoza es famosa por su gastronomía tradicional, que combina ingredientes locales y sabores únicos.
 
-| **Plato Típico**         | **Descripción**                                          |
-|---------------------------|----------------------------------------------------------|
-| **Ternasco de Aragón**    | Cordero asado o guisado, considerado un manjar local.    |
+| **Plato Típico**         | **Descripción**                                          || **Ternasco de Aragón**    | Cordero asado o guisado, considerado un manjar local.    |
 | **Bacalao al Ajoarriero** | Bacalao cocinado con ajo, aceite, y pimientos.           |
 | **Migas Aragonesas**      | Trozos de pan frito con chorizo, huevo y uvas.           |
 | **Melocotón con Vino**    | Postre típico de melocotones marinados en vino tinto.    |
-
----
 
 ## Eventos y Fiestas
 
 ### Fiestas del Pilar
 Se celebran en octubre en honor a la Virgen del Pilar, la patrona de Zaragoza. Incluyen procesiones, conciertos, y espectáculos de fuegos artificiales.
 
-| **Evento**                 | **Fecha**           | **Descripción**                                  |
-|----------------------------|---------------------|-------------------------------------------------|
-| **Ofrenda de Flores**      | 12 de octubre       | Miles de personas ofrecen flores a la Virgen.   |
+| **Evento**                 | **Fecha**           | **Descripción**                                  || **Ofrenda de Flores**      | 12 de octubre       | Miles de personas ofrecen flores a la Virgen.   |
 | **Romería de la Virgen**   | 13 de octubre       | Peregrinación por la ciudad.                    |
 | **Gigantes y Cabezudos**   | Durante las fiestas | Desfile de figuras gigantes y cabezudas.        |
-
----
 
 ## Clima
 
 Zaragoza tiene un clima semiárido, caracterizado por inviernos fríos y veranos calurosos.
 
-| **Estación** | **Temperatura Media (°C)** | **Precipitaciones (mm)** |
-|--------------|-----------------------------|--------------------------|
-| **Invierno** | 5-10                        | ~30                     |
+| **Estación** | **Temperatura Media (°C)** | **Precipitaciones (mm)** || **Invierno** | 5-10                        | ~30                     |
 | **Verano**   | 25-35                       | ~15                     |
-
----
 
 ## Curiosidades
 
@@ -883,24 +619,16 @@ Zaragoza tiene un clima semiárido, caracterizado por inviernos fríos y veranos
 - Es el punto medio entre Madrid y Barcelona, a unas 1:30 horas en tren de alta velocidad (AVE).
 - La Expo 2008 se celebró en Zaragoza, destacando el tema del agua y el desarrollo sostenible.
 
----
-
 ## Imágenes Destacadas
 
 ![Basílica del Pilar](https://upload.wikimedia.org/wikipedia/commons/0/0f/Zaragoza_-_Bas%C3%ADlica_del_Pilar_y_r%C3%ADo_Ebro.jpg)  
 *Fuente: Wikimedia Commons*
 
----
-
 ## Cómo Llegar
 
-| **Modo de Transporte** | **Duración**            | **Comentario**                               |
-|-------------------------|-------------------------|---------------------------------------------|
-| **Tren (AVE)**          | 1:30 desde Madrid/Barcelona | Alta velocidad, rápido y cómodo.          |
+| **Modo de Transporte** | **Duración**            | **Comentario**                               || **Tren (AVE)**          | 1:30 desde Madrid/Barcelona | Alta velocidad, rápido y cómodo.          |
 | **Avión**               | Aeropuerto de Zaragoza | Conexiones nacionales e internacionales.    |
 | **Coche**               | 3 horas desde Madrid    | Buena red de carreteras.                   |
-
----
 
 ¡Zaragoza es un destino ideal para quienes buscan historia, cultura, y gastronomía en un entorno acogedor!
 
@@ -909,96 +637,66 @@ Zaragoza tiene un clima semiárido, caracterizado por inviernos fríos y veranos
 
 Los Pirineos son una majestuosa cadena montañosa que se extiende a lo largo de aproximadamente 430 kilómetros entre España, Francia y Andorra. Son el hogar de paisajes espectaculares, una rica biodiversidad y tradiciones culturales únicas.
 
----
-
 ## Información General
 
-| **Característica**       | **Detalle**                            |
-|---------------------------|----------------------------------------|
-| **Ubicación**            | Entre España, Francia y Andorra        |
+| **Característica**       | **Detalle**                            || **Ubicación**            | Entre España, Francia y Andorra        |
 | **Pico más alto**        | Aneto (3,404 metros)                   |
 | **Extensión**            | ~430 km                                |
 | **Formación Geológica**  | Era Paleozoica (~300 millones de años) |
 | **Ecosistema principal** | Alpino y subalpino                     |
 
----
-
 ## Principales Picos de los Pirineos
 
-| **Pico**              | **Altura (m)** | **Ubicación**            |
-|------------------------|----------------|--------------------------|
-| **Aneto**             | 3,404          | España                   |
+| **Pico**              | **Altura (m)** | **Ubicación**            || **Aneto**             | 3,404          | España                   |
 | **Posets**            | 3,375          | España                   |
 | **Monte Perdido**     | 3,355          | España                   |
 | **Vignemale**         | 3,298          | Francia/España           |
 | **La Maladeta**       | 3,312          | España                   |
 
----
-
 ## Parques Naturales y Nacionales
 
 Los Pirineos albergan numerosos espacios protegidos que conservan su biodiversidad y su belleza natural.
 
-| **Parque**                        | **Ubicación**          | **Descripción**                            |
-|-----------------------------------|------------------------|--------------------------------------------|
-| **Parque Nacional de Ordesa y Monte Perdido** | Aragón (España)       | Patrimonio de la Humanidad por la UNESCO. |
+| **Parque**                        | **Ubicación**          | **Descripción**                            || **Parque Nacional de Ordesa y Monte Perdido** | Aragón (España)       | Patrimonio de la Humanidad por la UNESCO. |
 | **Parque Nacional de los Pirineos**          | Francia               | Amplias áreas de glaciares y lagos.       |
 | **Parque Natural de Aigüestortes i Estany de Sant Maurici** | Cataluña (España) | Lagos de alta montaña y picos escarpados. |
 | **Parque Natural de Alt Pirineu**           | Cataluña (España)     | El parque más grande de Cataluña.         |
-
----
 
 ## Actividades al Aire Libre
 
 Los Pirineos son un destino perfecto para los amantes de la naturaleza y los deportes al aire libre.
 
-| **Actividad**           | **Descripción**                                    |
-|--------------------------|--------------------------------------------------|
-| **Senderismo**          | Rutas como el GR-11 o el Camino de Santiago.      |
+| **Actividad**           | **Descripción**                                    || **Senderismo**          | Rutas como el GR-11 o el Camino de Santiago.      |
 | **Esquí**               | Estaciones como Baqueira-Beret y Formigal.        |
 | **Escalada**            | Paredes y picos desafiantes como los Mallos de Riglos. |
 | **Rafting**             | Descenso de ríos como el Gállego o el Noguera Pallaresa. |
 | **Observación de fauna**| Ver osos pardos, buitres y quebrantahuesos.       |
 
----
-
 ## Gastronomía
 
 La región pirenaica ofrece platos típicos basados en ingredientes locales como quesos, carnes y setas.
 
-| **Plato Típico**            | **Descripción**                                      |
-|------------------------------|----------------------------------------------------|
-| **Civet de Jabalí**          | Guiso de carne de jabalí con vino tinto.           |
+| **Plato Típico**            | **Descripción**                                      || **Civet de Jabalí**          | Guiso de carne de jabalí con vino tinto.           |
 | **Trucha Pirenaica**         | Pescado fresco de los ríos de la región.           |
 | **Quesos Artesanales**       | Como el queso de Roncal o el Mató de Cataluña.     |
 | **Garbure**                  | Sopa tradicional del lado francés con col y jamón. |
 | **Chuletón de Ternera**      | Carne de vacuno cocinada a la parrilla.            |
 
----
-
 ## Clima
 
 El clima de los Pirineos varía dependiendo de la altitud y la ubicación.
 
-| **Zona**                  | **Clima**                 | **Características**                         |
-|---------------------------|---------------------------|---------------------------------------------|
-| **Zona baja (valles)**    | Mediterráneo/Atlántico    | Veranos cálidos e inviernos suaves.         |
+| **Zona**                  | **Clima**                 | **Características**                         || **Zona baja (valles)**    | Mediterráneo/Atlántico    | Veranos cálidos e inviernos suaves.         |
 | **Zona media**            | Continental              | Nieve en invierno, temperaturas frescas.    |
 | **Zona alta**             | Alpino                   | Frío extremo, nevadas frecuentes.           |
-
----
 
 ## Cultura y Tradiciones
 
 Los Pirineos son una región rica en folclore, con tradiciones que han perdurado durante siglos.
 
-| **Evento/Tradición**         | **Ubicación**        | **Descripción**                            |
-|-------------------------------|----------------------|--------------------------------------------|
-| **Fallas del Pirineo**        | Aragón y Cataluña    | Descenso nocturno con antorchas en verano. |
+| **Evento/Tradición**         | **Ubicación**        | **Descripción**                            || **Fallas del Pirineo**        | Aragón y Cataluña    | Descenso nocturno con antorchas en verano. |
 | **Carnaval de Bielsa**        | Aragón              | Fiesta con personajes tradicionales.       |
 | **Danza de San Juan**         | País Vasco          | Celebración del solsticio de verano.       |
-
----
 
 ## Curiosidades
 
@@ -1006,17 +704,11 @@ Los Pirineos son una región rica en folclore, con tradiciones que han perdurado
 - **Franja cultural**: Separan dos culturas principales, la española y la francesa, pero también tienen tradiciones únicas como el idioma aragonés o el gascón.
 - **Osos pardos**: Aunque estuvieron casi extintos, hoy vuelven a habitar los Pirineos gracias a programas de reintroducción.
 
----
-
 ## Cómo Llegar
 
-| **Modo de Transporte**      | **Comentario**                                         |
-|-----------------------------|-------------------------------------------------------|
-| **Coche**                   | Carreteras como la N-260 conectan los principales valles. |
+| **Modo de Transporte**      | **Comentario**                                         || **Coche**                   | Carreteras como la N-260 conectan los principales valles. |
 | **Tren**                    | Líneas como la de Zaragoza-Canfranc.                  |
 | **Avión**                   | Aeropuertos cercanos en Zaragoza, Barcelona y Toulouse. |
-
----
 
 Los Pirineos ofrecen una experiencia única donde se combinan la majestuosidad de sus paisajes y la riqueza cultural. ¡Un lugar perfecto para explorar y disfrutar de la naturaleza en su máxima expresión!
 
@@ -1025,96 +717,66 @@ Los Pirineos ofrecen una experiencia única donde se combinan la majestuosidad d
 
 Los Pirineos son una majestuosa cadena montañosa que se extiende a lo largo de aproximadamente 430 kilómetros entre España, Francia y Andorra. Son el hogar de paisajes espectaculares, una rica biodiversidad y tradiciones culturales únicas.
 
----
-
 ## Información General
 
-| **Característica**       | **Detalle**                            |
-|---------------------------|----------------------------------------|
-| **Ubicación**            | Entre España, Francia y Andorra        |
+| **Característica**       | **Detalle**                            || **Ubicación**            | Entre España, Francia y Andorra        |
 | **Pico más alto**        | Aneto (3,404 metros)                   |
 | **Extensión**            | ~430 km                                |
 | **Formación Geológica**  | Era Paleozoica (~300 millones de años) |
 | **Ecosistema principal** | Alpino y subalpino                     |
 
----
-
 ## Principales Picos de los Pirineos
 
-| **Pico**              | **Altura (m)** | **Ubicación**            |
-|------------------------|----------------|--------------------------|
-| **Aneto**             | 3,404          | España                   |
+| **Pico**              | **Altura (m)** | **Ubicación**            || **Aneto**             | 3,404          | España                   |
 | **Posets**            | 3,375          | España                   |
 | **Monte Perdido**     | 3,355          | España                   |
 | **Vignemale**         | 3,298          | Francia/España           |
 | **La Maladeta**       | 3,312          | España                   |
 
----
-
 ## Parques Naturales y Nacionales
 
 Los Pirineos albergan numerosos espacios protegidos que conservan su biodiversidad y su belleza natural.
 
-| **Parque**                        | **Ubicación**          | **Descripción**                            |
-|-----------------------------------|------------------------|--------------------------------------------|
-| **Parque Nacional de Ordesa y Monte Perdido** | Aragón (España)       | Patrimonio de la Humanidad por la UNESCO. |
+| **Parque**                        | **Ubicación**          | **Descripción**                            || **Parque Nacional de Ordesa y Monte Perdido** | Aragón (España)       | Patrimonio de la Humanidad por la UNESCO. |
 | **Parque Nacional de los Pirineos**          | Francia               | Amplias áreas de glaciares y lagos.       |
 | **Parque Natural de Aigüestortes i Estany de Sant Maurici** | Cataluña (España) | Lagos de alta montaña y picos escarpados. |
 | **Parque Natural de Alt Pirineu**           | Cataluña (España)     | El parque más grande de Cataluña.         |
-
----
 
 ## Actividades al Aire Libre
 
 Los Pirineos son un destino perfecto para los amantes de la naturaleza y los deportes al aire libre.
 
-| **Actividad**           | **Descripción**                                    |
-|--------------------------|--------------------------------------------------|
-| **Senderismo**          | Rutas como el GR-11 o el Camino de Santiago.      |
+| **Actividad**           | **Descripción**                                    || **Senderismo**          | Rutas como el GR-11 o el Camino de Santiago.      |
 | **Esquí**               | Estaciones como Baqueira-Beret y Formigal.        |
 | **Escalada**            | Paredes y picos desafiantes como los Mallos de Riglos. |
 | **Rafting**             | Descenso de ríos como el Gállego o el Noguera Pallaresa. |
 | **Observación de fauna**| Ver osos pardos, buitres y quebrantahuesos.       |
 
----
-
 ## Gastronomía
 
 La región pirenaica ofrece platos típicos basados en ingredientes locales como quesos, carnes y setas.
 
-| **Plato Típico**            | **Descripción**                                      |
-|------------------------------|----------------------------------------------------|
-| **Civet de Jabalí**          | Guiso de carne de jabalí con vino tinto.           |
+| **Plato Típico**            | **Descripción**                                      || **Civet de Jabalí**          | Guiso de carne de jabalí con vino tinto.           |
 | **Trucha Pirenaica**         | Pescado fresco de los ríos de la región.           |
 | **Quesos Artesanales**       | Como el queso de Roncal o el Mató de Cataluña.     |
 | **Garbure**                  | Sopa tradicional del lado francés con col y jamón. |
 | **Chuletón de Ternera**      | Carne de vacuno cocinada a la parrilla.            |
 
----
-
 ## Clima
 
 El clima de los Pirineos varía dependiendo de la altitud y la ubicación.
 
-| **Zona**                  | **Clima**                 | **Características**                         |
-|---------------------------|---------------------------|---------------------------------------------|
-| **Zona baja (valles)**    | Mediterráneo/Atlántico    | Veranos cálidos e inviernos suaves.         |
+| **Zona**                  | **Clima**                 | **Características**                         || **Zona baja (valles)**    | Mediterráneo/Atlántico    | Veranos cálidos e inviernos suaves.         |
 | **Zona media**            | Continental              | Nieve en invierno, temperaturas frescas.    |
 | **Zona alta**             | Alpino                   | Frío extremo, nevadas frecuentes.           |
-
----
 
 ## Cultura y Tradiciones
 
 Los Pirineos son una región rica en folclore, con tradiciones que han perdurado durante siglos.
 
-| **Evento/Tradición**         | **Ubicación**        | **Descripción**                            |
-|-------------------------------|----------------------|--------------------------------------------|
-| **Fallas del Pirineo**        | Aragón y Cataluña    | Descenso nocturno con antorchas en verano. |
+| **Evento/Tradición**         | **Ubicación**        | **Descripción**                            || **Fallas del Pirineo**        | Aragón y Cataluña    | Descenso nocturno con antorchas en verano. |
 | **Carnaval de Bielsa**        | Aragón              | Fiesta con personajes tradicionales.       |
 | **Danza de San Juan**         | País Vasco          | Celebración del solsticio de verano.       |
-
----
 
 ## Curiosidades
 
@@ -1122,17 +784,11 @@ Los Pirineos son una región rica en folclore, con tradiciones que han perdurado
 - **Franja cultural**: Separan dos culturas principales, la española y la francesa, pero también tienen tradiciones únicas como el idioma aragonés o el gascón.
 - **Osos pardos**: Aunque estuvieron casi extintos, hoy vuelven a habitar los Pirineos gracias a programas de reintroducción.
 
----
-
 ## Cómo Llegar
 
-| **Modo de Transporte**      | **Comentario**                                         |
-|-----------------------------|-------------------------------------------------------|
-| **Coche**                   | Carreteras como la N-260 conectan los principales valles. |
+| **Modo de Transporte**      | **Comentario**                                         || **Coche**                   | Carreteras como la N-260 conectan los principales valles. |
 | **Tren**                    | Líneas como la de Zaragoza-Canfranc.                  |
 | **Avión**                   | Aeropuertos cercanos en Zaragoza, Barcelona y Toulouse. |
-
----
 
 Los Pirineos ofrecen una experiencia única donde se combinan la majestuosidad de sus paisajes y la riqueza cultural. ¡Un lugar perfecto para explorar y disfrutar de la naturaleza en su máxima expresión!
 

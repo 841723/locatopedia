@@ -561,20 +561,39 @@ async function getDataOrderedByQuery(query, params = []) {
     return res.rows;
 }
 
+async function deleteArticle(hash) {
+    try {
+        const res = await pool.query(
+            `
+            delete from 
+                tfg.article
+            where
+                hash = $1
+            `,
+            [hash]
+        );
+        return res.rowCount === 1;
+        
+    } catch (err) {
+        console.log("Error in deleteArticle");
+        console.log(err);
+    }
+}
+
 module.exports = {
     checkExistingHash,
     getDataFromHash,
     getDataFromHashAndVersion,
-    
+
     createNewVersionFromHash,
     createNewArticleFromHash,
-    
+
     getAll,
     getAllVersionsFromHash,
-    
+
     getLikesFromHashandEmail,
     toggleLike,
-    
+
     getPopular,
     getRandom,
     getLiked,
@@ -582,49 +601,6 @@ module.exports = {
     getEdited,
     getNewestVersions,
     getNewestArticles,
-};
 
-/*
-WITH ordered_hashes AS (
-    SELECT 
-        l.hash,
-        ROW_NUMBER() OVER () AS row_order -- Mantiene el orden original
-    FROM (
-        -- Subconsulta que genera los hashes
-        SELECT 
-            l.hash
-        FROM 
-            tfg.likes l
-        GROUP BY 
-            l.hash
-        ORDER BY 
-            COUNT(*) DESC
-    ) l
-),
-latest_versions AS (
-    SELECT DISTINCT ON (v.hash)
-    v.hash, v.id_version, v.title, v.subtitle, v."content", v."date" AS edition_date, v.email_user AS editor_mail
-    FROM 
-        tfg.version v
-    JOIN 
-        ordered_hashes o 
-    ON 
-        v.hash = o.hash
-    ORDER BY 
-        v.hash, v."date" DESC
-)
-SELECT 
-    a.hash, a.auid, a."date" AS creation_date, a.email_user AS creator_mail,a.is_deprecated, a.new_hash, a.img_url, lv.id_version, lv.title, lv.subtitle, lv."content", lv.edition_date, lv.editor_mail
-FROM 
-    latest_versions lv
-JOIN 
-    tfg.article a 
-ON 
-    a.hash = lv.hash
-JOIN 
-    ordered_hashes o
-ON 
-    a.hash = o.hash
-ORDER BY 
-    o.row_order; -- Respeta el orden original de la consulta del IN
-*/
+    deleteArticle,
+};

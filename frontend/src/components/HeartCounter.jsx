@@ -1,13 +1,20 @@
 import { Heart } from "@/components/basic/icons/Heart";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { BACKEND_API_URL } from "@/lib/env.js";
 
 export function HeartCounter({initialLikes, initialLiked, hash, email}) {
+    const navigate = useNavigate();
     const [liked, setLiked] = useState(initialLiked);
     const [likes, setLikes] = useState(Number(initialLikes));
 
     const handleLike = () => {
+        if (!email) {
+            navigate("/account");
+            return;
+        }
+
         fetch(`${BACKEND_API_URL}/api/wiki/like`, {
             method: "POST",
             headers: {

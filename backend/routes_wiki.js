@@ -9,7 +9,7 @@ const {
     getAllVersionsFromHash,
     getLikesFromHashandEmail,
     toggleLike,
-    
+
     getPopular,
     getRandom,
     getLiked,
@@ -17,6 +17,8 @@ const {
     getEdited,
     getNewestVersions,
     getNewestArticles,
+
+    deleteArticle,
 } = require("./locatopedia");
 
 const { saveBase64asWebP } = require("./utils");
@@ -226,3 +228,14 @@ router_wiki.get("/:hash/versions", async (req, res) => {
 
     res.status(200).send(data);
 });
+
+// PARAMS: hash
+// RETURNS: true if deleted
+router_wiki.delete("/delete", async (req, res) => {
+    const { hash } = req.body;
+
+    const response = await deleteArticle(hash);
+    console.log("response", response);
+
+    res.status(204).send();
+}); 

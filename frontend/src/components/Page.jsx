@@ -20,7 +20,7 @@ export function Page() {
     const { hash, version } = useParams();
 
     const navigate = useNavigate();
-    
+
     const [emailUser] = useState(getData()?.email);
     const [content, setContent] = useState({
         title: "",
@@ -29,15 +29,15 @@ export function Page() {
         date: "",
         email_user: "",
     });
-    
+
     const [editedContent, setEditedContent] = useState({
         title: "",
         subtitle: "",
         content: "",
     });
-    
+
     const [editing, setEditing] = useState(false);
-    
+
     let url = `${BACKEND_API_URL}/api/wiki?hash=${hash}${version ? `&version=${version}` : ""}${emailUser ? `&email=${emailUser}` : ""}`;
     const { data, loading, error } = useFetch(url);
 
@@ -315,6 +315,29 @@ export function Page() {
                         </div>
                     )}
             </footer>
+
+            {emailUser && emailUser === "841723@unizar.es" && (
+                <Button
+                    className='mt-10 bg-red-500 hover:bg-red-600 w-full'
+                    onClick={() => {
+                        fetch(`${BACKEND_API_URL}/api/wiki/delete/`, {
+                            method: "DELETE",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                hash: hash,
+                            }),
+                        })
+                            .then(() => {
+                                console.log("article hash", hash, "deleted");
+                                navigate("/");
+                            })
+                    }}
+                >
+                    as <strong>841723@unizar.es</strong>: Delete this page
+                </Button>
+            )}
         </>
     );
 }
