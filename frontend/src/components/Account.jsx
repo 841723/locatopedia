@@ -67,18 +67,17 @@ export function Account() {
                     <div className='flex flex-col gap-20 mt-10'>
                         <ArticleList
                             title='Liked by you'
-                            // query='/api/wiki/popular?limit=4'
-                            query={'/api/wiki/liked?email=' + credential.email}
+                            query={"/api/wiki/auth/liked"}
                         />
 
                         <ArticleList
                             title='Created by you'
-                            query={'/api/wiki/created?email=' + credential.email}
+                            query={"/api/wiki/auth/created"}
                         />
 
                         <ArticleList
                             title='Edited by you'
-                            query={'/api/wiki/edited?email=' + credential.email}
+                            query={"/api/wiki/auth/edited"}
                         />
 
                         {/* <ArticleList

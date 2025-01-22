@@ -15,7 +15,9 @@ import { BACKEND_API_URL } from "@/lib/env";
 import { HeartCounter } from "@/components/HeartCounter";
 
 export function Page() {
-    const { getData } = use(AccountContext);
+    const { getData, getToken } = use(AccountContext);
+    const token = getToken();
+
     const { setText, setState } = use(TopInfoDisplayContext);
     const { hash, version } = useParams();
 
@@ -82,10 +84,11 @@ export function Page() {
     }, [editedContent]);
 
     async function saveChanges() {
-        fetch(`${BACKEND_API_URL}/api/wiki/newversion`, {
+        fetch(`${BACKEND_API_URL}/api/wiki/auth/newversion`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({
                 hash: hash,
@@ -320,19 +323,19 @@ export function Page() {
                 <Button
                     className='mt-10 bg-red-500 hover:bg-red-600 w-full'
                     onClick={() => {
-                        fetch(`${BACKEND_API_URL}/api/wiki/delete/`, {
+                        fetch(`${BACKEND_API_URL}/api/wiki/auth/delete/`, {
                             method: "DELETE",
                             headers: {
                                 "Content-Type": "application/json",
+                                Authorization: `Bearer ${token}`,
                             },
                             body: JSON.stringify({
                                 hash: hash,
                             }),
-                        })
-                            .then(() => {
-                                console.log("article hash", hash, "deleted");
-                                navigate("/");
-                            })
+                        }).then(() => {
+                            console.log("article hash", hash, "deleted");
+                            navigate("/");
+                        });
                     }}
                 >
                     as <strong>841723@unizar.es</strong>: Delete this page

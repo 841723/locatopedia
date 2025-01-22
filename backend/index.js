@@ -1,9 +1,11 @@
 const express = require("express");
 const cors = require("cors");
 const routes_wiki = require("./routes_wiki");
+const routes_wiki_auth = require("./routes_wiki_auth");
 const routes_dggs = require("./routes_dggs");
 
-const app = express();
+
+const app = express(); 
 
 app.use(express.json({ limit: "50mb" }));
 app.use(cors({
@@ -16,6 +18,7 @@ const corsOrigin = process.env.CORS_ORIGIN.split(",");
 console.log("CORS_ORIGIN: ", corsOrigin);
 
 app.use("/api/wiki", routes_wiki);
+app.use("/api/wiki/auth", routes_wiki_auth);
 app.use("/api/dggstools", routes_dggs);
 
 app.use("/api/images", express.static("public/images"));

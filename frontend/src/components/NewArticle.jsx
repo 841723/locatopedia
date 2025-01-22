@@ -11,6 +11,7 @@ import { Modal } from "@/lib/modal";
 
 import { BACKEND_API_URL } from "@/lib/env";
 import { PageContent } from "./PageContent";
+import { userfetch } from "@/hooks/useFetch";
 
 
 export function NewArticle() {
@@ -87,20 +88,23 @@ export function NewArticle() {
 
                 console.log({imgData});
 
-                const res = await fetch(`${BACKEND_API_URL}/api/wiki/add`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        cuids: selectedCells,
-                        title: title,
-                        subtitle: subtitle,
-                        content: contents,
-                        imgData: imgData,
-                        emailUser: email_user,
-                    }),
-                });
+                const res = await userfetch(
+                    `${BACKEND_API_URL}/api/wiki/auth/add`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            cuids: selectedCells,
+                            title: title,
+                            subtitle: subtitle,
+                            content: contents,
+                            imgData: imgData,
+                            emailUser: email_user,
+                        }),
+                    }
+                );
                 if (res.status !== 201) {
                     console.error("Error adding new article");
                     return;
@@ -125,7 +129,7 @@ export function NewArticle() {
                 return;
             }
 
-            fetch(
+            userfetch(
                 `${BACKEND_API_URL}/api/wiki/validnewcuids?cuids=${selectedCells.join(",")}`
             )
                 .then((res) => res.json())

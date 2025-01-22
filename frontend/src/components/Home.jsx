@@ -1,9 +1,8 @@
 import { ArticleList } from "./ArticleList";
 
 export function Home() {
-
     return (
-        <div className='flex flex-col gap-20 bg-'>
+        <div className='flex flex-col gap-20'>
             <ArticleList title='Popular' query='/api/wiki/popular?limit=3' />
             {/* <ArticleList
                 title='Close to you'

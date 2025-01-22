@@ -1,33 +1,47 @@
-import { useCookie } from "@/lib/useCookie";
+import { useCookie } from "@/hooks/useCookie";
 import { jwtDecode } from "jwt-decode";
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
+import { googleLogout } from "@react-oauth/google";
+
 
 export const AccountContext = createContext({});
 
 export function AccountProvider({ children }) {
-    const [
-        credentialCookie,
-        credentialUpdateCookie,
-        credentialDeleteCookie,
-    ] = useCookie("credential");
+    const [credentialCookie, credentialUpdateCookie, credentialDeleteCookie] =
+        useCookie("credential");
 
-    const [data, setData] = useState(
-        credentialCookie ? jwtDecode(credentialCookie) : null
-    );
+    useEffect(() => {
+        console.log("Checking if token is expired");
+        if (credentialCookie) {
+            const decoded = jwtDecode(credentialCookie);
+            console.log(decoded);
+
+            const { exp } = decoded;
+            if (exp * 1000 < Date.now()) {
+                logout();
+            }
+        }
+        else {
+            console.log("No token found");
+            logout();
+        }
+    }, [credentialCookie, credentialDeleteCookie]);
+
+    const [token, setToken] = useState(null);
+    const [decoded, setDecoded] = useState(null);
 
     const login = (res) => {
-        credentialUpdateCookie(res.credential, { expires: 1 });
-        const newData = jwtDecode(res.credential);
-        setData(newData);
+        const decodedToken = jwtDecode(res.credential);
+        credentialUpdateCookie(res.credential, decodedToken.exp);
+        setToken(res.credential);
+        setDecoded(decodedToken);
     };
 
     const logout = () => {
         credentialDeleteCookie();
-        setData(null);
-    };
-
-    const getData = () => {
-        return data;
+        googleLogout();
+        setToken(null);
+        setDecoded(null);
     };
 
     const isLoggedIn = () => {
@@ -39,9 +53,9 @@ export function AccountProvider({ children }) {
             value={{
                 login,
                 logout,
-                getData,
                 isLoggedIn,
-                data,
+                getToken: () => token,
+                getData: () => decoded,
             }}
         >
             {children}
