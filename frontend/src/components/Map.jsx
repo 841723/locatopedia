@@ -76,7 +76,12 @@ export function Map({
     initialMapSize = "small",
     map4DownloadImage = false,
     idMap = "mapid",
+    allowSelectingCells,
 }) {
+
+    if (allowSelectingCells === undefined) {
+        throw new Error("allowSelectingCells is required");
+    }
 
     const smallMapClassName = "w-full h-80";
     const bigMapClassName =
@@ -86,6 +91,7 @@ export function Map({
     const [className, setClassName] = useState(
         mapSize === "big" ? bigMapClassName : smallMapClassName
     );
+    const [mapPosition, setMapPosition] = useState(null);
 
     const [selectedInicialCellsIDs] = useState(
         selectedInitial ? selectedInitial : []
@@ -98,11 +104,6 @@ export function Map({
     var hexLayer = useRef(null);
 
     function handleClickCell(h3id) {
-        const allowSelectingCells =
-            !selectedInicialCellsIDs ||
-            (Array.isArray(selectedInicialCellsIDs) &&
-                selectedInicialCellsIDs.length === 0);
-
         if (!allowSelectingCells) return;
 
         setSelectedCellsIDs((prev) => {
@@ -130,6 +131,23 @@ export function Map({
     }
 
     useEffect(() => {
+        const handleMoveEnd = () => {
+            console.log("moveend");
+            setMapPosition({
+                position: map.current.getCenter(),
+                zoom: map.current.getZoom(),
+            });
+        };
+        if (map.current) {
+            map.current.addEventListener("moveend", handleMoveEnd);
+        }
+        else {
+            console.log("map.current is null");
+        }
+        return () => map.current?.removeEventListener("moveend", handleMoveEnd);
+    }, [map.current]);
+
+    useEffect(() => {
         handleSetSelectedCells(selectedCellsIDs);
     }, [selectedCellsIDs, handleSetSelectedCells]);
 
@@ -145,31 +163,31 @@ export function Map({
             attribution:
                 '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>',
         }).addTo(map.current);
-        map.current.setView([51.509865, -0.118092], 10);
-        if (selectedCellsIDs.length === 0) {
-            // get user gps position 
-            // set zoom to 13
-            map.current.locate({ setView: true, maxZoom: 13 });
-            map.current.on("locationfound", (e) => {
+        
+        map.current.setView([41.64739040268027, -0.882854461669922], 13);
+        if (mapPosition) {
+            map.current.setView(mapPosition.position, mapPosition.zoom);
+        }
+        else {
+            if (selectedCellsIDs.length === 0) {
+                // get user gps position 
                 // set zoom to 13
-                map.current.setView(e.latlng, 13);
-            });
-        } else {
-            const polygonVertex = h3.cellsToMultiPolygon(
-                selectedCellsIDs,
-                false
-            );
-            const bounds = L.latLngBounds(polygonVertex);
-            map.current.fitBounds(bounds);
+                map.current.locate({ setView: true, maxZoom: 13 });
+                map.current.on("locationfound", (e) => {
+                    map.current.setView(e.latlng, 13);
+                });
+            } else {
+                const polygonVertex = h3.cellsToMultiPolygon(
+                    selectedCellsIDs,
+                    false
+                );
+                const bounds = L.latLngBounds(polygonVertex);
+                map.current.fitBounds(bounds);
+            }
         }
     }, [className]);
 
     useEffect(() => {
-        const allowSelectingCells =
-            !selectedInicialCellsIDs ||
-            (Array.isArray(selectedInicialCellsIDs) &&
-                selectedInicialCellsIDs.length === 0);
-
         if (allowSelectingCells) return;
 
         for (const h3id of selectedCellsIDs) {
@@ -182,7 +200,12 @@ export function Map({
         const polygonVertex = h3.cellsToMultiPolygon(selectedCellsIDs, false);
         const bounds = L.latLngBounds(polygonVertex);
 
-        map.current.fitBounds(bounds);
+        if (mapPosition) {
+            map.current.setView(mapPosition.center, mapPosition.zoom);
+        }
+        else {
+            map.current.fitBounds(bounds);
+        }
 
         setSelectedCellsIDs(selectedCellsIDs);
     }, [selectedCellsIDs]);
@@ -190,11 +213,6 @@ export function Map({
     useEffect(() => {
         function updateMapDisplay() {
             if (!map.current) return;
-
-            const allowSelectingCells =
-                !selectedInicialCellsIDs ||
-                (Array.isArray(selectedInicialCellsIDs) &&
-                    selectedInicialCellsIDs.length === 0);
 
             if (hexLayer.current) {
                 hexLayer.current.remove();

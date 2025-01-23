@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import ReactDOM from "react-dom/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Map } from "@/components/Map";
 import { Button } from "@/components/basic/Button";
 import { AutoSaveImage } from "@/components/AutoSaveImage";
@@ -13,23 +13,43 @@ import { BACKEND_API_URL } from "@/lib/env";
 import { PageContent } from "./PageContent";
 import { userfetch } from "@/hooks/useFetch";
 
-
 export function NewArticle() {
+    const { hash, version } = useParams();
+
+    useEffect(() => {
+        if (hash || version) {
+            (async () => {
+                let url = `${BACKEND_API_URL}/api/wiki?hash=${hash}${version ? `&version=${version}` : ""}`;
+                const response = await userfetch(url);
+                if (response.error) {
+                    console.error(response.error);
+                }
+                setTitle(response.data.title);
+                setSubtitle(response.data.subtitle);
+                setContents(response.data.content);
+                setSelectedCells(response.data.cuids);
+
+                console.log(response.data);
+            })();
+        }
+    }, [hash, version]);
+
     const mapImageRef = useRef(null);
     const navigate = useNavigate();
 
     const [disabled, setDisabled] = useState(true);
     const [validCuids, setValidCuids] = useState(false);
-    const [selectedCells, setSelectedCells] = useState([]);
     const [published, setPublished] = useState(false);
 
+    const [selectedCells, setSelectedCells] = useState([]);
     const [title, setTitle] = useState("");
     const [subtitle, setSubtitle] = useState("");
     const [contents, setContents] = useState("");
 
     const { setState, setText } = use(TopInfoDisplayContext);
-    const { getData } = use(AccountContext);
-    const [email_user] = useState(getData()?.email);
+    const { getData, getToken } = use(AccountContext);
+    const credentials = getData();
+    const [email_user] = useState(credentials.email);
 
     async function handleClick() {
         if (!title || !subtitle || !contents) {
@@ -78,6 +98,7 @@ export function NewArticle() {
                         selectedInitial={selectedCells}
                         handleSetSelectedCells={() => {}}
                         map4DownloadImage={true}
+                        allowSelectingCells={false}
                     />
                 </AutoSaveImage>
             );
@@ -85,8 +106,11 @@ export function NewArticle() {
                 const imgData = await mapImageRef.current.saveImage();
                 document.body.style.overflow = "auto";
                 div.remove();
-
-                console.log({imgData});
+                
+                console.log({ imgData });
+                
+                const token = getToken();
+                console.log({ token });
 
                 const res = await userfetch(
                     `${BACKEND_API_URL}/api/wiki/auth/add`,
@@ -94,6 +118,7 @@ export function NewArticle() {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
                         },
                         body: JSON.stringify({
                             cuids: selectedCells,
@@ -112,10 +137,7 @@ export function NewArticle() {
                 setText("Article created successfully");
                 setState(2);
 
-                console.log("res", res);
-                const data = await res.json();
-                console.log("data", data);
-                navigate(`/wiki/${data.hash}`);
+                navigate(`/wiki/${res.data.hash}`);
                 console.log("published");
                 return;
             }, 500);
@@ -131,15 +153,9 @@ export function NewArticle() {
 
             userfetch(
                 `${BACKEND_API_URL}/api/wiki/validnewcuids?cuids=${selectedCells.join(",")}`
-            )
-                .then((res) => res.json())
-                .then((res) => {
-                    setValidCuids(res.valid);
-                })
-                .catch((err) => {
-                    console.error(err);
-                    setDisabled(true);
-                });
+            ).then((res) => {
+                setValidCuids(res.data.valid);
+            });
         })();
     }, [selectedCells]);
 
@@ -152,13 +168,14 @@ export function NewArticle() {
                 !validCuids
         );
     }, [title, subtitle, contents, selectedCells, validCuids]);
+    
     return (
         <>
             <div className='flex justify-between mb-4'>
                 <div className='flex-1 flex flex-col'>
                     <textarea
                         id='title-textarea'
-                        defaultValue={""}
+                        defaultValue={title}
                         className='resize-none w-full text-4xl font-medium h-12 outline'
                         minLength={1}
                         placeholder='Page title'
@@ -167,7 +184,7 @@ export function NewArticle() {
                     />
                     <textarea
                         id='subtitle-textarea'
-                        defaultValue={""}
+                        defaultValue={subtitle}
                         className='resize-none w-full mt-2 text-xl text-gray-600 h-8 outline'
                         minLength={1}
                         placeholder='Page subtitle'
@@ -178,12 +195,15 @@ export function NewArticle() {
             </div>
 
             {!published ? (
-                <Map
-                    selectedInitial={[]}
-                    handleSetSelectedCells={setSelectedCells}
-                    allowMapResize={true}
-                    initialMapSize={"small"}
-                />
+                !hash || (hash && selectedCells.length > 0) ? (
+                    <Map
+                        selectedInitial={selectedCells}
+                        handleSetSelectedCells={setSelectedCells}
+                        allowMapResize={true}
+                        initialMapSize={"small"}
+                        allowSelectingCells={true}
+                    />
+                ) : null
             ) : (
                 <div className='w-full h-80' />
             )}
@@ -201,17 +221,14 @@ export function NewArticle() {
             /> */}
 
             <PageContent
-                initialContents={""}
+                initialContents={contents}
                 editing={true}
                 onChange={(value) => setContents(value)}
             />
 
             <div className='flex gap-8 justify-end mt-4'>
-                <Button onClick={() => navigate('/')}>cancel</Button>
-                <Button
-                    onClick={handleClick}
-                    disabled={disabled}
-                >
+                <Button onClick={() => navigate("/")}>cancel</Button>
+                <Button onClick={handleClick} disabled={disabled}>
                     publish
                 </Button>
             </div>

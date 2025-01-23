@@ -22,7 +22,11 @@ function App() {
         },
         {
             path: "/wiki/new/:hash",
-            element: <Page />,
+            element: <NewArticle />,
+        },
+        {
+            path: "/wiki/new/:hash/:version",
+            element: <NewArticle />,
         },
         {
             path: "/wiki/:hash/:version",

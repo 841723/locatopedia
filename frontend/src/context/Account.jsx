@@ -10,12 +10,11 @@ export function AccountProvider({ children }) {
     const [credentialCookie, credentialUpdateCookie, credentialDeleteCookie] =
         useCookie("credential");
 
+
     useEffect(() => {
         console.log("Checking if token is expired");
         if (credentialCookie) {
             const decoded = jwtDecode(credentialCookie);
-            console.log(decoded);
-
             const { exp } = decoded;
             if (exp * 1000 < Date.now()) {
                 logout();
@@ -27,8 +26,8 @@ export function AccountProvider({ children }) {
         }
     }, [credentialCookie, credentialDeleteCookie]);
 
-    const [token, setToken] = useState(null);
-    const [decoded, setDecoded] = useState(null);
+    const [token, setToken] = useState(credentialCookie ? credentialCookie : null);
+    const [decoded, setDecoded] = useState(token ? jwtDecode(token) : null);
 
     const login = (res) => {
         const decodedToken = jwtDecode(res.credential);
@@ -48,14 +47,22 @@ export function AccountProvider({ children }) {
         return credentialCookie ? true : false;
     };
 
+    const getToken = () => {
+        return token;
+    };
+
+    const getData = () => {
+        return decoded;
+    };
+
     return (
         <AccountContext.Provider
             value={{
                 login,
                 logout,
                 isLoggedIn,
-                getToken: () => token,
-                getData: () => decoded,
+                getToken,
+                getData,
             }}
         >
             {children}

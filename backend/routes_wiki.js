@@ -31,8 +31,8 @@ router_wiki.get("/", async (req, res) => {
     }
 
     const data = version
-        ? await getDataFromHashAndVersion(hash, version, email)
-        : await getDataFromHash(hash, email);
+        ? await getDataFromHashAndVersion(hash, version)
+        : await getDataFromHash(hash);
 
     if (!data.auid) {
         res.status(500).send("Internal server error");

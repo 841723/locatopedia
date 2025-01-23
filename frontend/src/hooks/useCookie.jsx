@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
 
 // Hook personalizado para manejar cookies de forma reactiva
 export const useCookie = (cookieName) => {
@@ -26,7 +25,7 @@ export const useCookie = (cookieName) => {
     useEffect(() => {
         const interval = setInterval(() => {
             const newValue = Cookies.get(cookieName);
-            if (newValue !== cookieValue) {
+            if (newValue && newValue !== cookieValue) {
                 setCookieValue(newValue); // Si el valor cambia, actualizar el estado
             }
         }, 1000); // Comprobar cambios cada segundo

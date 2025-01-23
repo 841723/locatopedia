@@ -9,15 +9,17 @@ const DEFAULT_OPTIONS = {
 };
 
 export async function userfetch(url, options) {
+    var status = -1;
     return fetch(url, options)
         .then((res) => {
             if (!res.ok) {
                 throw new Error("Network response was not ok");
             }
+            status = res.status;
             return res.json();
         })
         .then((data) => {
-            return {data: data, error: null};
+            return {data: data, status:status, error: null};
         })
         .catch((e) => {
             console.log("Error fetching data");

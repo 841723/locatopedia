@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Button } from "@/components/basic/Button";
@@ -7,18 +7,24 @@ import { Button } from "@/components/basic/Button";
 export function PageContent({ initialContents, editing, onChange}) {
     const [showPreviewWhileEditing, setShowPreviewWhileEditing] = useState(false);
     const [contents, setContents] = useState(initialContents);
+    const textareaRef = useRef(null);
     
 
     function handleNewContent(e) {
         if (!e) {
             return;
         }
-        e.target.style.height = "auto";
-        e.target.style.height = `${e.target.scrollHeight}px`;
 
         onChange(e.target.value);
         setContents(e.target.value);
     }
+
+    useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = "auto";
+            textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+        }
+    }, [contents]);
 
     useEffect(() => {
         const textarea = document.getElementById("contents-textarea");
@@ -35,6 +41,10 @@ export function PageContent({ initialContents, editing, onChange}) {
         }
     }, [editing]);
 
+    useEffect(() => {
+        setContents(initialContents);
+    }, [initialContents]);
+
     return editing ? (
         <div className='border border-black p-2'>
             <Button 
@@ -47,6 +57,7 @@ export function PageContent({ initialContents, editing, onChange}) {
                     <MarkdownVisualizer contents={contents} />
                 ) : (
                     <textarea
+                        ref={textareaRef}
                         id='contents-textarea'
                         className='w-full h-auto p-2 overflow-hidden outline'
                         defaultValue={contents}

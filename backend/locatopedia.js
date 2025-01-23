@@ -35,7 +35,7 @@ async function getDataFromHash(hash) {
     const res = await pool.query(
         `
         select 
-            a.hash, a.auid, v.title, v.subtitle, v.content, v.email_user, v.date 
+            a.hash, a.auid, v.title, v.subtitle, v.content, a.email_user, v.date 
         from 
             tfg.version v join tfg.article a on a.hash = v.hash
         where

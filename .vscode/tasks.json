@@ -7,7 +7,7 @@
             "script": "install",
             "path": "backend",
             "problemMatcher": [],
-            "detail": "npm install backend" 
+            "detail": "npm install backend"
         },
         {
             "type": "npm",
@@ -20,14 +20,10 @@
         {
             "label": "npm: run - backend",
             "type": "shell",
-            "dependsOn": [
-                "npm: install - backend",
-                "npm: dev - backend"
-            ],
+            "dependsOn": ["npm: install - backend", "npm: dev - backend"],
             "problemMatcher": [],
-            "dependsOrder": "sequence",
+            "dependsOrder": "sequence"
         },
-
         {
             "label": "npm: install - frontend",
             "type": "npm",
@@ -47,20 +43,16 @@
         {
             "label": "npm: run - frontend",
             "type": "shell",
-            "dependsOn": [
-                "npm: install - frontend",
-                "npm: dev - frontend"
-            ],
+            "dependsOn": ["npm: install - frontend", "npm: dev - frontend"],
             "problemMatcher": [],
-            "dependsOrder": "sequence",
+            "dependsOrder": "sequence"
         },
-
-
         {
             "type": "shell",
             "label": "python: dggstools",
             "detail": "python backend/services/dggstools/app.py",
-            "command": "python backend/services/dggstools/app.py"
+            "command": "python backend/services/dggstools/app.py",
+            "problemMatcher": []
         },
         {
             "label": "docker-compose: up",

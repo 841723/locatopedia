@@ -24,6 +24,8 @@ module.exports = router_wiki_auth;
 router_wiki_auth.use(async (req, res, next) => {
     const authorization = req.headers.authorization;
     if (!authorization) {
+        console.log("Unauthorized");
+        console.log("token", authorization);
         res.status(401).send("Unauthorized");
         return;
     }
@@ -32,6 +34,8 @@ router_wiki_auth.use(async (req, res, next) => {
 
     const payload = await verifyGoogleToken(token);
     if (!payload) {
+        console.log("Unauthorized");
+        console.log("token", token);
         res.status(401).send("Unauthorized");
         return;
     }

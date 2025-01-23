@@ -192,6 +192,10 @@ export function Page() {
         return <div>Loading..</div>;
     }
 
+    const canDeletePage =
+        emailUser &&
+        (emailUser === "841723@unizar.es" || emailUser === data.email_user);
+
     return (
         <>
             <div className='flex justify-between mb-4'>
@@ -260,6 +264,7 @@ export function Page() {
                     selectedInitial={data.cuids}
                     allowMapResize={true}
                     initialMapSize={"small"}
+                    allowSelectingCells={false}
                 />
             )}
 
@@ -279,7 +284,16 @@ export function Page() {
             )}
 
             {emailUser && (
-                <div className='flex gap-8 justify-end mt-4'>
+                <div className={`flex gap-8 mt-4 ${editing ? "justify-end" : "justify-between"}`}>
+                    {!editing && (
+                        <Button
+                            onClick={() => {
+                                navigate(`/wiki/new/${hash}${version? `/${version}` : ""}`);
+                            }}
+                        >
+                            Create similar
+                        </Button>
+                    )}
                     {editing && (
                         <Button onClick={() => setEditing(false)}>
                             cancel
@@ -303,7 +317,7 @@ export function Page() {
                 </div>
             )}
             <footer className='flex flex-col md:flex-row gap-4 justify-between text-sm text-gray-500 mt-4'>
-                <a href={`/wiki/${hash}/versions`} className='hover:underline'>
+                <a href={`/wiki/${hash}/versions`} className='underline hover:text-gray-700 transition-colors'>
                     See other versions of this page
                 </a>
                 {content &&
@@ -319,7 +333,7 @@ export function Page() {
                     )}
             </footer>
 
-            {emailUser && emailUser === "841723@unizar.es" && (
+            {canDeletePage && (
                 <Button
                     className='mt-10 bg-red-500 hover:bg-red-600 w-full'
                     onClick={() => {
@@ -338,7 +352,7 @@ export function Page() {
                         });
                     }}
                 >
-                    as <strong>841723@unizar.es</strong>: Delete this page
+                    Delete this page as <strong>{emailUser}</strong>
                 </Button>
             )}
         </>
