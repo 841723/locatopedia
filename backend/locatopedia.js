@@ -377,7 +377,7 @@ async function getNewestVersions(limit) {
     }
 }
 
-async function getNewestArticles(limit, email) {
+async function getNewestArticles(limit) {
     try {
         const res = await getDataOrderedByQuery(
             `
@@ -408,8 +408,25 @@ async function getNewestArticles(limit, email) {
 
 async function getAll() {
     try {
-        const res = await pool.query("SELECT * FROM article ORDER BY RANDOM()");
-        return res.rows;
+        const res = await getDataOrderedByQuery(
+            `
+            select 
+                a.hash
+            from 
+                tfg.article a 
+            order by random()
+            `,
+        );
+        const returnedData = res.map((item) => {
+            return {
+                hash: item.hash,
+                title: item.title,
+                subtitle: item.subtitle,
+                img_url: item.img_url,
+                auid: item.auid,                
+            };
+        });
+        return returnedData;
     } catch (err) {
         console.log("Error in getAll");
         console.log(err);

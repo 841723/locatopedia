@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { useNavigate, useParams } from "react-router-dom";
-import { Map } from "@/components/Map";
+import { MapCells } from "@/components/MapCells";
 import { Button } from "@/components/basic/Button";
 import { AutoSaveImage } from "@/components/AutoSaveImage";
 import { use } from "react";
@@ -94,7 +94,7 @@ export function NewArticle() {
             document.body.appendChild(div);
             ReactDOM.createRoot(document.getElementById("mapid2")).render(
                 <AutoSaveImage ref={mapImageRef}>
-                    <Map
+                    <MapCells
                         selectedInitial={selectedCells}
                         handleSetSelectedCells={() => {}}
                         map4DownloadImage={true}
@@ -196,7 +196,7 @@ export function NewArticle() {
 
             {!published ? (
                 !hash || (hash && selectedCells.length > 0) ? (
-                    <Map
+                    <MapCells
                         selectedInitial={selectedCells}
                         handleSetSelectedCells={setSelectedCells}
                         allowMapResize={true}

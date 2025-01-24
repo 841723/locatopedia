@@ -125,3 +125,42 @@ router_wiki.get("/:hash/versions", async (req, res) => {
 
     res.status(200).send(data);
 });
+
+
+// PARAMS: query
+// RETURNS: search results
+router_wiki.get("/search", async (req, res) => {
+    const { query } = req.query;
+
+    console.log("query", query);
+
+    const all = await getAll();
+
+
+    for (const alli of all) {
+        const response = await fetch(
+            `${DGGS_ENDPOINT}/api/dggstools/cuids-from-auid?auid=${alli.auid}`
+        );
+        const { cuids } = await response.json();
+        alli.cuids = cuids;
+        alli.auid = undefined;
+    }
+
+    if (!query || query === "") {
+        res.status(200).send(all);
+        return;
+    }
+
+    var searchResults = all.filter((article) =>
+        article.title.toLowerCase().includes(query.toLowerCase())
+    );
+
+    const searchResults2 = all.filter((article) =>
+        article.subtitle.toLowerCase().includes(query.toLowerCase()) &&
+        !searchResults.includes(article)
+    );
+
+    searchResults = searchResults.concat(searchResults2);
+
+    res.status(200).send(searchResults);
+});

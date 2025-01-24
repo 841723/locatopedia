@@ -2,7 +2,11 @@
 import { useEffect, useState, useRef } from "react";
 import { union, featureCollection } from "@turf/turf";
 import * as h3 from "h3-js";
-import { WindowSizeDecrease, WindowSizeIncrease } from "@/components/basic/icons/WindowResize";
+import {
+    WindowSizeDecrease,
+    WindowSizeIncrease,
+} from "@/components/basic/icons/WindowResize";
+import { debounce } from "@/lib/debounce";
 
 const GeoUtils = {
     EARTH_RADIUS_METERS: 6371000,
@@ -69,7 +73,7 @@ const h3BoundsToPolygon = (lngLatH3Bounds) => {
  * @param className the class name of the map container
  *
  */
-export function Map({
+export function MapCells({
     selectedInitial,
     allowMapResize = true,
     handleSetSelectedCells = () => {},
@@ -78,11 +82,6 @@ export function Map({
     idMap = "mapid",
     allowSelectingCells,
 }) {
-
-    if (allowSelectingCells === undefined) {
-        throw new Error("allowSelectingCells is required");
-    }
-
     const smallMapClassName = "w-full h-80";
     const bigMapClassName =
         "absolute bottom-0 left-0 w-screen h-[calc(100dvh-80px)] md:h-[calc(100dvh-96px)] z-10";
@@ -93,9 +92,6 @@ export function Map({
     );
     const [mapPosition, setMapPosition] = useState(null);
 
-    const [selectedInicialCellsIDs] = useState(
-        selectedInitial ? selectedInitial : []
-    );
     const [selectedCellsIDs, setSelectedCellsIDs] = useState(
         selectedInitial ? selectedInitial : []
     );
@@ -119,11 +115,10 @@ export function Map({
         if (mapSize === "small") {
             document.body.style.overflow = "hidden";
             window.scrollTo(0, 0);
-        }
-        else {
+        } else {
             document.body.style.overflow = "auto";
         }
-        
+
         setClassName(() =>
             mapSize === "small" ? bigMapClassName : smallMapClassName
         );
@@ -140,8 +135,7 @@ export function Map({
         };
         if (map.current) {
             map.current.addEventListener("moveend", handleMoveEnd);
-        }
-        else {
+        } else {
             console.log("map.current is null");
         }
         return () => map.current?.removeEventListener("moveend", handleMoveEnd);
@@ -163,14 +157,13 @@ export function Map({
             attribution:
                 '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>',
         }).addTo(map.current);
-        
+
         map.current.setView([41.64739040268027, -0.882854461669922], 13);
         if (mapPosition) {
             map.current.setView(mapPosition.position, mapPosition.zoom);
-        }
-        else {
+        } else {
             if (selectedCellsIDs.length === 0) {
-                // get user gps position 
+                // get user gps position
                 // set zoom to 13
                 map.current.locate({ setView: true, maxZoom: 13 });
                 map.current.on("locationfound", (e) => {
@@ -202,8 +195,7 @@ export function Map({
 
         if (mapPosition) {
             map.current.setView(mapPosition.center, mapPosition.zoom);
-        }
-        else {
+        } else {
             map.current.fitBounds(bounds);
         }
 
@@ -338,15 +330,3 @@ export function Map({
 }
 
 export default Map;
-
-function debounce(func, wait) {
-    let timeout;
-    return function (...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}

@@ -46,7 +46,7 @@ export function PageContent({ initialContents, editing, onChange}) {
     }, [initialContents]);
 
     return editing ? (
-        <div className='border border-black p-2'>
+        <div className='border border-black p-2 overflow-hidden'>
             <Button 
                 onClick={() => setShowPreviewWhileEditing(!showPreviewWhileEditing)}
             >
@@ -82,83 +82,83 @@ function MarkdownVisualizer({ contents }) {
                 {
                     h1( props ) { 
                         const {node, ...rest} = props 
-                        return <h1 {...rest} className='max-w-full text-2xl font-medium mt-4' />
+                        return <h1 {...rest} className='overflow-hidden max-w-full text-2xl font-medium mt-4' />
                     },
                     h2( props ) { 
                         const {node, ...rest} = props 
-                        return <h2 {...rest} className='max-w-full text-xl font-medium mt-4' />
+                        return <h2 {...rest} className='overflow-hidden max-w-full text-xl font-medium mt-4' />
                     },
                     h3( props ) { 
                         const {node, ...rest} = props 
-                        return <h3 {...rest} className='max-w-full text-lg text-gray-500 font-medium mt-4' />
+                        return <h3 {...rest} className='overflow-hidden max-w-full text-lg text-gray-500 font-medium mt-4' />
                     },
                     h4( props ) { 
                         const {node, ...rest} = props 
-                        return <h4 {...rest} className='max-w-full text-md font-medium mt-1' />
+                        return <h4 {...rest} className='overflow-hidden max-w-full text-md font-medium mt-1' />
                     },
                     h5( props ) { 
                         const {node, ...rest} = props 
-                        return <h5 {...rest} className='max-w-full text-md font-medium mt-1' />
+                        return <h5 {...rest} className='overflow-hidden max-w-full text-md font-medium mt-1' />
                     },
                     h6( props ) { 
                         const {node, ...rest} = props 
-                        return <h6 {...rest} className='max-w-full text-md font-medium mt-1' />
+                        return <h6 {...rest} className='overflow-hidden max-w-full text-md font-medium mt-1' />
                     },
                     p( props ) { 
                         const {node, ...rest} = props 
-                        return <p {...rest} className='max-w-full text-base mt-1' />
+                        return <p {...rest} className='overflow-hidden max-w-full text-base mt-1' />
                     },
                     em( props ) {
                         const {node, ...rest} = props 
-                        return <em {...rest} className='max-w-full italic' />
+                        return <em {...rest} className='overflow-hidden max-w-full italic' />
                     },
                     a( props ) { 
                         const {node, ...rest} = props 
-                        return <a {...rest} className='max-w-full text-blue-600 hover:text-blue-400' />
+                        return <a {...rest} className='overflow-hidden max-w-full text-blue-600 hover:text-blue-400' />
                     },
                     ul( props ) { 
                         const {node, ...rest} = props 
-                        return <ul {...rest} className='max-w-full list-disc  ml-10' />;
+                        return <ul {...rest} className='overflow-hidden max-w-full list-disc  ml-10' />;
                     },
                     ol( props ) { 
                         const {node, ...rest} = props 
-                        return <ol {...rest} className='max-w-full list-decimal  ml-10' />;
+                        return <ol {...rest} className='overflow-hidden max-w-full list-decimal  ml-10' />;
                     },
                     li( props ) { 
                         const {node, ...rest} = props 
-                        return <li {...rest} className='max-w-full text-base' />
+                        return <li {...rest} className='overflow-hidden max-w-full text-base' />
                     },
                     blockquote( props ) { 
                         const {node, ...rest} = props 
-                        return <blockquote {...rest} className='max-w-full border-l-4 border-gray-400 pl-4' />
+                        return <blockquote {...rest} className='overflow-hidden max-w-full border-l-4 border-gray-400 pl-4' />
                     },
                     pre( props ) { 
                         const {node, ...rest} = props 
-                        return <pre {...rest} className='max-w-full bg-gray-200 p-4 rounded-md' />
+                        return <pre {...rest} className='overflow-hidden max-w-full bg-gray-200 p-4 rounded-md' />
                     },
                     code( props ) { 
                         const {node, ...rest} = props 
-                        return <code {...rest} className='max-w-full bg-gray-200 p-1 rounded-md' />
+                        return <code {...rest} className='overflow-hidden max-w-full bg-gray-200 p-1 rounded-md' />
                     },
                     img( props ) { 
                         const {node, ...rest} = props 
-                        return <img {...rest} className='max-w-full mx-auto size-60' />
+                        return <img {...rest} className='overflow-hidden max-w-full mx-auto size-60' />
                     },
                     hr( props ) { 
                         const {node, ...rest} = props 
-                        return <hr {...rest} className='max-w-full w-full my-4' />
+                        return <hr {...rest} className='overflow-hidden max-w-full w-full my-4' />
                     },
                     table( props ) {
                         const {node, ...rest} = props 
-                        return <table {...rest} className='max-w-full border-collapse w-full my-4' />
+                        return <table {...rest} className='overflow-hidden max-w-full border-collapse w-full my-4' />
                     },
                     thead( props ) {
                         const {node, ...rest} = props 
-                        return <thead {...rest} className='max-w-full' />
+                        return <thead {...rest} className='overflow-hidden max-w-full' />
                     },
                     th( props ) {
                         const {node, ...rest} = props 
-                        return <th {...rest} className='max-w-full px-4 py-2 text-left border-b-2 border-gray-300' />
+                        return <th {...rest} className='overflow-hidden max-w-full px-4 py-2 text-left border-b-2 border-gray-300' />
                     },
                     tbody( props ) {
                         const {node, ...rest} = props 

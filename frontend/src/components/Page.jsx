@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Map } from "@/components/Map";
+import { MapCells } from "@/components/MapCells";
 import { PageContent } from "@/components/PageContent";
 import { Button } from "@/components/basic/Button";
 import { useFetch } from "@/hooks/useFetch.jsx";
@@ -233,10 +233,10 @@ export function Page() {
                         </>
                     ) : (
                         <>
-                            <h1 className='text-4xl font-medium h-12'>
+                            <h1 className='text-4xl font-medium min-h-12 h-fit'>
                                 {content.title ?? ""}
                             </h1>
-                            <h2 className='mt-2 text-xl text-gray-600 h-8'>
+                            <h2 className='mt-2 text-xl text-gray-600 min-h-8 h-fit'>
                                 {content.subtitle ?? ""}
                             </h2>
                         </>
@@ -260,7 +260,7 @@ export function Page() {
             <hr className='w-full my-4 border border-gray-900' />
 
             {data?.cuids && (
-                <Map
+                <MapCells
                     selectedInitial={data.cuids}
                     allowMapResize={true}
                     initialMapSize={"small"}
@@ -284,11 +284,15 @@ export function Page() {
             )}
 
             {emailUser && (
-                <div className={`flex gap-8 mt-4 ${editing ? "justify-end" : "justify-between"}`}>
+                <div
+                    className={`flex gap-8 mt-4 ${editing ? "justify-end" : "justify-between"}`}
+                >
                     {!editing && (
                         <Button
                             onClick={() => {
-                                navigate(`/wiki/new/${hash}${version? `/${version}` : ""}`);
+                                navigate(
+                                    `/wiki/new/${hash}${version ? `/${version}` : ""}`
+                                );
                             }}
                         >
                             Create similar
@@ -317,7 +321,10 @@ export function Page() {
                 </div>
             )}
             <footer className='flex flex-col md:flex-row gap-4 justify-between text-sm text-gray-500 mt-4'>
-                <a href={`/wiki/${hash}/versions`} className='underline hover:text-gray-700 transition-colors'>
+                <a
+                    href={`/wiki/${hash}/versions`}
+                    className='underline hover:text-gray-700 transition-colors'
+                >
                     See other versions of this page
                 </a>
                 {content &&
