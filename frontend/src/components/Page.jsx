@@ -42,6 +42,9 @@ export function Page() {
 
     let url = `${BACKEND_API_URL}/api/wiki?hash=${hash}${version ? `&version=${version}` : ""}${emailUser ? `&email=${emailUser}` : ""}`;
     const { data, loading, error } = useFetch(url);
+    if (error) {
+        navigate("/");
+    }
 
     useEffect(() => {
         if (editing) {

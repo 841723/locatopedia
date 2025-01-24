@@ -18,7 +18,12 @@ function calculateMergedPolygon(h3Indexes) {
         return turf.polygon([boundary.concat([boundary[0]])]); // Cerrar el polígono
     });
 
+    console.log("polygons", polygons);
+    if (polygons.length === 1) {
+        return polygons[0];
+    }
     const allPolygons = turf.featureCollection(polygons);
+    console.log("allPolygons", allPolygons);
     const mergedPolygon = turf.union(allPolygons);
 
     return mergedPolygon;
@@ -55,8 +60,8 @@ export function SearchBar() {
                 console.error(error);
                 return;
             }
-
-            var filteredData = data;
+            var filteredData = data.filter((article) => article.title !== "test");
+            console.log("filteredData fetched:", filteredData);
 
             if (selectedArea) {
                 const isInSelectedArea = (article) => {
