@@ -14,7 +14,7 @@ export function ArticleCard({ item }) {
             const img = await fetch(img_url);
             if (!img.ok) {
                 console.error(`Failed to load image: ${img_url}`);
-                setImgUrl("/sample.jpg");
+                setImgUrl(null);
             }
         })();
     }, [img_url]);
@@ -25,11 +25,19 @@ export function ArticleCard({ item }) {
                 href={`/wiki/${item.hash}`}
                 className='flex flex-col gap-2 justify-between h-full'
             >
-                <img
-                    src={img_url}
-                    alt=''
-                    className='object-cover h-40 grow rounded'
-                />
+                {
+                    img_url === null ? (
+                        <div className='flex items-center justify-center h-40 bg-gray-100 text-gray-500'>
+                            <Loader />
+                        </div>
+                    ) : (
+                    <img
+                        src={img_url}
+                        alt=''
+                        className='object-cover h-40 grow rounded'
+                    />
+                )}
+                
                 <div className='flex flex-col justify-end'>
                     <h2 className='text-[var(--color-secondary)] hover:underline hover:text-blue-900 text-lg font-semibold truncate'>
                         {item.title}
@@ -40,5 +48,18 @@ export function ArticleCard({ item }) {
                 </div>
             </a>
         </article>
+    );
+}
+
+function Loader() {
+    return (
+        <div
+            className='inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]'
+            role='status'
+        >
+            <span className='!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]'>
+                Loading...
+            </span>
+        </div>
     );
 }
