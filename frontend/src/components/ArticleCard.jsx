@@ -1,11 +1,24 @@
 import { BACKEND_API_URL } from "@/lib/env.js";
+import { useEffect, useState } from "react";
 
 export function ArticleCard({ item }) {
-
-    const img_url =
+    const [img_url, setImgUrl] = useState(
         item.img_url.split(".").pop() === "webp"
             ? `${BACKEND_API_URL}${item.img_url}`
-            : item.img_url || "/sample.jpg";
+            : item.img_url || "/sample.jpg"
+    );
+
+    // check if the image is getting loaded
+    useEffect(() => {
+        (async () => {
+            const img = await fetch(img_url);
+            if (!img.ok) {
+                console.error(`Failed to load image: ${img_url}`);
+                setImgUrl("/sample.jpg");
+            }
+        })();
+    }, [img_url]);
+
     return (
         <article className='w-full h-64 rounded p-2 hover:contrast-100 contrast-[90%] hover:bg-slate-100 transition-all hover:shadow-lg'>
             <a
