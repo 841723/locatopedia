@@ -28,9 +28,6 @@ export function ArticleCard({ item }) {
                 {img_url === null ? (
                     <div className='flex items-center justify-center h-40 bg-gray-100 text-gray-500'>
                         <Loader />
-                        {item.img_url.split(".").pop() === "webp"
-                            ? `${BACKEND_API_URL}${item.img_url}`
-                            : item.img_url || "/sample.jpg"}
                     </div>
                 ) : (
                     <img
@@ -56,7 +53,7 @@ export function ArticleCard({ item }) {
 function Loader() {
     return (
         <div
-            className='inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]'
+            className='inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_5s_linear_infinite]'
             role='status'
         >
             <span className='!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]'>
