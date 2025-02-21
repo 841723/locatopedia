@@ -1,35 +1,36 @@
-version: "3.8"  # Especifica la versión de Compose
-
 services:
-  postgresql:
-    image: postgres:latest
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
-    volumes:
-      - postgresql-data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    restart: always
+    postgresql:
+        image: postgres:latest
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: postgres
+        volumes:
+            - postgresql-data:/var/lib/postgresql/data
+        ports:
+            - "5432:5432" 
+        restart: always
 
-  dggstools:
-    image: dggstools
-    build:
-      context: services/dggstools
-      dockerfile: Dockerfile
-    restart: always
 
-  backend:
-    image: backend
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    depends_on:
-      - postgresql
-    restart: always
+    dggstools:
+        image: dggstools
+        build:
+            context: services/dggstools
+            dockerfile: Dockerfile
+        restart: always
+
+
+    backend:
+        image: backend
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - "3000:3000"
+        depends_on:
+            - postgresql
+        restart: always
+
 
 volumes:
-  postgresql-data:
+    postgresql-data:
