@@ -132,10 +132,7 @@ router_wiki.get("/:hash/versions", async (req, res) => {
 router_wiki.get("/search", async (req, res) => {
     const { query } = req.query;
 
-    console.log("query", query);
-
     const all = await getAll();
-
 
     for (const alli of all) {
         const response = await fetch(

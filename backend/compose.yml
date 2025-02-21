@@ -9,6 +9,7 @@ services:
             - postgresql-data:/var/lib/postgresql/data
         ports:
             - "5432:5432" 
+        restart: always
 
 
     dggstools:
@@ -16,6 +17,7 @@ services:
         build:
             context: services/dggstools
             dockerfile: Dockerfile
+        restart: always
 
 
     backend:
