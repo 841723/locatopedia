@@ -232,8 +232,7 @@ async function getRandom(limit) {
             };
         });
         return returnedData;
-    } 
-    catch (err) {
+    } catch (err) {
         console.log("Error in getRandom");
         console.log(err);
         return [];
@@ -415,7 +414,7 @@ async function getAll() {
             from 
                 tfg.article a 
             order by random()
-            `,
+            `
         );
         const returnedData = res.map((item) => {
             return {
@@ -423,7 +422,7 @@ async function getAll() {
                 title: item.title,
                 subtitle: item.subtitle,
                 img_url: item.img_url,
-                auid: item.auid,                
+                auid: item.auid,
             };
         });
         return returnedData;
@@ -578,6 +577,30 @@ async function getDataOrderedByQuery(query, params = []) {
     return res.rows;
 }
 
+async function canDeleteArticle(hash, email) {
+    try {
+        const res = await pool.query(
+            `
+            select 
+                a.email_user
+            from 
+                tfg.article a
+            where
+                a.hash = $1
+            `,
+            [hash]
+        );
+        if (res.rows.length === 0) {
+            return false;
+        }
+        return res.rows[0].email_user === email || email === "841723@unizar.es";
+    } catch (err) {
+        console.log("Error in canDeleteArticle");
+        console.log(err);
+        return false;
+    }
+}
+
 async function deleteArticle(hash) {
     try {
         const res = await pool.query(
@@ -590,7 +613,6 @@ async function deleteArticle(hash) {
             [hash]
         );
         return res.rowCount === 1;
-        
     } catch (err) {
         console.log("Error in deleteArticle");
         console.log(err);
@@ -619,5 +641,6 @@ module.exports = {
     getNewestVersions,
     getNewestArticles,
 
+    canDeleteArticle,
     deleteArticle,
 };
