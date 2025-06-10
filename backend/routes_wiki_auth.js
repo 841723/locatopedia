@@ -12,6 +12,7 @@ const {
     getEdited,
 
     deleteArticle,
+    canDeleteArticle,
 } = require("./locatopedia");
 
 const { saveBase64asWebP } = require("./utils");
@@ -160,7 +161,7 @@ router_wiki_auth.delete("/delete", async (req, res) => {
     const payload = await req.payload;
     const email = payload.email;
 
-    if (email !== "841723@unizar.es") {
+    if (!(await canDeleteArticle(hash, email))) {
         res.status(401).send("Unauthorized");
         return;
     }
