@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "api-docs": "node_modules/.bin/api2html -o docs/api.html -l shell,javascript--nodejs docs/openapi/api.yml"
+  },
+  "devDependencies": {
+    "api2html": "^0.4.0"
+  }
+}

@@ -1,0 +1,814 @@
+openapi: 3.0.0
+info:
+    title: Locatopedia
+    version: 1.0.0
+    description: Documentation for Locatopedia backend.
+servers:
+    - url: "{{BASE_URL}}"
+paths:
+    /api/wiki:
+        parameters: []
+        get:
+            summary: /api/wiki/
+            parameters:
+                - name: hash
+                  in: query
+                  required: false
+                  example: 4W2pF8ErT0Utxp5HLU4rikyKgVA=
+                  schema:
+                      type: integer
+                - name: version
+                  in: query
+                  required: false
+                  example: "1"
+                  schema:
+                      type: integer
+            responses:
+                "200":
+                    headers:
+                        X-Powered-By:
+                            schema:
+                                type: string
+                            example: Express
+                        Vary:
+                            schema:
+                                type: string
+                            example: Origin
+                        Content-Type:
+                            schema:
+                                type: string
+                            example: application/json; charset=utf-8
+                        Content-Length:
+                            schema:
+                                type: integer
+                            example: "6947"
+                        ETag:
+                            schema:
+                                type: string
+                            example: W/"1b23-CekYkIf6Qpz+y+jUjBRbHrME7+M"
+                        Date:
+                            schema:
+                                type: string
+                            example: Tue, 10 Jun 2025 19:36:09 GMT
+                        Connection:
+                            schema:
+                                type: string
+                            example: keep-alive
+                        Keep-Alive:
+                            schema:
+                                type: string
+                            example: timeout=5
+                    description: /
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    hash:
+                                        type: string
+                                    auid:
+                                        type: string
+                                    title:
+                                        type: string
+                                    subtitle:
+                                        type: string
+                                    content:
+                                        type: string
+                                        format: style
+                                    email_user:
+                                        type: string
+                                        format: email
+                                    date:
+                                        type: string
+                                        format: date-time
+                                    like_count:
+                                        type: string
+                                        format: utc-millisec
+                                    user_liked:
+                                        type: boolean
+                                    cuids:
+                                        type: array
+                                        items:
+                                            type: string
+    /api/wiki/all:
+        parameters: []
+        get:
+            summary: /api/wiki/all
+            parameters: []
+            responses:
+                "200":
+                    headers:
+                        X-Powered-By:
+                            schema:
+                                type: string
+                            example: Express
+                        Vary:
+                            schema:
+                                type: string
+                            example: Origin
+                        Content-Type:
+                            schema:
+                                type: string
+                            example: application/json; charset=utf-8
+                        Content-Length:
+                            schema:
+                                type: integer
+                            example: "875"
+                        ETag:
+                            schema:
+                                type: string
+                            example: W/"36b-NU5h51rCoaRToEuhYgKwr4azxSo"
+                        Date:
+                            schema:
+                                type: string
+                            example: Tue, 10 Jun 2025 19:49:22 GMT
+                        Connection:
+                            schema:
+                                type: string
+                            example: keep-alive
+                        Keep-Alive:
+                            schema:
+                                type: string
+                            example: timeout=5
+                    description: all
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    type: object
+                                    properties:
+                                        hash:
+                                            type: string
+                                        title:
+                                            type: string
+                                        subtitle:
+                                            type: string
+                                            format: style
+                                        img_url:
+                                            type: string
+                                        auid:
+                                            type: string
+    /api/wiki/validnewcuids:
+        parameters: []
+        get:
+            summary: /api/wiki/validnewcuids
+            parameters:
+                - name: cuids
+                  in: query
+                  required: false
+                  example: >-
+                      8a39708d4c87fff,8a39708d4c8ffff,8a39708d4ca7fff,8a39708d4caffff,8a39708d4cb7fff,8a39708d4cd7fff,8a39708d4cf7fff,8a39708d4d9ffff
+                  schema:
+                      type: integer
+            responses:
+                "200":
+                    headers:
+                        X-Powered-By:
+                            schema:
+                                type: string
+                            example: Express
+                        Vary:
+                            schema:
+                                type: string
+                            example: Origin
+                        Content-Type:
+                            schema:
+                                type: string
+                            example: application/json; charset=utf-8
+                        Content-Length:
+                            schema:
+                                type: integer
+                            example: "14"
+                        ETag:
+                            schema:
+                                type: string
+                            example: W/"e-3MDSGou3nIOvlBZElUyTiBbaRZY"
+                        Date:
+                            schema:
+                                type: string
+                            example: Tue, 10 Jun 2025 20:04:02 GMT
+                        Connection:
+                            schema:
+                                type: string
+                            example: keep-alive
+                        Keep-Alive:
+                            schema:
+                                type: string
+                            example: timeout=5
+                    description: "true"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    valid:
+                                        type: boolean
+    /api/dggstools/generate-auid-hash:
+        parameters: []
+        get:
+            summary: /api/dggstools/generate-auid-hash
+            parameters:
+                - name: cuids
+                  in: query
+                  required: false
+                  description: cuids of cells from wich to get hash and auid
+                  example: >-
+                      8a39708d4c87fff,8a39708d4c8ffff,8a39708d4ca7fff,8a39708d4caffff,8a39708d4cb7fff,8a39708d4cd7fff,8a39708d4cf7fff,8a39708d4d9ffff
+                  schema:
+                      type: integer
+            responses:
+                "200":
+                    headers:
+                        X-Powered-By:
+                            schema:
+                                type: string
+                            example: Express
+                        Vary:
+                            schema:
+                                type: string
+                            example: Origin
+                        Content-Type:
+                            schema:
+                                type: string
+                            example: application/json; charset=utf-8
+                        Content-Length:
+                            schema:
+                                type: integer
+                            example: "132"
+                        ETag:
+                            schema:
+                                type: string
+                            example: W/"84-ovma8oW8bWcrgmoFKALqKLa+kWk"
+                        Date:
+                            schema:
+                                type: string
+                            example: Tue, 10 Jun 2025 21:12:23 GMT
+                        Connection:
+                            schema:
+                                type: string
+                            example: keep-alive
+                        Keep-Alive:
+                            schema:
+                                type: string
+                            example: timeout=5
+                    description: auid_hash
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    auid_comp_b64:
+                                        type: string
+                                    hashed_b64:
+                                        type: string
+    /api/dggstools/cuids-from-auid:
+        parameters: []
+        get:
+            summary: /api/dggstools/cuids-from-auid
+            parameters:
+                - name: auid
+                  in: query
+                  required: false
+                  example: eJyLs0g0tjQ3sEgxSbYwT0tLU7EHgTQ4yz4Rq2gSQtQ-BYmdhsS2T7EE6wAAgbMcbA==
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    headers:
+                        X-Powered-By:
+                            schema:
+                                type: string
+                            example: Express
+                        Vary:
+                            schema:
+                                type: string
+                            example: Origin
+                        Content-Type:
+                            schema:
+                                type: string
+                            example: application/json; charset=utf-8
+                        Content-Length:
+                            schema:
+                                type: integer
+                            example: "155"
+                        ETag:
+                            schema:
+                                type: string
+                            example: W/"9b-B2lD0YewczOdFuVrkMDh6gKtdvs"
+                        Date:
+                            schema:
+                                type: string
+                            example: Tue, 10 Jun 2025 21:15:22 GMT
+                        Connection:
+                            schema:
+                                type: string
+                            example: keep-alive
+                        Keep-Alive:
+                            schema:
+                                type: string
+                            example: timeout=5
+                    description: cuids-from-auid
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    cuids:
+                                        type: array
+                                        items:
+                                            type: string
+    /api/dggstools/hash:
+        parameters: []
+        get:
+            summary: /api/dggstools/hash
+            parameters:
+                - name: auid
+                  in: query
+                  required: false
+                  example: eJyLs0g0tjQ3sEgxSbYwT0tLU7EHgTQ4yz4Rq2gSQtQ-BYmdhsS2T7EE6wAAgbMcbA==
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    headers:
+                        X-Powered-By:
+                            schema:
+                                type: string
+                            example: Express
+                        Vary:
+                            schema:
+                                type: string
+                            example: Origin
+                        Content-Type:
+                            schema:
+                                type: string
+                            example: application/json; charset=utf-8
+                        Content-Length:
+                            schema:
+                                type: integer
+                            example: "45"
+                        ETag:
+                            schema:
+                                type: string
+                            example: W/"2d-JdpPmjvuvECkWqGD4IOrGw53TGY"
+                        Date:
+                            schema:
+                                type: string
+                            example: Tue, 10 Jun 2025 21:17:11 GMT
+                        Connection:
+                            schema:
+                                type: string
+                            example: keep-alive
+                        Keep-Alive:
+                            schema:
+                                type: string
+                            example: timeout=5
+                    description: hash
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    hashed_b64:
+                                        type: string
+    /api/wiki/auth/like:
+        parameters: []
+        post:
+            summary: /api/wiki/auth/like
+            parameters: []
+            responses:
+                "204":
+                    headers:
+                        X-Powered-By:
+                            schema:
+                                type: string
+                            example: Express
+                        Vary:
+                            schema:
+                                type: string
+                            example: Origin
+                        Date:
+                            schema:
+                                type: string
+                            example: Tue, 10 Jun 2025 21:23:00 GMT
+                        Connection:
+                            schema:
+                                type: string
+                            example: keep-alive
+                        Keep-Alive:
+                            schema:
+                                type: string
+                            example: timeout=5
+                    description: like
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                hash:
+                                    type: string
+                                email:
+                                    type: string
+                                    format: email
+    /api/wiki/auth/liked:
+        parameters: []
+        get:
+            summary: /api/wiki/auth/liked
+            parameters:
+                - name: limit
+                  in: query
+                  required: false
+                  example: "10"
+                  schema:
+                      type: integer
+            responses:
+                "200":
+                    headers:
+                        X-Powered-By:
+                            schema:
+                                type: string
+                            example: Express
+                        Vary:
+                            schema:
+                                type: string
+                            example: Origin
+                        Content-Type:
+                            schema:
+                                type: string
+                            example: application/json; charset=utf-8
+                        Content-Length:
+                            schema:
+                                type: integer
+                            example: "150"
+                        ETag:
+                            schema:
+                                type: string
+                            example: W/"96-y+O8Q5hbMAYEIecVw1G98zS6jvo"
+                        Date:
+                            schema:
+                                type: string
+                            example: Tue, 10 Jun 2025 21:26:53 GMT
+                        Connection:
+                            schema:
+                                type: string
+                            example: keep-alive
+                        Keep-Alive:
+                            schema:
+                                type: string
+                            example: timeout=5
+                    description: /api/wiki/auth/liked
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    type: object
+                                    properties:
+                                        hash:
+                                            type: string
+                                        title:
+                                            type: string
+                                        subtitle:
+                                            type: string
+                                        img_url:
+                                            type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+    /api/wiki/auth/created:
+        parameters: []
+        get:
+            summary: /api/wiki/auth/created
+            parameters:
+                - name: limit
+                  in: query
+                  required: false
+                  example: "10"
+                  schema:
+                      type: integer
+            responses:
+                "200":
+                    headers:
+                        X-Powered-By:
+                            schema:
+                                type: string
+                            example: Express
+                        Vary:
+                            schema:
+                                type: string
+                            example: Origin
+                        Content-Type:
+                            schema:
+                                type: string
+                            example: application/json; charset=utf-8
+                        Content-Length:
+                            schema:
+                                type: integer
+                            example: "315"
+                        ETag:
+                            schema:
+                                type: string
+                            example: W/"13b-ARrMG4o7YsfPw0rZaZ0R5QBoMek"
+                        Date:
+                            schema:
+                                type: string
+                            example: Tue, 10 Jun 2025 21:30:26 GMT
+                        Connection:
+                            schema:
+                                type: string
+                            example: keep-alive
+                        Keep-Alive:
+                            schema:
+                                type: string
+                            example: timeout=5
+                    description: /api/wiki/auth/created
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    type: object
+                                    properties:
+                                        hash:
+                                            type: string
+                                        title:
+                                            type: string
+                                        subtitle:
+                                            type: string
+                                        img_url:
+                                            type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+    /api/wiki/auth/edited:
+        parameters: []
+        get:
+            summary: /api/wiki/auth/edited
+            parameters:
+                - name: limit
+                  in: query
+                  required: false
+                  example: "10"
+                  schema:
+                      type: integer
+            responses:
+                "200":
+                    headers:
+                        X-Powered-By:
+                            schema:
+                                type: string
+                            example: Express
+                        Vary:
+                            schema:
+                                type: string
+                            example: Origin
+                        Content-Type:
+                            schema:
+                                type: string
+                            example: application/json; charset=utf-8
+                        Content-Length:
+                            schema:
+                                type: integer
+                            example: "537"
+                        ETag:
+                            schema:
+                                type: string
+                            example: W/"219-Do4AfrdBcn3pkENLDCHB1H5tonc"
+                        Date:
+                            schema:
+                                type: string
+                            example: Tue, 10 Jun 2025 21:30:48 GMT
+                        Connection:
+                            schema:
+                                type: string
+                            example: keep-alive
+                        Keep-Alive:
+                            schema:
+                                type: string
+                            example: timeout=5
+                    description: /api/wiki/auth/edited
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    type: object
+                                    properties:
+                                        hash:
+                                            type: string
+                                        title:
+                                            type: string
+                                        subtitle:
+                                            type: string
+                                        img_url:
+                                            type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+    /api/wiki/auth/newversion:
+        parameters: []
+        put:
+            summary: /api/wiki/auth/newversion
+            parameters: []
+            responses:
+                "200":
+                    headers:
+                        X-Powered-By:
+                            schema:
+                                type: string
+                            example: Express
+                        Vary:
+                            schema:
+                                type: string
+                            example: Origin
+                        Content-Type:
+                            schema:
+                                type: string
+                            example: application/json; charset=utf-8
+                        Content-Length:
+                            schema:
+                                type: integer
+                            example: "2391"
+                        ETag:
+                            schema:
+                                type: string
+                            example: W/"957-FWBCccAK5Ta0e3kxDwp4BeXYAoU"
+                        Date:
+                            schema:
+                                type: string
+                            example: Tue, 10 Jun 2025 21:42:12 GMT
+                        Connection:
+                            schema:
+                                type: string
+                            example: keep-alive
+                        Keep-Alive:
+                            schema:
+                                type: string
+                            example: timeout=5
+                    description: /api/wiki/auth/newversion
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    title:
+                                        type: string
+                                    subtitle:
+                                        type: string
+                                    content:
+                                        type: string
+                                        format: style
+                                    email_user:
+                                        type: string
+                                        format: email
+                                    date:
+                                        type: string
+                                        format: date-time
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                hash:
+                                    type: string
+                                title:
+                                    type: string
+                                subtitle:
+                                    type: string
+                                content:
+                                    type: string
+                                    format: style
+                                email_user:
+                                    type: string
+                                    format: email
+    /api/wiki/auth/add:
+        parameters: []
+        post:
+            summary: /api/wiki/auth/add
+            parameters: []
+            responses:
+                "201":
+                    headers:
+                        X-Powered-By:
+                            schema:
+                                type: string
+                            example: Express
+                        Vary:
+                            schema:
+                                type: string
+                            example: Origin
+                        Content-Type:
+                            schema:
+                                type: string
+                            example: application/json; charset=utf-8
+                        Content-Length:
+                            schema:
+                                type: integer
+                            example: "2579"
+                        ETag:
+                            schema:
+                                type: string
+                            example: W/"a13-XlMuvE8bDSp0A+41JDmY3Dic++8"
+                        Date:
+                            schema:
+                                type: string
+                            example: Tue, 10 Jun 2025 21:38:36 GMT
+                        Connection:
+                            schema:
+                                type: string
+                            example: keep-alive
+                        Keep-Alive:
+                            schema:
+                                type: string
+                            example: timeout=5
+                    description: /api/wiki/auth/add
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    auid:
+                                        type: string
+                                    title:
+                                        type: string
+                                    subtitle:
+                                        type: string
+                                    content:
+                                        type: string
+                                        format: style
+                                    img_url:
+                                        type: string
+                                    email_user:
+                                        type: string
+                                        format: email
+                                    hash:
+                                        type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                cuids:
+                                    type: array
+                                    items:
+                                        type: string
+                                title:
+                                    type: string
+                                subtitle:
+                                    type: string
+                                content:
+                                    type: string
+                                    format: style
+                                imgData:
+                                    type: string
+                                    format: uri
+                                emailUser:
+                                    type: string
+                                    format: email
+    /api/wiki/auth/delete:
+        parameters: []
+        delete:
+            summary: /api/wiki/auth/delete
+            parameters: []
+            responses:
+                "204":
+                    headers:
+                        X-Powered-By:
+                            schema:
+                                type: string
+                            example: Express
+                        Vary:
+                            schema:
+                                type: string
+                            example: Origin
+                        Date:
+                            schema:
+                                type: string
+                            example: Tue, 10 Jun 2025 21:46:02 GMT
+                        Connection:
+                            schema:
+                                type: string
+                            example: keep-alive
+                        Keep-Alive:
+                            schema:
+                                type: string
+                            example: timeout=5
+                    description: /api/wiki/auth/delete
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                hash:
+                                    type: string
