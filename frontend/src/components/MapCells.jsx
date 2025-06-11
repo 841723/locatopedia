@@ -323,6 +323,80 @@ export function MapCells({
                             )}
                         </button>
                     )}
+                    <button
+                        data-testid='random-cells-button'
+                        className='absolute z-[2000] p-1 right-0 mt-[50px] mr-[10px] bg-slate-100 rounded flex items-center justify-center text-black'
+                        onClick={() => {
+                            // select random cells
+                            const randomCells = [];
+                            const h3Res = getH3ResForMapZoom(
+                                map.current.getZoom()
+                            );
+                            const { _southWest: sw, _northEast: ne } =
+                                map.current.getBounds();
+                            const padding = 1;
+                            const extraPaddingLat =
+                                (ne.lat - sw.lat) * padding;
+                            const extraPaddingLng =
+                                (ne.lng - sw.lng) * padding;
+                            const boundsPolygon = [
+                                [
+                                    sw.lat - extraPaddingLat,
+                                    sw.lng - extraPaddingLng,
+                                ],
+                                [
+                                    ne.lat + extraPaddingLat,
+                                    sw.lng - extraPaddingLng,
+                                ],
+                                [
+                                    ne.lat + extraPaddingLat,
+                                    ne.lng + extraPaddingLng,
+                                ],
+                                [
+                                    sw.lat - extraPaddingLat,
+                                    ne.lng + extraPaddingLng,
+                                ],
+                                [
+                                    sw.lat - extraPaddingLat,
+                                    sw.lng - extraPaddingLng,
+                                ],
+                            ];
+                            const h3s = h3.polygonToCells(
+                                boundsPolygon,
+                                h3Res
+                            );
+                            const numCells = Math.floor(
+                                Math.random() * (h3s.length - 1) + 1
+                            );
+
+                            for (let i = 0; i < numCells; i++) {
+                                const randomIndex = Math.floor(
+                                    Math.random() * h3s.length
+                                );
+                                const randomCell = h3s[randomIndex];
+                                if (!randomCells.includes(randomCell)) {
+                                    randomCells.push(randomCell);
+                                }
+                            }
+
+                            setSelectedCellsIDs((prev) => [
+                                ...prev,
+                                ...randomCells,
+                            ]);
+
+                            handleSetSelectedCells([
+                                ...selectedCellsIDs,
+                                ...randomCells,
+                            ]);
+
+                            console.log(
+                                "Random cells selected:",
+                                randomCells
+                            );
+                        }}
+                    >
+                       random
+                    </button>
                 </div>
             </div>
         </>

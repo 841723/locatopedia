@@ -36,11 +36,13 @@ export function HeartCounter({initialLikes, initialLiked, hash, email}) {
 
     return (
         <button
+            data-testid='heart-counter'
             onClick={handleLike}
             className='flex items-center gap-1 hover:bg-slate-100 px-4 py-2 rounded-full transition-all'
         >
             <p className='text-base select-none'>{likes}</p>
             <Heart
+                data-testid='heart-icon'
                 className={`size-6 transition-all duration-500 hover:scale-110 ${liked ? "text-red-500" : "text-transparent"}`}
             />
         </button>

@@ -1,0 +1,144 @@
+# Page snapshot
+
+```yaml
+- heading "Locatopedia" [level=1]
+- banner:
+  - complementary:
+    - link:
+      - /url: /
+      - img
+    - complementary:
+      - textbox "Search for articles..."
+      - button:
+        - img
+    - complementary
+    - link "841723@unizar.es User profile picture":
+      - /url: /account
+      - paragraph: 841723@unizar.es
+      - img "User profile picture"
+- main:
+  - heading "Popular" [level=1]
+  - list:
+    - listitem:
+      - article:
+        - link "Test Article This is a test article.":
+          - /url: /wiki/9pPPRtRWpu-G6QhgYxhy0OLAkHA=
+          - heading "Test Article" [level=2]
+          - heading "This is a test article." [level=3]
+    - listitem:
+      - article:
+        - link "Aragón Comunidad Autónoma Española":
+          - /url: /wiki/P1VUnlbg5OJw1h74dL8gbyZD9Gk=
+          - heading "Aragón" [level=2]
+          - heading "Comunidad Autónoma Española" [level=3]
+  - heading "Recently updated" [level=1]
+  - list:
+    - listitem:
+      - article:
+        - link "Test Article This is a test article":
+          - /url: /wiki/IU1x9-hiMEIRO2mAmz7e8_i5JyI=
+          - heading "Test Article" [level=2]
+          - heading "This is a test article" [level=3]
+    - listitem:
+      - article:
+        - link "Test Article This is a test article.":
+          - /url: /wiki/9pPPRtRWpu-G6QhgYxhy0OLAkHA=
+          - heading "Test Article" [level=2]
+          - heading "This is a test article." [level=3]
+    - listitem:
+      - article:
+        - link "Test Article This is a test article.":
+          - /url: /wiki/Ip7mimRH7Ly3X9_gPp_60UPfXpU=
+          - heading "Test Article" [level=2]
+          - heading "This is a test article." [level=3]
+    - listitem:
+      - article:
+        - link "Test Article This is a test article.":
+          - /url: /wiki/9Yb8uBkEYj8LJWxDavK1nzXLCQY=
+          - heading "Test Article" [level=2]
+          - heading "This is a test article." [level=3]
+    - listitem:
+      - article:
+        - link "Test Article This is a test article.":
+          - /url: /wiki/wrONfLg74LohfRlK_AY72nJzi6o=
+          - heading "Test Article" [level=2]
+          - heading "This is a test article." [level=3]
+    - listitem:
+      - article:
+        - link "Kiel City in Schleswig-Holstein, North Germany":
+          - /url: /wiki/lCmzVZNWA7GlHEbC8wfyJm4vK9w=
+          - heading "Kiel" [level=2]
+          - heading "City in Schleswig-Holstein, North Germany" [level=3]
+    - listitem:
+      - article:
+        - link "Plaza Aragón Un lugar emblemático que combina historia y vida urbana":
+          - /url: /wiki/RQNsGZloEyiPYDhNG7_A7ZVdWgw=
+          - heading "Plaza Aragón" [level=2]
+          - heading "Un lugar emblemático que combina historia y vida urbana" [level=3]
+    - listitem:
+      - article:
+        - link "Aragón Comunidad Autónoma Española":
+          - /url: /wiki/P1VUnlbg5OJw1h74dL8gbyZD9Gk=
+          - heading "Aragón" [level=2]
+          - heading "Comunidad Autónoma Española" [level=3]
+  - heading "Recently created" [level=1]
+  - list:
+    - listitem:
+      - article:
+        - link "Test Article This is a test article.":
+          - /url: /wiki/9pPPRtRWpu-G6QhgYxhy0OLAkHA=
+          - heading "Test Article" [level=2]
+          - heading "This is a test article." [level=3]
+    - listitem:
+      - article:
+        - link "Test Article This is a test article.":
+          - /url: /wiki/Ip7mimRH7Ly3X9_gPp_60UPfXpU=
+          - heading "Test Article" [level=2]
+          - heading "This is a test article." [level=3]
+    - listitem:
+      - article:
+        - link "Test Article This is a test article.":
+          - /url: /wiki/9Yb8uBkEYj8LJWxDavK1nzXLCQY=
+          - heading "Test Article" [level=2]
+          - heading "This is a test article." [level=3]
+    - listitem:
+      - article:
+        - link "Test Article This is a test article.":
+          - /url: /wiki/wrONfLg74LohfRlK_AY72nJzi6o=
+          - heading "Test Article" [level=2]
+          - heading "This is a test article." [level=3]
+    - listitem:
+      - article:
+        - link "Test Article This is a test article":
+          - /url: /wiki/IU1x9-hiMEIRO2mAmz7e8_i5JyI=
+          - heading "Test Article" [level=2]
+          - heading "This is a test article" [level=3]
+    - listitem:
+      - article:
+        - link "Plaza Aragón Un lugar emblemático que combina historia y vida urbana":
+          - /url: /wiki/RQNsGZloEyiPYDhNG7_A7ZVdWgw=
+          - heading "Plaza Aragón" [level=2]
+          - heading "Un lugar emblemático que combina historia y vida urbana" [level=3]
+    - listitem:
+      - article:
+        - link "Kiel City in Schleswig-Holstein, North Germany":
+          - /url: /wiki/lCmzVZNWA7GlHEbC8wfyJm4vK9w=
+          - heading "Kiel" [level=2]
+          - heading "City in Schleswig-Holstein, North Germany" [level=3]
+    - listitem:
+      - article:
+        - link "Aragón Comunidad Autónoma Española":
+          - /url: /wiki/P1VUnlbg5OJw1h74dL8gbyZD9Gk=
+          - heading "Aragón" [level=2]
+          - heading "Comunidad Autónoma Española" [level=3]
+  - heading "Article of the day" [level=1]
+  - list:
+    - listitem:
+      - article:
+        - link "Test Article This is a test article.":
+          - /url: /wiki/9pPPRtRWpu-G6QhgYxhy0OLAkHA=
+          - heading "Test Article" [level=2]
+          - heading "This is a test article." [level=3]
+- contentinfo:
+  - paragraph: © 2025 Locatopedia. All rights reserved.
+```

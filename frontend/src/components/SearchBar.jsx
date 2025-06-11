@@ -120,22 +120,32 @@ export function SearchBar() {
                     <input
                         ref={inputRef}
                         type='text'
-                        className={`bg-white flex-grow w-full px-2 py-1 xl:p-2 border-l border-t border-b focus:outline-none border-gray-300 ${showBlackScreen ? "rounded-tl-lg z-[2000]" : "rounded-l-lg"}`}
+                        className={`bg-white flex-grow w-full px-2 py-1 xl:p-2 border-l border-t border-b focus:outline-none border-gray-300 ${
+                            showBlackScreen
+                                ? "rounded-tl-lg z-[2000]"
+                                : "rounded-l-lg"
+                        }`}
                         placeholder='Search for articles...'
                         onChange={(e) => debouncedHandleChange(e.target.value)}
                     />
                     <div
-                        className={`bg-white px-2 py-1 xl:p-2 border-r border-t border-b flex border-gray-300 ${showBlackScreen ? "rounded-tr-lg z-[2000]" : "rounded-r-lg"} text-slate-400`}
+                        className={`bg-white px-2 py-1 xl:p-2 border-r border-t border-b flex border-gray-300 ${
+                            showBlackScreen
+                                ? "rounded-tr-lg z-[2000]"
+                                : "rounded-r-lg"
+                        } text-slate-400`}
                     >
                         {selectedArea && (
                             <span className='whitespace-nowrap select-none text-sm font-normal self-center mr-3 text-slate-400/90'>
                                 (Area selected)
                             </span>
                         )}
-                        <button onClick={() => {
-                            setShowMap((prev) => !prev);
-                            setSelectedArea(null);
-                        }}>
+                        <button
+                            onClick={() => {
+                                setShowMap((prev) => !prev);
+                                setSelectedArea(null);
+                            }}
+                        >
                             <MapIcon className='w-6 h-6  hover:text-gray-700 transition-all' />
                         </button>
                     </div>
@@ -156,8 +166,13 @@ export function SearchBar() {
                             <ul className='z-[2000] pt-4 w-full border bg-white rounded-b-lg p-2'>
                                 {searchResults.map((result) => (
                                     <li
+                                        data-testid='result-item'
                                         key={result.hash || result.title}
-                                        className={`px-2 py-4 rounded-lg transition-colors ${result.hash ? "hover:bg-gray-200" : ""}`}
+                                        className={`px-2 py-4 rounded-lg transition-colors ${
+                                            result.hash
+                                                ? "hover:bg-gray-200"
+                                                : ""
+                                        }`}
                                     >
                                         {result.hash ? (
                                             <a href={`/wiki/${result.hash}`}>
@@ -189,24 +204,24 @@ export function SearchBar() {
     );
 }
 
-const data = [
-    {
-        hash: "4W2pF8ErT0Utxp5HLU4rikyKgVA=",
-        title: "CPS",
-        subtitle: "Centro Politecnico Superior de Zaragoza",
-        img_url: "/api/images/4W2pF8ErT0Utxp5HLU4rikyKgVA=.webp",
-    },
-    {
-        hash: "TlDy5lMOz4sRH-Ulfvj28eveDFs=",
-        title: "Zaragoza",
-        subtitle: "Capital de Aragón",
-        img_url: "/api/images/TlDy5lMOz4sRH-Ulfvj28eveDFs=.webp",
-    },
-    {
-        hash: "MHq90v59SVFBkHknOaRaq3XokeU=",
-        title: "Pirineos",
-        subtitle:
-            "Los Pirineos: Naturaleza en su Máxima Expresión y tanto que si maximmo son chulisimosssss",
-        img_url: "/api/images/MHq90v59SVFBkHknOaRaq3XokeU=.webp",
-    },
-];
+// const data = [
+//     {
+//         hash: "4W2pF8ErT0Utxp5HLU4rikyKgVA=",
+//         title: "CPS",
+//         subtitle: "Centro Politecnico Superior de Zaragoza",
+//         img_url: "/api/images/4W2pF8ErT0Utxp5HLU4rikyKgVA=.webp",
+//     },
+//     {
+//         hash: "TlDy5lMOz4sRH-Ulfvj28eveDFs=",
+//         title: "Zaragoza",
+//         subtitle: "Capital de Aragón",
+//         img_url: "/api/images/TlDy5lMOz4sRH-Ulfvj28eveDFs=.webp",
+//     },
+//     {
+//         hash: "MHq90v59SVFBkHknOaRaq3XokeU=",
+//         title: "Pirineos",
+//         subtitle:
+//             "Los Pirineos: Naturaleza en su Máxima Expresión y tanto que si maximmo son chulisimosssss",
+//         img_url: "/api/images/MHq90v59SVFBkHknOaRaq3XokeU=.webp",
+//     },
+// ];

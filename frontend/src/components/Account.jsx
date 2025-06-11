@@ -6,7 +6,6 @@ import { AccountContext } from "@/context/Account";
 
 import { ArticleList } from "@/components/ArticleList";
 
-
 export function Account() {
     const [openLogin, setOpenLogin] = useState(true);
 
@@ -40,7 +39,10 @@ export function Account() {
             ) : (
                 <>
                     <div className='flex flex-col md:flex-row gap-4 w-full justify-between items-center'>
-                        <h1 className='text-xl md:text-5xl max-w-full font-bold'>
+                        <h1
+                            data-testid='account-title'
+                            className='text-xl md:text-5xl max-w-full font-bold'
+                        >
                             {credential ? credential.email : "Your email"}
                         </h1>
                         {credential && (

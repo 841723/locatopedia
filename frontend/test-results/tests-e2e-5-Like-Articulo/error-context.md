@@ -1,0 +1,51 @@
+# Page snapshot
+
+```yaml
+- heading "Locatopedia" [level=1]
+- banner:
+  - complementary:
+    - link:
+      - /url: /
+      - img
+    - complementary:
+      - textbox "Search for articles..."
+      - button:
+        - img
+    - complementary
+    - link "841723@unizar.es User profile picture":
+      - /url: /account
+      - paragraph: 841723@unizar.es
+      - img "User profile picture"
+- main:
+  - heading "España" [level=1]
+  - heading "Este pais" [level=2]
+  - button "0":
+    - paragraph: "0"
+    - img
+  - separator
+  - button:
+    - img
+  - button "random"
+  - img
+  - button "Zoom in": +
+  - button "Zoom out": −
+  - link "Leaflet":
+    - /url: https://leafletjs.com
+  - text: "| ©"
+  - link "OpenStreetMap contributors":
+    - /url: https://openstreetmap.org/copyright
+  - separator
+  - paragraph: no voy a poner una descripcion muy facha
+  - button "Create similar"
+  - button "edit page"
+  - link "See other versions of this page":
+    - /url: /wiki/IU1x9-hiMEIRO2mAmz7e8_i5JyI=/versions
+  - text: Last changes made by
+  - emphasis: diegoraulroldan@gmail.com
+  - text: on 11 June 2025 at 19:12
+  - button "Delete this page as 841723@unizar.es":
+    - text: Delete this page as
+    - strong: 841723@unizar.es
+- contentinfo:
+  - paragraph: © 2025 Locatopedia. All rights reserved.
+```
