@@ -14,7 +14,7 @@ app.use(cors({
     allowedHeaders: "Content-Type, Authorization, Content-Length, X-Requested-With",
 }));
 
-const corsOrigin = process.env.CORS_ORIGIN.split(",");
+const corsOrigin = process.env.CORS_ORIGIN || "*";
 console.log("CORS_ORIGIN: ", corsOrigin);
 
 app.use("/api/wiki", routes_wiki);
@@ -23,7 +23,7 @@ app.use("/api/dggstools", routes_dggs);
 
 app.use("/api/images", express.static("public/images"));
 
-const port = process.env.PORT || 3000;
+const port = 3001;
 app.listen(port, "0.0.0.0", () => {
     console.log(`Server listening at http://localhost:${port}`);
 });

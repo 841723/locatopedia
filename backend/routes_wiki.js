@@ -44,15 +44,23 @@ router_wiki.get("/", async (req, res) => {
     const response = await fetch(
         `${DGGS_ENDPOINT}/api/dggstools/cuids-from-auid?auid=${data.auid}`
     );
-    const { cuids } = await response.json();
+    try {
+        const { cuids } = await response.json();
+        const sendData = {
+            ...data,
+            ...data2,
+            cuids,
+        };
+        res.status(statusCode).send(sendData);
 
-    const sendData = {
-        ...data,
-        ...data2,
-        cuids,
-    };
+    }
+    catch (e) {
+        console.error("Error fetching cuids from auid:", e);
+        res.status(500).send("Error fetching cuids from auid");
+    }
 
-    res.status(statusCode).send(sendData);
+    
+
 });
 
 // PARAMS: none

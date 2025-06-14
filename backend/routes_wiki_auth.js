@@ -51,6 +51,9 @@ router_wiki_auth.use(async (req, res, next) => {
 router_wiki_auth.post("/like", async (req, res) => {
     const { hash, email } = req.body;
 
+    console.log("like performed", hash, email);
+
+
     const existingHash = await checkExistingHash(hash);
     if (!existingHash) {
         res.status(404).send("Hash not found");
@@ -125,10 +128,32 @@ router_wiki_auth.put("/newversion", async (req, res) => {
 router_wiki_auth.post("/add", async (req, res) => {
     const { cuids, title, subtitle, content, imgData, emailUser } = req.body;
 
+    console.log("add received");
     const response = await fetch(
         `${DGGS_ENDPOINT}/api/dggstools/generate-auid-hash?cuids=${cuids}`
     );
-    const { auid_comp_b64, hashed_b64 } = await response.json();
+
+    let { auid_comp_b64, hashed_b64 } = await response.json();
+
+    const tests = true; // only for testing purposes
+    if (tests) {
+        function makeid(length) {
+            var result = "";
+            var characters =
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var charactersLength = characters.length;
+            for (var i = 0; i < length; i++) {
+                result += characters.charAt(
+                    Math.floor(Math.random() * charactersLength)
+                );
+            }
+            return result;
+        }
+
+        // set random unique values
+        auid_comp_b64 = "diego" + makeid(10);
+        hashed_b64 = makeid(25);
+    }
 
     const response2 = saveBase64asWebP(
         imgData,

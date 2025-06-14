@@ -24,7 +24,7 @@ services:
             context: backend/
             dockerfile: Dockerfile
         ports:
-            - "3000:3000"
+            - "3001:3001"
         depends_on:
             - postgresql
 
@@ -35,6 +35,15 @@ services:
             dockerfile: Dockerfile
         ports:
             - "80:80"
+
+    k6:
+        image: grafana/k6
+        volumes:
+        - ./backend/tests:/scripts
+        depends_on:
+        - backend
+        stdin_open: true
+        tty: true
 
 
 volumes:

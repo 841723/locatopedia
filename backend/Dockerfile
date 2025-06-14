@@ -37,7 +37,10 @@ RUN mkdir -p /usr/src/app/public/images && chmod -R 777 /usr/src/app/public
 USER node
 
 # Expose the port that the application listens on.
-EXPOSE 3000
+EXPOSE 3001
 
 # Run the application.
 CMD ["node", "--env-file=.env.docker", "index.js"]
+# CMD ["sleep", "infinity"]
+
+# node --env-file=.env.docker index.js
