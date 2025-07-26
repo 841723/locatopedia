@@ -1,3 +1,8 @@
+## Licencia
+
+Este proyecto está protegido por una licencia personalizada de uso restringido.  
+Consulta el archivo [LICENSE](./LICENSE) para más detalles.
+
 ## To run the project:
 
 ```bash
